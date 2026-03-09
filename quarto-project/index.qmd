@@ -1,0 +1,21 @@
+---
+title: "Data Analysis Project"
+author:
+  - name: "Person A"
+  - name: "Person B"
+date: today
+---
+
+# Introduction
+
+Welcome to our data analysis project. This report is structured into the following chapters:
+
+{{< include chapters/01_introduction.qmd >}}
+
+{{< include chapters/02_data.qmd >}}
+
+{{< include chapters/03_analysis.qmd >}}
+
+{{< include chapters/04_results.qmd >}}
+
+{{< include chapters/05_conclusion.qmd >}}

@@ -1,0 +1,17 @@
+project:
+  type: html
+  output-dir: _site
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    number-sections: true
+    code-fold: true
+
+execute:
+  echo: true
+  warning: false
+  freeze: auto
+
+jupyter: python3

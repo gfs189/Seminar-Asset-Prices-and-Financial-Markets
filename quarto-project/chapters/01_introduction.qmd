@@ -1,0 +1,9 @@
+## Background
+
+*[Person A]* — Describe the background and motivation for the analysis here.
+
+## Research Questions
+
+- Question 1
+- Question 2
+- Question 3

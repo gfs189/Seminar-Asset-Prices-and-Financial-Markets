@@ -1,0 +1,15 @@
+## Visualisations
+
+*[Person B]* — Present your results and plots here.
+
+```{python}
+import sys
+sys.path.insert(0, '../src')
+from visualisation import plot_results
+
+plot_results(results)
+```
+
+## Key Findings
+
+Summarise the key findings from the analysis.

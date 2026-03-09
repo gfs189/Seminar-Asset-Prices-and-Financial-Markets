@@ -1,0 +1,12 @@
+## Conclusion
+
+*[Person A or B]* — Summarise what you found and what it means.
+
+## Limitations
+
+- Limitation 1
+- Limitation 2
+
+## Future Work
+
+Suggestions for further analysis or improvements.
