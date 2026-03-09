@@ -1,17 +1,24 @@
 project:
   type: default
-  output-dir: _site
 
 format:
-  html:
-    theme: cosmo
-    toc: true
+  pdf:
     number-sections: true
-    code-fold: true
+    colorlinks: true
+    geometry:
+      - top=20mm
+      - left=20mm
+      - bottom=20mm
+      - right=20mm
+    bibliography: references.bib
+    cite-method: natbib
+    biblio-style: apalike
+    lang: en
+    fontsize: 12pt
+    highlight-style: github-light
 
 execute:
-  echo: true
+  echo: false
   warning: false
-  freeze: auto
 
 jupyter: python3
