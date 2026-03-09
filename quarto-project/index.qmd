@@ -1,14 +1,27 @@
 ---
-title: "Data Analysis Project"
-author:
-  - name: "Person A"
-  - name: "Person B"
+title: Mandatory Assignment 1
+author: GFS189, RTL959
 date: today
+date-format: MMMM DD, YYYY
+execute: 
+  echo: false
+  warning: false
+format: 
+  pdf: 
+    number-sections: true
+    colorlinks: true
+    geometry:
+      - top=20mm
+      - left=20mm
+      - bottom=20mm
+      - right=20mm
+    bibliography: references.bib
+    cite-method: natbib
+    biblio-style: apalike  
+    lang: en
+    fontsize: 12pt
+    highlight-style: github-light
 ---
-
-# Introduction
-
-Welcome to our data analysis project. This report is structured into the following chapters:
 
 {{< include chapters/01_introduction.qmd >}}
 
@@ -19,3 +32,7 @@ Welcome to our data analysis project. This report is structured into the followi
 {{< include chapters/04_results.qmd >}}
 
 {{< include chapters/05_conclusion.qmd >}}
+
+## References
+::::{#refs}
+::::
