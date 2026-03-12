@@ -1,8 +1,13 @@
 ---
-title: "01 Introduction"
-author: GFS189, RTL959
+title: "Asset Prices and Financial Markets"
+subtitle: "Your Subtitle Here"
+author: "GFS189, RTL959"
 date: today
+date-format: "Submitted: D MMMM YYYY"
 ---
+```{=latex}
+\maketitle
+```
 
 {{< include chapters/01_introduction.qmd >}}
 

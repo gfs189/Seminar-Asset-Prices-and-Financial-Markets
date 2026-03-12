@@ -3,19 +3,11 @@
 *[Person A]* — Describe your dataset here.
 
 ```{python}
-import sys
-sys.path.insert(0, '../src')
-from data_loader import load_data
 
-df = load_data()
-df.head()
 ```
 
 ## Data Cleaning
 
 ```{python}
-from data_loader import clean_data
 
-df_clean = clean_data(df)
-print(f"Shape after cleaning: {df_clean.shape}")
 ```

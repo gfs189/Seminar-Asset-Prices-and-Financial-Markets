@@ -3,6 +3,14 @@ project:
 
 format:
   pdf:
+    documentclass: memoir
+    classoption: [11pt, a4paper]
+    include-in-header:
+      text: |
+        \usepackage[english, samf]{ku-frontpage}
+        \assignment{Master's Seminar Paper}
+        \advisor{Advisor: Name Here}
+        \frontpageimage{figures/your-image.png}
     number-sections: true
     colorlinks: true
     geometry:

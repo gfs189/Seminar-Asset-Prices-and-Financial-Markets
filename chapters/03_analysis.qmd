@@ -3,18 +3,11 @@
 *[Person B]* — Perform and describe your exploratory analysis here.
 
 ```{python}
-import sys
-sys.path.insert(0, '../src')
-from analysis import run_eda
 
-run_eda(df_clean)
 ```
 
 ## Statistical Analysis
 
 ```{python}
-from analysis import run_statistics
 
-results = run_statistics(df_clean)
-results
 ```
