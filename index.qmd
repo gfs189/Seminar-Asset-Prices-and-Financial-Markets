@@ -1,7 +1,7 @@
 ---
 title: "Betting against beta"
 subtitle: "a study of proposition 1 & 2 in american equity markets"
-author: "Tobias Dines Schlünssen and Conrad Frederik Kromann"
+author: "Tobias Dines Schlünssen & Conrad Frederik Kromann"
 date: today
 date-format: "D MMMM YYYY"
 ---
@@ -22,9 +22,18 @@ date-format: "D MMMM YYYY"
   Date:               & June 2nd, 2026 \\
 \end{tabular}
 \clearpage
+% Abstract page
+\begin{abstract}
+Your abstract text goes here.
+\end{abstract}
+
+\clearpage
+
 \renewcommand{\contentsname}{Table of content}
 \tableofcontents
 \clearpage
+
+
 ```
 
 {{< include chapters/01_introduction.qmd >}}
