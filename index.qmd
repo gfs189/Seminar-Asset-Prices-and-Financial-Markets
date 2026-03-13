@@ -1,12 +1,30 @@
 ---
-title: "Asset Prices and Financial Markets"
-subtitle: "Your Subtitle Here"
-author: "GFS189, RTL959"
+title: "Betting against beta"
+subtitle: "a study of proposition 1 & 2 in american equity markets"
+author: "Tobias Dines Schlünssen and Conrad Frederik Kromann"
 date: today
-date-format: "Submitted: D MMMM YYYY"
+date-format: "D MMMM YYYY"
 ---
 ```{=latex}
-\maketitle
+
+% --- Info page (KU template page 2) ---
+\thispagestyle{empty}
+\vspace*{2cm}
+\begin{tabular}{@{}p{3.5cm} p{9cm}}
+  Institute:          & Department of Economics \\[1ex]
+  Faculty:            & Faculty of Social Sciences (SAMF) \\[1ex]
+  Author(s):          & Tobias Dines Schlünssen (GFS189)\\
+                        & Conrad Frederik Kromann (RTL959)\\[1ex]
+  Title and subtitle: & Betting against beta\\
+                        &- A study of proposition 1 \& 2 in american equity markets \\[1ex]
+  Description:        & [A short abstract or description of your thesis goes here.] \\[1ex]
+  Advisor:            & Jacob Lundbeck Serup\\[1ex]
+  Date:               & June 2nd, 2026 \\
+\end{tabular}
+\clearpage
+\renewcommand{\contentsname}{Table of content}
+\tableofcontents
+\clearpage
 ```
 
 {{< include chapters/01_introduction.qmd >}}

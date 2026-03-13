@@ -1,16 +1,20 @@
 project:
   type: default
+  render:
+    - index.qmd
 
 format:
   pdf:
     documentclass: memoir
-    classoption: [11pt, a4paper]
+    classoption: [11pt, a4paper, openany]
     include-in-header:
       text: |
         \usepackage[english, samf]{ku-frontpage}
-        \assignment{Master's Seminar Paper}
-        \advisor{Advisor: Name Here}
-        \frontpageimage{figures/your-image.png}
+        \assignment{Seminar paper}
+        \advisor{Advisor: Jacob Lundbeck Serup}
+        \let\frontmatter\relax
+        \let\mainmatter\relax
+        \let\backmatter\relax
     number-sections: true
     colorlinks: true
     geometry:

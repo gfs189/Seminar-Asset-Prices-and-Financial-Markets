@@ -1,3 +1,5 @@
+# Results
+
 ## Visualisations
 
 *[Person B]* — Present your results and plots here.
