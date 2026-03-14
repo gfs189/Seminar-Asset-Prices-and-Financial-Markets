@@ -24,7 +24,8 @@ date-format: "D MMMM YYYY"
 \clearpage
 % Abstract page
 \begin{abstract}
-Your abstract text goes here.
+In this paper we will be examining the market anomoly where stocks with higher betas tends to have lower alphas than those with lower betas. This done by testing the proposition 1 and 2 of from the paper:''Betting against beta'' by Frazzini and Pedersen (2014)@FRAZZINI20141. Using data from US equity markets we will test proposition 1 by examiningg the relationship between beta and alpha to test for the presence of the market anonmoly. Then, to test for proposition 2, we will construct a BAB-portfolio to examine the performance of a strategy which exploits this market anomaly by going long on low beta stocks and short on high beta stocks. We find
+
 \end{abstract}
 
 \clearpage

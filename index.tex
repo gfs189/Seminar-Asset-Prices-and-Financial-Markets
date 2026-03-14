@@ -1,0 +1,307 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  english,
+  12pt,
+  11pt,
+  a4paper,
+  openany]{memoir}
+\usepackage{xcolor}
+\usepackage[top=20mm,left=20mm,bottom=20mm,right=20mm]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+\ifLuaTeX
+\usepackage[bidi=basic]{babel}
+\else
+\usepackage[bidi=default]{babel}
+\fi
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+\ifLuaTeX
+  \usepackage[english]{selnolig} % disable illegal ligatures
+\fi
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+\usepackage[]{natbib}
+\bibliographystyle{apalike}
+
+
+\usepackage[english, samf]{ku-frontpage}
+\assignment{Seminar paper}
+\advisor{Advisor: Jacob Lundbeck Serup}
+\let\frontmatter\relax
+\let\mainmatter\relax
+\let\backmatter\relax
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Betting against beta},
+  pdfauthor={Tobias Dines Schlünssen \& Conrad Frederik Kromann},
+  pdflang={en},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Betting against beta}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{a study of proposition 1 \& 2 in american equity markets}
+\author{Tobias Dines Schlünssen \& Conrad Frederik Kromann}
+\date{14 March 2026}
+\begin{document}
+\frontmatter
+\maketitle
+
+
+\mainmatter
+
+% --- Info page (KU template page 2) ---
+\thispagestyle{empty}
+\vspace*{2cm}
+\begin{tabular}{@{}p{3.5cm} p{9cm}}
+  Institute:          & Department of Economics \\[1ex]
+  Faculty:            & Faculty of Social Sciences (SAMF) \\[1ex]
+  Author(s):          & Tobias Dines Schlünssen (GFS189)\\
+                        & Conrad Frederik Kromann (RTL959)\\[1ex]
+  Title and subtitle: & Betting against beta\\
+                        &- A study of proposition 1 \& 2 in american equity markets \\[1ex]
+  Description:        & [A short abstract or description of your thesis goes here.] \\[1ex]
+  Advisor:            & Jacob Lundbeck Serup\\[1ex]
+  Date:               & June 2nd, 2026 \\
+\end{tabular}
+\clearpage
+% Abstract page
+\begin{abstract}
+In this paper we will be examining the market anomoly where stocks with higher betas tends to have lower alphas than those with lower betas. This done by testing the proposition 1 and 2 of from the paper:"" by Frazzini and Pedersen (2014)@FRAZZINI20141. Using data from US equity markets we will test proposition 1 by examiningg the relationship between beta and alpha to test for the presence of the market anonmoly. Then, to test for proposition 2, we will construct a BAB-portfolio to examine the performance of a strategy which exploits this market anomaly by going long on low beta stocks and short on high beta stocks. We find___ 
+\end{abstract}
+
+\clearpage
+
+\renewcommand{\contentsname}{Table of content}
+\tableofcontents
+\clearpage
+
+\chapter{Introduction}\label{introduction}
+
+\section{Background}\label{background}
+
+\emph{{[}Person A{]}} --- Describe the background and motivation for the
+analysis here.
+
+\section{Research Questions}\label{research-questions}
+
+\begin{itemize}
+\tightlist
+\item
+  Question 1
+\item
+  Question 2
+\item
+  Question 3
+\end{itemize}
+
+\chapter{Data}\label{data}
+
+\section{Data Description}\label{data-description}
+
+\emph{{[}Person A{]}} --- Describe your dataset here.
+
+\section{Data Cleaning}\label{data-cleaning}
+
+\chapter{Analysis}\label{analysis}
+
+\section{Exploratory Data Analysis}\label{exploratory-data-analysis}
+
+\emph{{[}Person B{]}} --- Perform and describe your exploratory analysis
+here.
+
+\section{Statistical Analysis}\label{statistical-analysis}
+
+\chapter{Results}\label{results}
+
+\section{Visualisations}\label{visualisations}
+
+\emph{{[}Person B{]}} --- Present your results and plots here.
+
+\section{Key Findings}\label{key-findings}
+
+Summarise the key findings from the analysis.
+
+\chapter{Conclusion}\label{conclusion}
+
+\section{Conclusion}\label{conclusion-1}
+
+\emph{{[}Person A or B{]}} --- Summarise what you found and what it
+means.
+
+\section{Limitations}\label{limitations}
+
+\begin{itemize}
+\tightlist
+\item
+  Limitation 1
+\item
+  Limitation 2
+\end{itemize}
+
+\section{Future Work}\label{future-work}
+
+Suggestions for further analysis or improvements.
+
+\section{References}\label{references}
+
+\renewcommand{\bibsection}{}
+\bibliography{references.bib}
+
+
+\backmatter
+
+
+
+\end{document}
