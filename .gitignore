@@ -18,6 +18,9 @@ data/processed/
 # Jupyter
 .ipynb_checkpoints/
 
+# Credentials
+config.yaml
+
 # OS
 .DS_Store
 Thumbs.db

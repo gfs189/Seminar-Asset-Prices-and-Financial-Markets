@@ -1,15 +1,278 @@
 # Analysis
 
-## Exploratory Data Analysis
-
-*[Person B]* — Perform and describe your exploratory analysis here.
-
 ```{python}
+import pandas as pd
+import numpy as np
+import pyarrow.dataset as ds
+import statsmodels.formula.api as smf
 
+from plotnine import *
+from mizani.formatters import comma_format, percent_format
 ```
 
-## Statistical Analysis
+## Beta Estimation
+
+Following @frazzinipedersen2014, we estimate beta as the product of a correlation component and a volatility component:
+
+$$\hat{\beta}_i = \hat{\rho}_i \cdot \frac{\hat{\sigma}_i}{\hat{\sigma}_m}$$
+
+The correlation $\hat{\rho}_i$ is estimated from a 5-year rolling window of monthly excess returns (minimum 3 years), while the volatility ratio is estimated from a 1-year rolling window of daily excess returns (minimum 120 observations). This two-component approach improves precision by using higher-frequency data for the noisier volatility estimate.
 
 ```{python}
+crsp_monthly = pd.read_parquet("data/crsp_monthly.parquet")
+factors_ff3_monthly = pd.read_parquet("data/factors_ff3_monthly.parquet")
+factors_ff3_daily = pd.read_parquet("data/factors_ff3_daily.parquet")
 
+crsp_daily = (
+    ds.dataset("data/crsp_daily", format="parquet")
+    .to_table()
+    .to_pandas()
+)
+```
+
+### Volatility Component
+
+We estimate annualised standard deviations using a 252-day rolling window of daily excess returns (minimum 120 observations).
+
+```{python}
+# Merge market daily volatility
+daily_vol = (
+    crsp_daily
+    .merge(factors_ff3_daily[["date", "mkt_excess"]], on="date", how="left")
+)
+
+# Stock volatility: 252-day rolling std of daily excess returns
+stock_vol = (
+    daily_vol
+    .sort_values(["permno", "date"])
+    .groupby("permno")["ret_excess"]
+    .rolling(window=252, min_periods=120)
+    .std()
+    .reset_index()
+    .rename(columns={"ret_excess": "sigma_i"})
+)
+
+# Market volatility: same window on mkt_excess
+market_vol = (
+    daily_vol
+    .drop_duplicates("date")
+    .sort_values("date")
+    ["mkt_excess"]
+    .rolling(window=252, min_periods=120)
+    .std()
+    .reset_index(drop=True)
+)
+
+# Attach date back to market vol
+market_vol_df = (
+    daily_vol
+    .drop_duplicates("date")[["date"]]
+    .sort_values("date")
+    .assign(sigma_m=market_vol.values)
+)
+
+# Merge and compute volatility ratio — take last obs per (permno, month)
+stock_vol = stock_vol.merge(
+    daily_vol[["permno", "date"]].drop_duplicates(),
+    left_on=["permno", "level_1"],
+    right_on=["permno", "date"],
+    how="left"
+).drop(columns=["level_1"])
+
+vol_ratio = (
+    stock_vol
+    .merge(market_vol_df, on="date", how="left")
+    .assign(month=lambda x: x["date"].values.astype("datetime64[M]"))
+    .sort_values(["permno", "date"])
+    .groupby(["permno", "month"])
+    .last()
+    .reset_index()
+    .assign(vol_ratio=lambda x: x["sigma_i"] / x["sigma_m"])
+    [["permno", "month", "vol_ratio"]]
+)
+```
+
+### Correlation Component
+
+We estimate the correlation with the market from a 60-month rolling window of monthly excess returns (minimum 36 months).
+
+```{python}
+# Pivot to wide: rows = date, cols = permno
+monthly_wide = (
+    crsp_monthly[["permno", "date", "ret_excess"]]
+    .merge(factors_ff3_monthly[["date", "mkt_excess"]], on="date", how="left")
+)
+
+def rolling_corr(df, min_periods=36, window=60):
+    df = df.sort_values("date")
+    corrs = (
+        df["ret_excess"]
+        .rolling(window=window, min_periods=min_periods)
+        .corr(df["mkt_excess"])
+    )
+    return corrs
+
+corr_component = (
+    monthly_wide
+    .groupby("permno", group_keys=False)
+    .apply(lambda df: df.assign(rho=rolling_corr(df)))
+    [["permno", "date", "rho"]]
+    .assign(month=lambda x: x["date"].values.astype("datetime64[M]"))
+    .rename(columns={"date": "date_monthly"})
+)
+```
+
+### Combined Beta Estimate
+
+```{python}
+beta_estimates = (
+    corr_component
+    .merge(vol_ratio, on=["permno", "month"], how="inner")
+    .assign(beta=lambda x: (x["rho"] * x["vol_ratio"]).clip(lower=0.001))
+    [["permno", "month", "beta"]]
+)
+```
+
+## BAB Portfolio Construction
+
+### Proposition 2: The BAB Factor
+
+Following @frazzinipedersen2014, at each month $t$ we rank stocks by their estimated beta. We form a low-beta portfolio (below-median beta) and a high-beta portfolio (above-median beta). Portfolio weights are rank-based and sum to one within each leg. The BAB factor return is:
+
+$$r^{BAB}_t = \frac{1}{\beta^L_t} r^L_t - \frac{1}{\beta^H_t} r^H_t$$
+
+where $\beta^L_t$ and $\beta^H_t$ are the value-weighted average betas of the low and high portfolios.
+
+```{python}
+# Merge betas into monthly data (beta estimated at t, applied at t+1)
+crsp_monthly = crsp_monthly.assign(
+    month=lambda x: x["date"].values.astype("datetime64[M]")
+)
+
+# Lag betas by one month so we use last month's beta to form this month's portfolio
+beta_lagged = (
+    beta_estimates
+    .assign(month=lambda x: (x["month"].astype("datetime64[M]") + np.timedelta64(1, "M")))
+)
+
+analysis_data = (
+    crsp_monthly
+    .merge(beta_lagged, on=["permno", "month"], how="inner")
+    .dropna(subset=["beta", "ret_excess", "mktcap_lag"])
+)
+
+def rank_weights(betas):
+    """Rank-based portfolio weights (Frazzini-Pedersen eq. 9)."""
+    k = betas.rank()
+    k = k - k.mean()
+    return k / k.abs().sum()
+
+def bab_month(df):
+    median_beta = df["beta"].median()
+    low = df[df["beta"] <= median_beta].copy()
+    high = df[df["beta"] > median_beta].copy()
+
+    if low.empty or high.empty:
+        return pd.Series({"r_bab": np.nan, "beta_L": np.nan, "beta_H": np.nan,
+                          "r_L": np.nan, "r_H": np.nan})
+
+    low["w"] = rank_weights(low["beta"])
+    high["w"] = rank_weights(-high["beta"])  # flip so highest weight = lowest beta in high leg
+
+    beta_L = (low["w"] * low["beta"]).sum()
+    beta_H = (high["w"] * high["beta"]).sum()
+
+    r_L = (low["w"] * low["ret_excess"]).sum()
+    r_H = (high["w"] * high["ret_excess"]).sum()
+
+    r_bab = r_L / beta_L - r_H / beta_H
+
+    return pd.Series({
+        "r_bab": r_bab,
+        "beta_L": beta_L,
+        "beta_H": beta_H,
+        "r_L": r_L,
+        "r_H": r_H,
+    })
+
+bab_returns = (
+    analysis_data
+    .groupby("month")
+    .apply(bab_month)
+    .reset_index()
+)
+```
+
+## Proposition 1: The Security Market Line
+
+Proposition 1 predicts that the empirical SML is flatter than CAML implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas.
+
+```{python}
+# Fama-MacBeth: each month regress ret_excess on beta
+def fmb_month(df):
+    if len(df) < 10:
+        return pd.Series({"intercept": np.nan, "beta_coef": np.nan})
+    m = smf.ols("ret_excess ~ beta", data=df).fit()
+    return pd.Series({"intercept": m.params["Intercept"], "beta_coef": m.params["beta"]})
+
+fmb_results = (
+    analysis_data
+    .groupby("month")
+    .apply(fmb_month)
+    .reset_index()
+)
+
+# Time-series average and t-stats
+fmb_summary = fmb_results[["intercept", "beta_coef"]].agg(
+    mean=("mean"),
+    t_stat=lambda x: x.mean() / (x.std() / np.sqrt(x.notna().sum()))
+).T
+
+print(fmb_summary)
+```
+
+### Beta-Sorted Portfolio Alphas
+
+We sort stocks into 10 beta-decile portfolios and compute each decile's monthly CAPM alpha to visualise the alpha-beta relationship.
+
+```{python}
+analysis_data = analysis_data.assign(
+    beta_decile=lambda x: pd.qcut(x["beta"], q=10, labels=False) + 1
+)
+
+# Value-weighted returns per decile per month
+decile_returns = (
+    analysis_data
+    .assign(vw_ret=lambda x: x["ret_excess"] * x["mktcap_lag"])
+    .groupby(["month", "beta_decile"])
+    .apply(lambda df: pd.Series({
+        "ret": df["vw_ret"].sum() / df["mktcap_lag"].sum(),
+        "avg_beta": (df["beta"] * df["mktcap_lag"]).sum() / df["mktcap_lag"].sum()
+    }))
+    .reset_index()
+    .merge(
+        factors_ff3_monthly[["date", "mkt_excess"]].assign(
+            month=lambda x: x["date"].values.astype("datetime64[M]")
+        ),
+        on="month", how="left"
+    )
+)
+
+# CAPM alpha per decile
+def capm_alpha(df):
+    m = smf.ols("ret ~ mkt_excess", data=df).fit()
+    return pd.Series({
+        "alpha": m.params["Intercept"],
+        "alpha_t": m.tvalues["Intercept"],
+        "avg_beta": df["avg_beta"].mean()
+    })
+
+decile_alphas = (
+    decile_returns
+    .groupby("beta_decile")
+    .apply(capm_alpha)
+    .reset_index()
+)
+
+print(decile_alphas)
 ```

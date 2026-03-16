@@ -16,7 +16,12 @@ import numpy as np
 import tidyfinance as tf
 import pyarrow as pa
 import pyarrow.parquet as pq
-import os
+import pyarrow.dataset as ds
+import os as os
+
+from plotnine import *
+from mizani.formatters import comma_format, percent_format
+from datetime import datetime
 
 start_date = "01/01/1963"
 end_date = "12/31/2023"
@@ -31,8 +36,8 @@ We download Fama-French 3-factor data at monthly and daily frequency. We retain 
 ```{python}
 factors_ff3_monthly = (
     tf.download_data(
-        domain="french",
-        dataset="factors_ff3_monthly",
+        domain="famafrench",
+        dataset="F-F_Research_Data_Factors",
         start_date=start_date,
         end_date=end_date
     )
@@ -41,8 +46,8 @@ factors_ff3_monthly = (
 
 factors_ff3_daily = (
     tf.download_data(
-        domain="french",
-        dataset="factors_ff3_daily",
+        domain="famafrench",
+        dataset="F-F_Research_Data_Factors_daily",
         start_date=start_date,
         end_date=end_date
     )
