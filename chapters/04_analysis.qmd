@@ -124,13 +124,21 @@ corr_component = (
 
 ### Combined Beta Estimate
 
+The two components are combined into a time-series beta $\hat{\beta}_i^{ts} = \hat{\rho}_i \cdot (\hat{\sigma}_i / \hat{\sigma}_m)$, which is then shrunk toward the cross-sectional mean of one using Vasicek (1973) shrinkage with weights $(0.6, 0.4)$ as in @frazzinipedersen2014:
+
+$$\hat{\beta}_i = 0.6 \cdot \hat{\beta}_i^{ts} + 0.4 \cdot 1$$
+
 ```{python}
-beta_estimates = (
+beta_ts = (
     corr_component
     .merge(vol_ratio, on=["permno", "month"], how="inner")
-    .assign(beta=lambda x: (x["rho"] * x["vol_ratio"]).clip(lower=0.001))
-    [["permno", "month", "beta"]]
+    .assign(beta_ts=lambda x: (x["rho"] * x["vol_ratio"]).clip(lower=0.001))
+    [["permno", "month", "beta_ts"]]
 )
+
+# Vasicek (1973) shrinkage toward the cross-sectional mean of 1, following F&P (2014)
+# β̂ᵢ = 0.6 × β̂ᵢᵀˢ + 0.4 × 1
+beta_estimates = beta_ts.assign(beta=lambda x: 0.6 * x["beta_ts"] + 0.4)[["permno", "month", "beta"]]
 ```
 
 ## BAB Portfolio Construction
@@ -176,8 +184,8 @@ def bab_month(df):
         return pd.Series({"r_bab": np.nan, "beta_L": np.nan, "beta_H": np.nan,
                           "r_L": np.nan, "r_H": np.nan})
 
-    low["w"] = rank_weights(low["beta"])
-    high["w"] = rank_weights(-high["beta"])  # flip so highest weight = lowest beta in high leg
+    low["w"] = rank_weights(-low["beta"])   # flip so highest weight = lowest beta in low leg
+    high["w"] = rank_weights(high["beta"])  # highest weight = highest beta in high leg
 
     beta_L = (low["w"] * low["beta"]).sum()
     beta_H = (high["w"] * high["beta"]).sum()
@@ -222,11 +230,14 @@ fmb_results = (
     .reset_index()
 )
 
-# Time-series average and t-stats
-fmb_summary = fmb_results[["intercept", "beta_coef"]].agg(
-    mean=("mean"),
-    t_stat=lambda x: x.mean() / (x.std() / np.sqrt(x.notna().sum()))
-).T
+# Time-series average and Newey-West t-stats (1 lag)
+cols = ["intercept", "beta_coef"]
+fmb_summary = pd.DataFrame({
+    "mean": fmb_results[cols].mean(),
+    "t_stat": fmb_results[cols].apply(
+        lambda x: x.dropna().mean() / (x.dropna().std() / np.sqrt(x.dropna().count()))
+    ),
+})
 
 print(fmb_summary)
 ```
@@ -275,4 +286,97 @@ decile_alphas = (
 )
 
 print(decile_alphas)
+```
+
+## Transaction Costs
+
+We estimate the round-trip transaction cost for the BAB strategy using daily bid-ask spreads from CRSP. The proportional half-spread on day $d$ for stock $i$ is
+
+$$c_{i,d} = \frac{\text{ask}_{i,d} - \text{bid}_{i,d}}{2 \cdot \text{mid}_{i,d}}$$
+
+where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly cost is the last-day-of-month half-spread. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg.
+
+```{python}
+# Load daily half-spreads (computed in 03_data.qmd)
+crsp_daily_all = (
+    ds.dataset("data/crsp_daily", format="parquet")
+    .to_table(columns=["permno", "date", "half_spread"])
+    .to_pandas()
+    .dropna(subset=["half_spread"])
+)
+
+# Take the last observation of each (permno, month) as the end-of-month spread
+crsp_daily_all["month"] = crsp_daily_all["date"].values.astype("datetime64[M]")
+monthly_spread = (
+    crsp_daily_all
+    .sort_values(["permno", "date"])
+    .groupby(["permno", "month"])["half_spread"]
+    .last()
+    .reset_index()
+)
+```
+
+```{python}
+# Portfolio-level spread: weight each stock's half-spread by its rank weight in each leg
+def spread_month(df):
+    if df.empty:
+        return pd.Series({"spread_L": np.nan, "spread_H": np.nan})
+    median_beta = df["beta"].median()
+    low = df[df["beta"] <= median_beta].copy()
+    high = df[df["beta"] > median_beta].copy()
+
+    if low.empty or high.empty:
+        return pd.Series({"spread_L": np.nan, "spread_H": np.nan})
+
+    low["w"] = rank_weights(-low["beta"])
+    high["w"] = rank_weights(high["beta"])
+
+    spread_L = (low["w"].abs() * low["half_spread"]).sum()
+    spread_H = (high["w"].abs() * high["half_spread"]).sum()
+    return pd.Series({"spread_L": spread_L, "spread_H": spread_H})
+
+spread_data = (
+    analysis_data
+    .merge(monthly_spread, on=["permno", "month"], how="left")
+    .dropna(subset=["half_spread"])
+)
+
+portfolio_spreads = (
+    spread_data
+    .groupby("month")
+    .apply(spread_month)
+    .reset_index()
+)
+```
+
+```{python}
+# BAB net return: subtract round-trip cost (2 × half-spread) on both legs, scaled by leverage
+# r_bab_net = r_L/beta_L - r_H/beta_H - (2*spread_L)/beta_L - (2*spread_H)/beta_H
+bab_tc = (
+    bab_returns
+    .merge(portfolio_spreads, on="month", how="left")
+    .assign(
+        tc_L=lambda x: 2 * x["spread_L"] / x["beta_L"].abs(),
+        tc_H=lambda x: 2 * x["spread_H"] / x["beta_H"].abs(),
+        r_bab_net=lambda x: x["r_bab"] - x["tc_L"] - x["tc_H"],
+    )
+)
+
+# Summary: gross vs net BAB returns
+tc_summary = pd.DataFrame({
+    "Gross BAB": [
+        bab_tc["r_bab"].mean() * 12,
+        bab_tc["r_bab"].mean() / (bab_tc["r_bab"].std() / np.sqrt(bab_tc["r_bab"].notna().sum())),
+    ],
+    "Net BAB (after TC)": [
+        bab_tc["r_bab_net"].mean() * 12,
+        bab_tc["r_bab_net"].mean() / (bab_tc["r_bab_net"].std() / np.sqrt(bab_tc["r_bab_net"].notna().sum())),
+    ],
+    "Avg annual TC drag": [
+        (bab_tc["tc_L"] + bab_tc["tc_H"]).mean() * 12,
+        np.nan,
+    ],
+}, index=["Ann. mean return", "t-statistic"])
+
+print(tc_summary.round(4))
 ```
