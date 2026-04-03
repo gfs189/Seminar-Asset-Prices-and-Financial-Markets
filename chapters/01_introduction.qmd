@@ -1,11 +1,17 @@
 # Introduction
+One of the central prediction of the capital asset priciing model(CAPM) cite() is the linear relationship bewtween expected returns and systemtic risk which is undiversifable. This relationship however has long been challenged by empirecal evidence which suggest a much flatter line than prediced by the model. A reason for this suggested by the literature is the presence of the market anomalies suchs as high-beta assets yielding lower retruns compared to lower beta assets completly contradicting the model expectations. This is called the beta anomomly and a way of explaoitng this anomoly the investing strategy of betting against beta (BAB).
 
+Introduced by Frazzini and Pedersen (2014) the BAB-strategy is a simple long-short strategy which exploits the beta anomaly by going long on low beta stocks and short on high beta stocks. The strategy has been shown to generate positive returns in various markets and time periods, making it an attractive investment strategy for investors looking to capitalize on the beta anomaly. However, the performance of the BAB-strategy is not without controversy, with some studies suggesting that the strategy may not be as effective as initially thought, and that its performance may be driven by other factors such as size and value effects.\cite{frazzini2014betting}
+
+
+Inorder to examine the relevance of the beta anomaly we test the propositions 1 and 2 from the paper: \textit{Betting against beta} by Frazzini and Pedersen (2014). The first proposition states that there is a negative relationship between beta and alpha, which implies that stocks with higher betas tend to have lower alphas than those with lower betas. The second proposition states that a strategy which exploits this market anomaly by going long on low beta stocks and short on high beta stocks, known as the BAB-portfolio, should generate positive returns.\cite  {frazzini2014betting}
+
+We find 
+\
 ## Background
 
-*[Person A]* — Describe the background and motivation for the analysis here.
+
 
 ## Research Questions
 
-- Question 1
-- Question 2
-- Question 3
+
