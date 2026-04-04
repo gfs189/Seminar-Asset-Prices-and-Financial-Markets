@@ -1,6 +1,15 @@
 # Theory
+In this chapter we discuss the theoretical background nessscary inorder to understand the results. In this entails firstly describing the CAPM as the baseline model of comparison and what its predictions. secondly, we discuss the shortcomings of the CAPM and how the presence of leverage constraints can lead to a flatter security market line thus creating the beta-anomoly. Thirdly, we discuss propositions 1 and 2 from the paper: \textit{Betting against beta} by Frazzini and Pedersen (2014). Lastly, we discuss the existing literature on the beta anomaly and the performance of the BAB-strategy.
 
 ## The Capital Asset Pricing Model
+Our baseline model of interest is the capital asset pricing model(CAPM) which is a model that seeks to explain the relationship between expected returns and idiosyncratic risk(risk that cannot be diversfied away). The model predicts this relatioship to be linear and positive with the expected return of an asset being equal to the risk free rate plus a risk premium which is proportional to the asset's beta, which measures the sensitivity of the asset's returns to the returns of the market portfolio. The CAPM makes several underlying assumption. This includes: Equilibrium model in a single-period economy, no transaction costs or taxes, risk-freee borrowing and lending is unverisally avaible, investors share homogenoues expectaitions and investors maximize returns given limited risk. The model can be specified as a regression like the following:
+$$R_i = \alpha + \beta R_m + \epsilon$$
+
+Where $R_i$ is the return of asset i, $\alpha$ is the intercept, $\beta$ is the slope coefficient which measures the sensitivity of the asset's returns to the returns of the market portfolio, $R_m$ is the return of the market portfolio and $\epsilon$ is the error term. The CAPM predicts that in equilibrium, all assets should lie on the security market line (SML) which is a graphical representation of the relationship between expected returns and beta. The SML is upward sloping, indicating that higher beta assets should have higher expected returns.
+
+Empirical evidence, however, has long challenged the predictions of the CAPM. One of the most well-known anomalies is the beta anomaly, which refers to the empirical finding that stocks with higher betas tend to have lower alphas than those with lower betas. This contradicts the predictions of the CAPM and suggests that there may be other factors at play in determining expected returns.
+
+
 
 ## Leverage Constraints and a Flatter Security Market Line
 
