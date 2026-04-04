@@ -4,9 +4,13 @@ One of the central prediction of the capital asset priciing model(CAPM) cite() i
 Introduced by Frazzini and Pedersen (2014) the BAB-strategy is a simple long-short strategy which exploits the beta anomaly by going long on low beta stocks and short on high beta stocks. The strategy has been shown to generate positive returns in various markets and time periods, making it an attractive investment strategy for investors looking to capitalize on the beta anomaly. However, the performance of the BAB-strategy is not without controversy, with some studies suggesting that the strategy may not be as effective as initially thought, and that its performance may be driven by other factors such as size and value effects.\cite{frazzini2014betting}
 
 
-Inorder to examine the relevance of the beta anomaly we test the propositions 1 and 2 from the paper: \textit{Betting against beta} by Frazzini and Pedersen (2014). The first proposition states that there is a negative relationship between beta and alpha, which implies that stocks with higher betas tend to have lower alphas than those with lower betas. The second proposition states that a strategy which exploits this market anomaly by going long on low beta stocks and short on high beta stocks, known as the BAB-portfolio, should generate positive returns.\cite  {frazzini2014betting}
+To examine the relevance of the beta anomaly we test the propositions 1 and 2 from the paper: \textit{Betting against beta} by Frazzini and Pedersen (2014). The first proposition states that there is a negative relationship between beta and alpha, which implies that stocks with higher betas tend to have lower alphas than those with lower betas. The second proposition states that a strategy which exploits this market anomaly by going long on low beta stocks and short on high beta stocks, known as the BAB-portfolio, should generate positive returns.\cite  {frazzini2014betting}
 
-We find 
+For best understanding and comprehension of the subject mattter the paper structure is as follows: first, we introduce the theoretical background and framwork for the CAPM and the why the existence of the beta anomaly is possible and how the evidence found in existing literature. Second, we describe our data and methodology for testing the anomoly and the performance of the BAB-strategy. This is equivalent to testing proposition 1 and 2 from the paper of Frazzeni and Pedersen (2014). Third, we present the results. fourth, we connect our results to the existing litearture and the implications. Lastly, we conclude and suggest avenues for future research.
+
+We find using US equaity data for the period 
+
+This 
 \
 ## Background
 
