@@ -24,7 +24,7 @@ factors_ff3_monthly = pd.read_parquet("data/factors_ff3_monthly.parquet")
 factors_ff3_daily = pd.read_parquet("data/factors_ff3_daily.parquet")
 
 crsp_daily = (
-    ds.dataset("data/crsp_daily", format="parquet")
+    ds.dataset("data/crsp_daily", format="parquet", partitioning="hive")
     .to_table()
     .to_pandas()
 )
@@ -45,6 +45,7 @@ daily_vol = (
 stock_vol = (
     daily_vol
     .sort_values(["permno", "date"])
+    .set_index("date")
     .groupby("permno")["ret_excess"]
     .rolling(window=252, min_periods=120)
     .std()
@@ -70,14 +71,6 @@ market_vol_df = (
     .sort_values("date")
     .assign(sigma_m=market_vol.values)
 )
-
-# Merge and compute volatility ratio — take last obs per (permno, month)
-stock_vol = stock_vol.merge(
-    daily_vol[["permno", "date"]].drop_duplicates(),
-    left_on=["permno", "level_1"],
-    right_on=["permno", "date"],
-    how="left"
-).drop(columns=["level_1"])
 
 vol_ratio = (
     stock_vol
@@ -160,7 +153,7 @@ crsp_monthly = crsp_monthly.assign(
 # Lag betas by one month so we use last month's beta to form this month's portfolio
 beta_lagged = (
     beta_estimates
-    .assign(month=lambda x: (x["month"].astype("datetime64[M]") + np.timedelta64(1, "M")))
+    .assign(month=lambda x: (x["month"].values.astype("datetime64[M]") + np.timedelta64(1, "M")))
 )
 
 analysis_data = (
@@ -299,9 +292,10 @@ where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly cost is the last-d
 ```{python}
 # Load daily half-spreads (computed in 03_data.qmd)
 crsp_daily_all = (
-    ds.dataset("data/crsp_daily", format="parquet")
-    .to_table(columns=["permno", "date", "half_spread"])
+    ds.dataset("data/crsp_daily", format="parquet", partitioning="hive")
+    .to_table()
     .to_pandas()
+    [["permno", "date", "half_spread"]]
     .dropna(subset=["half_spread"])
 )
 
