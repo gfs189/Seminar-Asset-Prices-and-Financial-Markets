@@ -1,6 +1,7 @@
 # Analysis
 
 ```{python}
+import os
 import pandas as pd
 import numpy as np
 import pyarrow.dataset as ds
@@ -8,6 +9,8 @@ import statsmodels.formula.api as smf
 
 from plotnine import *
 from mizani.formatters import comma_format, percent_format
+
+os.makedirs("figures", exist_ok=True)
 ```
 
 ## Beta Estimation
@@ -204,6 +207,39 @@ bab_returns = (
 )
 ```
 
+```{python}
+# BAB summary statistics
+bab_summary = pd.DataFrame({
+    "BAB Factor": [
+        bab_returns["r_bab"].mean() * 12,
+        bab_returns["r_bab"].std() * np.sqrt(12),
+        bab_returns["r_bab"].mean() / bab_returns["r_bab"].std() * np.sqrt(12),
+        bab_returns["r_bab"].mean() / (bab_returns["r_bab"].std() / np.sqrt(bab_returns["r_bab"].notna().sum())),
+    ]
+}, index=["Ann. Mean Return", "Ann. Std Dev", "Sharpe Ratio", "t-statistic"])
+print(bab_summary.round(4))
+```
+
+```{python}
+# BAB cumulative return
+bab_cumret = (
+    bab_returns
+    .dropna(subset=["r_bab"])
+    .assign(
+        cum_bab=lambda x: (1 + x["r_bab"]).cumprod(),
+        date=lambda x: x["month"].astype("datetime64[ns]")
+    )
+)
+
+(
+    ggplot(bab_cumret, aes(x="date", y="cum_bab"))
+    + geom_line(color="steelblue", size=0.8)
+    + scale_x_datetime(date_breaks="10 years", date_labels="%Y")
+    + labs(x="Date", y="Cumulative Return ($1 Invested)")
+    + theme_minimal()
+).save("figures/bab_cumret.png", dpi=300, width=9, height=5)
+```
+
 ## Proposition 1: The Security Market Line
 
 Proposition 1 predicts that the empirical SML is flatter than CAML implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas.
@@ -281,13 +317,66 @@ decile_alphas = (
 print(decile_alphas)
 ```
 
+```{python}
+# Security Market Line: empirical vs CAPM
+decile_avg = (
+    decile_returns
+    .groupby("beta_decile")
+    .agg(avg_ret=("ret", "mean"), avg_beta=("avg_beta", "mean"))
+    .reset_index()
+)
+
+mkt_mean = factors_ff3_monthly["mkt_excess"].mean()
+beta_range = pd.DataFrame({
+    "avg_beta": np.linspace(
+        decile_avg["avg_beta"].min() * 0.9,
+        decile_avg["avg_beta"].max() * 1.1, 100
+    )
+})
+beta_range["capm_ret"] = beta_range["avg_beta"] * mkt_mean
+
+(
+    ggplot(decile_avg, aes(x="avg_beta", y="avg_ret"))
+    + geom_point(size=3, color="steelblue")
+    + geom_smooth(method="lm", se=False, color="steelblue")
+    + geom_line(
+        data=beta_range,
+        mapping=aes(x="avg_beta", y="capm_ret"),
+        color="red", linetype="dashed"
+    )
+    + scale_y_continuous(labels=percent_format())
+    + labs(
+        x="Average Beta",
+        y="Average Monthly Excess Return",
+        caption="Solid blue: empirical SML. Red dashed: CAPM prediction."
+    )
+    + theme_minimal()
+).save("figures/sml.png", dpi=300, width=7, height=5)
+```
+
+```{python}
+# CAPM alpha by beta decile
+(
+    ggplot(
+        decile_alphas.assign(positive=lambda x: x["alpha"] > 0),
+        aes(x="beta_decile", y="alpha", fill="positive")
+    )
+    + geom_col(show_legend=False)
+    + scale_fill_manual(values={True: "#2196F3", False: "#F44336"})
+    + scale_x_continuous(breaks=list(range(1, 11)))
+    + scale_y_continuous(labels=percent_format())
+    + labs(x="Beta Decile", y="Monthly CAPM Alpha")
+    + theme_minimal()
+).save("figures/decile_alphas.png", dpi=300, width=7, height=5)
+```
+
 ## Transaction Costs
 
 We estimate the round-trip transaction cost for the BAB strategy using daily bid-ask spreads from CRSP. The proportional half-spread on day $d$ for stock $i$ is
 
 $$c_{i,d} = \frac{\text{ask}_{i,d} - \text{bid}_{i,d}}{2 \cdot \text{mid}_{i,d}}$$
 
-where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly cost is the last-day-of-month half-spread. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg.
+where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly spread for each stock is the median of its daily half-spreads within the month, which is robust to days with stale or missing bid/ask quotes. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg. Following Frazzini, Israel, and Moskowitz (2015), we assume full monthly rebalancing, so this is an upper bound on realised costs.
 
 ```{python}
 # Load daily half-spreads (computed in 03_data.qmd)
@@ -299,13 +388,22 @@ crsp_daily_all = (
     .dropna(subset=["half_spread"])
 )
 
-# Take the last observation of each (permno, month) as the end-of-month spread
+# Restrict to post-1993: CRSP bid-ask data only reliable from 1993 onwards
+crsp_daily_all = crsp_daily_all[crsp_daily_all["date"] >= "1993-01-01"]
+
+# Drop stale-quote entries: when dlybid=0, the formula gives half_spread=1.0.
+# Also winsorise at 10% to remove other extreme outliers (e.g. penny stocks).
+crsp_daily_all = crsp_daily_all[
+    (crsp_daily_all["half_spread"] > 0) &
+    (crsp_daily_all["half_spread"] <= 0.10)
+]
+
+# Monthly median of daily spreads — more robust than last() against end-of-month noise
 crsp_daily_all["month"] = crsp_daily_all["date"].values.astype("datetime64[M]")
 monthly_spread = (
     crsp_daily_all
-    .sort_values(["permno", "date"])
     .groupby(["permno", "month"])["half_spread"]
-    .last()
+    .median()
     .reset_index()
 )
 ```
@@ -356,18 +454,27 @@ bab_tc = (
     )
 )
 
-# Summary: gross vs net BAB returns
+# Restrict to months where TC is available so gross and net are on the same sample
+bab_tc_sample = bab_tc.dropna(subset=["r_bab_net"])
+
+def ann_mean(s):
+    return s.mean() * 12
+
+def tstat(s):
+    return s.mean() / (s.std() / np.sqrt(s.notna().sum()))
+
+# Summary: gross vs net BAB returns over the matched post-1993 sample
 tc_summary = pd.DataFrame({
     "Gross BAB": [
-        bab_tc["r_bab"].mean() * 12,
-        bab_tc["r_bab"].mean() / (bab_tc["r_bab"].std() / np.sqrt(bab_tc["r_bab"].notna().sum())),
+        ann_mean(bab_tc_sample["r_bab"]),
+        tstat(bab_tc_sample["r_bab"]),
     ],
     "Net BAB (after TC)": [
-        bab_tc["r_bab_net"].mean() * 12,
-        bab_tc["r_bab_net"].mean() / (bab_tc["r_bab_net"].std() / np.sqrt(bab_tc["r_bab_net"].notna().sum())),
+        ann_mean(bab_tc_sample["r_bab_net"]),
+        tstat(bab_tc_sample["r_bab_net"]),
     ],
     "Avg annual TC drag": [
-        (bab_tc["tc_L"] + bab_tc["tc_H"]).mean() * 12,
+        ann_mean(bab_tc_sample["tc_L"] + bab_tc_sample["tc_H"]),
         np.nan,
     ],
 }, index=["Ann. mean return", "t-statistic"])
