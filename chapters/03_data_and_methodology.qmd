@@ -1,6 +1,57 @@
-# Analysis
+# Data and Methodology
+
+## Data Description
+
+This paper replicates the Betting Against Beta (BAB) factor of @frazzinipedersen2014 for the US equity market using CRSP data accessed through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025.
+
+Three datasets are required:
+
+1. **Monthly CRSP stock data** — monthly excess returns and market capitalisation for NYSE, AMEX, and NASDAQ common stocks. Used to construct the BAB portfolios and compute monthly factor returns.
+2. **Daily CRSP stock data** — daily excess returns and bid-ask prices for each stock. Used to estimate the volatility component of individual stock betas following @frazzinipedersen2014, and to compute proportional half-spreads for the transaction cost analysis.
+3. **Fama-French factors** — the monthly and daily risk-free rate and market excess return, used to compute excess returns and the correlation component of betas.
+
+WRDS credentials are stored by `tidyfinance` in its own configuration file. Run the one-time setup below before the first download. Leave this cell commented out once credentials are saved.
 
 ```{python}
+#| eval: false
+# Run once to store WRDS credentials securely in the tidyfinance config.
+# You will be prompted for your WRDS username and password.
+import tidyfinance as tf
+#tf.set_wrds_credentials()
+```
+
+```{python}
+import pandas as pd
+import numpy as np
+import tidyfinance as tf
+import pyarrow as pa
+import pyarrow.parquet as pq
+import pyarrow.dataset as ds
+import os
+import yaml
+import statsmodels.formula.api as smf
+
+from plotnine import *
+from mizani.formatters import comma_format, percent_format
+from datetime import datetime
+```
+
+```{python}
+#| eval: false
+# Load WRDS credentials from project config.yaml
+_here = os.path.dirname(os.path.abspath("03_data.qmd"))
+_config_path = os.path.join(_here, "config.yaml")
+if not os.path.exists(_config_path):
+    _config_path = os.path.join(os.path.dirname(_here), "config.yaml")
+with open(_config_path) as f:
+    _cfg = yaml.safe_load(f)
+os.environ["WRDS_USER"] = _cfg["wrds_user"]
+os.environ["WRDS_PASSWORD"] = _cfg["wrds_password"]
+
+start_date = "01/01/1963"
+end_date = "12/31/2025"
+
+os.makedirs("data", exist_ok=True)
 import os
 import pandas as pd
 import numpy as np
@@ -13,6 +64,153 @@ from mizani.formatters import comma_format, percent_format
 os.makedirs("figures", exist_ok=True)
 ```
 
+## Fama-French Factors
+
+We download Fama-French 3-factor data at monthly and daily frequency. We retain only the risk-free rate and market excess return, which are the inputs needed for excess return computation and beta estimation.
+
+```{python}
+#| eval: false
+factors_ff3_monthly = (
+    tf.download_data(
+        domain="famafrench",
+        dataset="F-F_Research_Data_Factors",
+        start_date=start_date,
+        end_date=end_date
+    )
+    .get(["date", "risk_free", "mkt_excess"])
+)
+
+factors_ff3_daily = (
+    tf.download_data(
+        domain="famafrench",
+        dataset="F-F_Research_Data_Factors_daily",
+        start_date=start_date,
+        end_date=end_date
+    )
+    .get(["date", "risk_free", "mkt_excess"])
+)
+
+factors_ff3_monthly.to_parquet("data/factors_ff3_monthly.parquet")
+factors_ff3_daily.to_parquet("data/factors_ff3_daily.parquet")
+```
+
+## Monthly CRSP Data
+
+We download monthly CRSP data for all US common stocks listed on NYSE, AMEX, and NASDAQ. Market capitalisation is computed as shares outstanding times the absolute price, expressed in millions of USD. We also construct a one-month lagged market cap, which serves as the portfolio weight in the BAB factor construction.
+
+```{python}
+#| eval: false
+crsp_monthly = tf.download_data(
+    domain="wrds",
+    dataset="crsp_monthly",
+    start_date=start_date,
+    end_date=end_date
+)
+```
+
+## Data Cleaning
+
+```{python}
+#| eval: false
+# Lagged market cap (one month) for portfolio weighting — computed from raw download
+mktcap_lag = (
+    crsp_monthly
+    .assign(
+        mktcap=lambda x: (x["shrout"] * x["altprc"].abs() / 1_000_000).replace(0, np.nan),
+        date=lambda x: x["date"] + pd.DateOffset(months=1)
+    )
+    .rename(columns={"mktcap": "mktcap_lag"})
+    [["permno", "date", "mktcap_lag"]]
+)
+
+# Compute market cap, merge lag, compute excess returns
+crsp_monthly = (
+    crsp_monthly
+    .assign(mktcap=lambda x: (x["shrout"] * x["altprc"].abs() / 1_000_000).replace(0, np.nan))
+    .merge(mktcap_lag, how="left", on=["permno", "date"])
+    .merge(factors_ff3_monthly[["date", "risk_free"]], how="left", on="date")
+    .assign(ret_excess=lambda x: (x["ret"] - x["risk_free"]).clip(lower=-1))
+    .drop(columns=["risk_free"])
+    .dropna(subset=["ret_excess", "mktcap", "mktcap_lag"])
+    [["permno", "date", "ret", "ret_excess", "mktcap", "mktcap_lag", "exchange"]]
+)
+
+crsp_monthly.to_parquet("data/crsp_monthly.parquet")
+```
+
+## Daily CRSP Data
+
+Beta estimation in @frazzinipedersen2014 requires daily returns. The volatility component of beta uses a 1-year rolling window (252 trading days, minimum 120 observations) of daily excess returns. We also retain bid and ask prices from CRSP to compute proportional half-spreads for the transaction cost analysis. We download the daily data in batches of 500 PERMNOs to manage memory.
+
+```{python}
+#| eval: false
+from tidyfinance.utilities import get_wrds_connection, disconnect_connection
+
+# Convert dates to ISO format for SQL
+start_date_sql = pd.to_datetime(start_date).strftime("%Y-%m-%d")
+end_date_sql = pd.to_datetime(end_date).strftime("%Y-%m-%d")
+
+wrds_conn = get_wrds_connection()
+
+permnos = list(crsp_monthly["permno"].unique())
+batch_size = 500
+batches = int(np.ceil(len(permnos) / batch_size))
+
+for j in range(1, batches + 1):
+    permno_batch = permnos[(j - 1) * batch_size : min(j * batch_size, len(permnos))]
+    permno_str = ", ".join(str(p) for p in permno_batch)
+
+    query = f"""
+        SELECT dsf.permno, dlycaldt AS date, dlyret AS ret, dlybid, dlyask
+        FROM crsp.dsf_v2 AS dsf
+        INNER JOIN crsp.stksecurityinfohist AS ssih
+        ON dsf.permno = ssih.permno
+            AND ssih.secinfostartdt <= dsf.dlycaldt
+            AND dsf.dlycaldt <= ssih.secinfoenddt
+        WHERE dsf.permno IN ({permno_str})
+        AND dlycaldt BETWEEN '{start_date_sql}' AND '{end_date_sql}'
+        AND ssih.sharetype = 'NS'
+        AND ssih.securitytype = 'EQTY'
+        AND ssih.securitysubtype = 'COM'
+        AND ssih.usincflg = 'Y'
+        AND ssih.issuertype IN ('ACOR', 'CORP')
+        AND ssih.primaryexch IN ('N', 'A', 'Q')
+        AND ssih.conditionaltype IN ('RW', 'NW')
+        AND ssih.tradingstatusflg = 'A'
+    """
+
+    crsp_daily_sub = pd.read_sql_query(
+        sql=query,
+        con=wrds_conn,
+        dtype={"permno": int},
+        parse_dates=["date"]
+    ).dropna(subset=["ret"])
+
+    if not crsp_daily_sub.empty:
+        crsp_daily_sub = (
+            crsp_daily_sub
+            .merge(factors_ff3_daily[["date", "risk_free"]], on="date", how="left")
+            .assign(ret_excess=lambda x: (x["ret"] - x["risk_free"]).clip(lower=-1))
+            .dropna(subset=["ret_excess"])
+            .assign(
+                half_spread=lambda x: (
+                    (x["dlyask"] - x["dlybid"]) / (x["dlyask"] + x["dlybid"])
+                ).clip(lower=0)
+            )
+            [["permno", "date", "ret_excess", "half_spread"]]
+        )
+
+        pq.write_to_dataset(
+            pa.Table.from_pandas(crsp_daily_sub, preserve_index=False),
+            root_path="data/crsp_daily",
+            partition_cols=["permno"],
+            existing_data_behavior="delete_matching"
+        )
+
+    print(f"Batch {j} of {batches} complete ({100 * j / batches:.1f}%)")
+
+disconnect_connection(wrds_conn)
+```
 ## Beta Estimation
 
 Following @frazzinipedersen2014, we estimate beta as the product of a correlation component and a volatility component:

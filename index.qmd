@@ -47,11 +47,11 @@ We find...
 
 {{< include chapters/02_theory.qmd >}}
 
-{{< include chapters/03_data.qmd >}}
+{{< include chapters/03_data_and_methodology.qmd >}}
 
-{{< include chapters/04_analysis.qmd >}}
+{{< include chapters/04_results.qmd >}}
 
-{{< include chapters/05_results.qmd >}}
+{{< include chapters/05_discussion.qmd >}}
 
 {{< include chapters/06_conclusion.qmd >}}
 
