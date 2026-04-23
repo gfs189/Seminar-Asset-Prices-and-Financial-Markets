@@ -26,7 +26,7 @@ date-format: "D MMMM YYYY"
 \begin{abstract}
 This paper examines the market anomaly where stocks with higher betas tends to have lower 
 alphas than those with lower betas. This is done by testing the proposition 1 and 2 from 
-the paper: \textit{Betting against beta} by Frazzini and Pedersen (2014).
+the paper: \textit{Betting against beta} by @frazzinipedersen2014 .
 Using data from US equity markets we test proposition 1 by examining the 
 relationship between beta and alpha to test for the presence of the market anomaly. To test 
 proposition 2, we construct a BAB-portfolio to examine the performance of a strategy which 
@@ -55,6 +55,6 @@ We find...
 
 {{< include chapters/06_conclusion.qmd >}}
 
-## References
+# References
 ::::{#refs}
 ::::
