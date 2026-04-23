@@ -21,6 +21,7 @@ import tidyfinance as tf
 ```
 
 ```{python}
+#| eval: false
 import pandas as pd
 import numpy as np
 import tidyfinance as tf
@@ -55,6 +56,7 @@ os.makedirs("data", exist_ok=True)
 We download Fama-French 3-factor data at monthly and daily frequency. We retain only the risk-free rate and market excess return, which are the inputs needed for excess return computation and beta estimation.
 
 ```{python}
+#| eval: false
 factors_ff3_monthly = (
     tf.download_data(
         domain="famafrench",
@@ -84,6 +86,7 @@ factors_ff3_daily.to_parquet("data/factors_ff3_daily.parquet")
 We download monthly CRSP data for all US common stocks listed on NYSE, AMEX, and NASDAQ. Market capitalisation is computed as shares outstanding times the absolute price, expressed in millions of USD. We also construct a one-month lagged market cap, which serves as the portfolio weight in the BAB factor construction.
 
 ```{python}
+#| eval: false
 crsp_monthly = tf.download_data(
     domain="wrds",
     dataset="crsp_monthly",
@@ -95,6 +98,7 @@ crsp_monthly = tf.download_data(
 ## Data Cleaning
 
 ```{python}
+#| eval: false
 # Lagged market cap (one month) for portfolio weighting — computed from raw download
 mktcap_lag = (
     crsp_monthly
@@ -126,6 +130,7 @@ crsp_monthly.to_parquet("data/crsp_monthly.parquet")
 Beta estimation in @frazzinipedersen2014 requires daily returns. The volatility component of beta uses a 1-year rolling window (252 trading days, minimum 120 observations) of daily excess returns. We also retain bid and ask prices from CRSP to compute proportional half-spreads for the transaction cost analysis. We download the daily data in batches of 500 PERMNOs to manage memory.
 
 ```{python}
+#| eval: false
 from tidyfinance.utilities import get_wrds_connection, disconnect_connection
 
 # Convert dates to ISO format for SQL

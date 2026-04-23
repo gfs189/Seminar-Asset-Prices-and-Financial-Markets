@@ -32,5 +32,6 @@ format:
 execute:
   echo: false
   warning: false
+  execute-dir: project
 
 jupyter: python3
