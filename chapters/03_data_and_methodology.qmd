@@ -1,5 +1,5 @@
 # Data and Methodology
-
+In this chapter we describe the data and methodology used to test the propositions of @frazzinipedersen2014. We first summarize the charactertics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test proposition 1. Finally, we discuss how we estimate transaction costs for the BAB strategy.
 ## Data Description
 
 This paper replicates the Betting Against Beta (BAB) factor of @frazzinipedersen2014 for the US equity market using CRSP data accessed through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025.

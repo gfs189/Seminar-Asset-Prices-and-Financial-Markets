@@ -24,7 +24,7 @@ format:
       - right=20mm
     bibliography: references.bib
     cite-method: natbib
-    biblio-style: apalike
+    biblio-style: plain
     lang: en
     fontsize: 12pt
     highlight-style: github-light

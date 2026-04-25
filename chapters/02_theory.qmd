@@ -1,18 +1,50 @@
 # Theory
-In this chapter we discuss the theoretical background nessscary inorder to understand the results. In this entails firstly describing the CAPM as the baseline model of comparison and what its predictions. secondly, we discuss the shortcomings of the CAPM and how the presence of leverage constraints can lead to a flatter security market line thus creating the beta-anomoly. Thirdly, we discuss propositions 1 and 2 from the paper: \textit{Betting against beta} by Frazzini and Pedersen (2014). Lastly, we discuss the existing literature on the beta anomaly and the performance of the BAB-strategy.
+In this chapter we discuss the theoretical background needed inorder to understand the results. This entails firstly describing the CAPM as the baseline model of comparison and its predictions. Secondly, we discuss the shortcomings of the CAPM and how the presence of leverage constraints can lead to a flatter security market line thus creating the beta-anomoly as discuessed by @frazzinipedersen2014. Lastly we introduce the propositions 1 and 2 from the paper of @frazzinipedersen2014 which we wish to test.
 
 ## The Capital Asset Pricing Model
-Our baseline model of interest is the capital asset pricing model(CAPM) which is a model that seeks to explain the relationship between expected returns and idiosyncratic risk(risk that cannot be diversfied away). The model predicts this relatioship to be linear and positive with the expected return of an asset being equal to the risk free rate plus a risk premium which is proportional to the asset's beta, which measures the sensitivity of the asset's returns to the returns of the market portfolio. The CAPM makes several underlying assumption. This includes: Equilibrium model in a single-period economy, no transaction costs or taxes, risk-freee borrowing and lending is unverisally avaible, investors share homogenoues expectaitions and investors maximize returns given limited risk. The model can be specified as a regression like the following:
-$$R_i = \alpha + \beta R_m + \epsilon$$
+Our baseline model of interest is the capital asset pricing model(CAPM) which is a simple model that seeks to explain the relationship between expected returns and idiosyncratic risk(risk that cannot be diversfied away). The model predicts this relatioship to be linear and positive with the expected return of an asset being equal to the risk free rate plus a risk premium which is proportional to the asset's beta, which measures the sensitivity of the asset's returns to the returns of the market portfolio. The CAPM makes several underlying assumption. This includes: Equilibrium model in a single-period economy, no transaction costs or taxes, risk-freee borrowing and lending is unverisally avaible, investors share homogenoues expectaitions and investors maximize returns given limited risk.\cite{sharpe1964} The model can be specified as a regression like the following:
+$$
+R_i = \alpha + \beta R_m + \epsilon
+$$ {#eq-capm}
 
 Where $R_i$ is the return of asset i, $\alpha$ is the intercept, $\beta$ is the slope coefficient which measures the sensitivity of the asset's returns to the returns of the market portfolio, $R_m$ is the return of the market portfolio and $\epsilon$ is the error term. The CAPM predicts that in equilibrium, all assets should lie on the security market line (SML) which is a graphical representation of the relationship between expected returns and beta. The SML is upward sloping, indicating that higher beta assets should have higher expected returns.
 
-Empirical evidence, however, has long challenged the predictions of the CAPM. One of the most well-known anomalies is the beta anomaly, which refers to the empirical finding that stocks with higher betas tend to have lower alphas than those with lower betas. This contradicts the predictions of the CAPM and suggests that there may be other factors at play in determining expected returns.
+Empirical evidence, however, has long challenged the predictions of the CAPM. One of the most well-known anomalies is the beta anomaly, which refers to the empirical finding that stocks with higher betas tend to have lower alphas than those with lower betas. This contradicts the predictions of the CAPM and suggests that there may be other factors at play in determining expected returns. The paper of focus here is the paper of @frazzinipedersen2014 which seeks to explain the beta anomaly and test the propositions that arise from their theoretical framework.
 
 
 
 ## Leverage Constraints and a Flatter Security Market Line
+The paper of @frazzinipedersen2014 suggests that the presence of leverage constraints can lead to a flatter security market line, which can explain the beta anomaly. Leverage constraints refer to the limitations that investors face when trying to borrow money to invest in higher beta assets. These constraints can arise from various sources, such as margin requirements, borrowing limits, or risk management policies. When investors are unable to borrow they compensate by over-buying high-beta risky assets which. This leads to excess demand which lower expected returns for the high beta assets and lowers their alpa's.
+This is the reason for the flatter security market line and the beta anomaly. The paper \cite{frazzinipedersen2014} provides a theoretical framework for understanding how leverage constraints can lead to a flatter security market line and tests this framework using empirical data from the US equity market.
 
-## Proposition 1: Beta and Alpha
+## Proposition 1: High Beta is Low Alpha
+
+@frazzinipedersen2014 show that in the presence of funding constraints, the equilibrium expected return for any security $s$ is:
+
+$$
+E_t(r^s_{t+1}) = r^f + \psi_t + \beta^s_t \lambda_t
+$$ {#eq-prop1-return}
+
+where $\lambda_t = E_t(r^M_{t+1}) - r^f - \psi_t$ is the risk premium adjusted for funding constraints and $\psi_t$ is the average Lagrange multiplier measures the tightness of the funding constraints. A security's alpha with respect to the market is then:
+
+$$
+\alpha^s_t = \psi_t (1 - \beta^s_t)
+$$ {#eq-prop1-alpha}
+
+The alpha decreases in beta $\beta^s_t$. When $\beta^s_t > 1$, alpha is negative — high-beta stocks are overpriced. When $\beta^s_t < 1$, alpha is positive — low-beta stocks are underpriced. Furthermore, for an efficient portfolio, the Sharpe ratio is highest for a beta below one, decreasing in $\beta^s_t$ for higher betas and increasing for lower betas.
 
 ## Proposition 2: The BAB Factor
+
+To construct the BAB factor, let $w_t^L$ be the relative portfolio weights for a portfolio of low-beta assets with return $r^L_{t+1} = w_t^L r_{t+1}$, and similarly a portfolio of high-beta assets with return $r^H_{t+1}$. The betas of these portfolios are denoted $\beta^L_t$ and $\beta^H_t$, where $\beta^L_t < \beta^H_t$. The BAB factor return is then:
+
+$$
+r^{BAB}_{t+1} = \frac{1}{\beta^L_t}(r^L_{t+1} - r^f) - \frac{1}{\beta^H_t}(r^H_{t+1} - r^f)
+$$ {#eq-bab}
+
+This portfolio is market-neutral with a beta of zero. The long side is leveraged to a beta of one and the short side is de-leveraged to a beta of one. @frazzinipedersen2014 show that the expected excess return of this self-financing BAB factor is positive:
+
+$$
+E_t(r^{BAB}_{t+1}) = \frac{\beta^H_t - \beta^L_t}{\beta^L_t \beta^H_t} \psi_t \geq 0
+$$ {#eq-prop2}
+
+The expected return is increasing in the ex ante beta spread $(\beta^H_t - \beta^L_t)/(\beta^L_t \beta^H_t)$ and funding tightness $\psi_t$. Thus a market-neutral BAB portfolio that is long leveraged low-beta securities and short higher-beta securities earns a positive expected return on average, with the size depending on how binding the funding constraints are in the market.
