@@ -1,7 +1,341 @@
 # Results
+In this chapter, we present the main results of our analysis. First we showcase the prevelance of the beta-anomoly by testing proposition 1 and then we present the performance of the BAB-portfolio to test proposition 2. Lastly, we present the results of our extension of proposition 2 by introducing transaction costs into our analysis.
 
-## Visualisations
 
-### Proposition 1
+## BAB Portfolio Construction
 
-### Proposition 2
+### Proposition 2: The BAB Factor
+
+Following Frazzini and Pedersen [@frazzinipedersen2014], at each month $t$ we rank stocks by their estimated beta. We form a low-beta portfolio (below-median beta) and a high-beta portfolio (above-median beta). Portfolio weights are rank-based and sum to one within each leg. The BAB factor return is:
+
+$$r^{BAB}_t = \frac{1}{\beta^L_t} r^L_t - \frac{1}{\beta^H_t} r^H_t$$
+
+where $\beta^L_t$ and $\beta^H_t$ are the value-weighted average betas of the low and high portfolios.
+
+```{python}
+# Merge betas into monthly data (beta estimated at t, applied at t+1)
+crsp_monthly = crsp_monthly.assign(
+    month=lambda x: x["date"].values.astype("datetime64[M]")
+)
+
+# Lag betas by one month so we use last month's beta to form this month's portfolio
+beta_lagged = (
+    beta_estimates
+    .assign(month=lambda x: (x["month"].values.astype("datetime64[M]") + np.timedelta64(1, "M")))
+)
+
+analysis_data = (
+    crsp_monthly
+    .merge(beta_lagged, on=["permno", "month"], how="inner")
+    .dropna(subset=["beta", "ret_excess", "mktcap_lag"])
+)
+
+def rank_weights(betas):
+    """Rank-based portfolio weights (Frazzini-Pedersen eq. 9)."""
+    k = betas.rank()
+    k = k - k.mean()
+    return k / k.abs().sum()
+
+def bab_month(df):
+    median_beta = df["beta"].median()
+    low = df[df["beta"] <= median_beta].copy()
+    high = df[df["beta"] > median_beta].copy()
+
+    if low.empty or high.empty:
+        return pd.Series({"r_bab": np.nan, "beta_L": np.nan, "beta_H": np.nan,
+                          "r_L": np.nan, "r_H": np.nan})
+
+    low["w"] = rank_weights(-low["beta"])   # flip so highest weight = lowest beta in low leg
+    high["w"] = rank_weights(high["beta"])  # highest weight = highest beta in high leg
+
+    beta_L = (low["w"] * low["beta"]).sum()
+    beta_H = (high["w"] * high["beta"]).sum()
+
+    r_L = (low["w"] * low["ret_excess"]).sum()
+    r_H = (high["w"] * high["ret_excess"]).sum()
+
+    r_bab = r_L / beta_L - r_H / beta_H
+
+    return pd.Series({
+        "r_bab": r_bab,
+        "beta_L": beta_L,
+        "beta_H": beta_H,
+        "r_L": r_L,
+        "r_H": r_H,
+    })
+
+bab_returns = (
+    analysis_data
+    .groupby("month")
+    .apply(bab_month)
+    .reset_index()
+)
+```
+
+```{python}
+# BAB summary statistics
+bab_summary = pd.DataFrame({
+    "BAB Factor": [
+        bab_returns["r_bab"].mean() * 12,
+        bab_returns["r_bab"].std() * np.sqrt(12),
+        bab_returns["r_bab"].mean() / bab_returns["r_bab"].std() * np.sqrt(12),
+        bab_returns["r_bab"].mean() / (bab_returns["r_bab"].std() / np.sqrt(bab_returns["r_bab"].notna().sum())),
+    ]
+}, index=["Ann. Mean Return", "Ann. Std Dev", "Sharpe Ratio", "t-statistic"])
+print(bab_summary.round(4))
+```
+
+```{python}
+# BAB cumulative return
+bab_cumret = (
+    bab_returns
+    .dropna(subset=["r_bab"])
+    .assign(
+        cum_bab=lambda x: (1 + x["r_bab"]).cumprod(),
+        date=lambda x: x["month"].astype("datetime64[ns]")
+    )
+)
+
+(
+    ggplot(bab_cumret, aes(x="date", y="cum_bab"))
+    + geom_line(color="steelblue", size=0.8)
+    + scale_x_datetime(date_breaks="10 years", date_labels="%Y")
+    + labs(x="Date", y="Cumulative Return ($1 Invested)")
+    + theme_minimal()
+).save("figures/bab_cumret.png", dpi=300, width=9, height=5)
+```
+
+## Proposition 1: The Security Market Line
+
+Proposition 1 predicts that the empirical SML is flatter than CAML implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas.
+
+```{python}
+# Fama-MacBeth: each month regress ret_excess on beta
+def fmb_month(df):
+    if len(df) < 10:
+        return pd.Series({"intercept": np.nan, "beta_coef": np.nan})
+    m = smf.ols("ret_excess ~ beta", data=df).fit()
+    return pd.Series({"intercept": m.params["Intercept"], "beta_coef": m.params["beta"]})
+
+fmb_results = (
+    analysis_data
+    .groupby("month")
+    .apply(fmb_month)
+    .reset_index()
+)
+
+# Time-series average and Newey-West t-stats (1 lag)
+cols = ["intercept", "beta_coef"]
+fmb_summary = pd.DataFrame({
+    "mean": fmb_results[cols].mean(),
+    "t_stat": fmb_results[cols].apply(
+        lambda x: x.dropna().mean() / (x.dropna().std() / np.sqrt(x.dropna().count()))
+    ),
+})
+
+print(fmb_summary)
+```
+
+### Beta-Sorted Portfolio Alphas
+
+We sort stocks into 10 beta-decile portfolios and compute each decile's monthly CAPM alpha to visualise the alpha-beta relationship.
+
+```{python}
+analysis_data = analysis_data.assign(
+    beta_decile=lambda x: pd.qcut(x["beta"], q=10, labels=False) + 1
+)
+
+# Value-weighted returns per decile per month
+decile_returns = (
+    analysis_data
+    .assign(vw_ret=lambda x: x["ret_excess"] * x["mktcap_lag"])
+    .groupby(["month", "beta_decile"])
+    .apply(lambda df: pd.Series({
+        "ret": df["vw_ret"].sum() / df["mktcap_lag"].sum(),
+        "avg_beta": (df["beta"] * df["mktcap_lag"]).sum() / df["mktcap_lag"].sum()
+    }))
+    .reset_index()
+    .merge(
+        factors_ff3_monthly[["date", "mkt_excess"]].assign(
+            month=lambda x: x["date"].values.astype("datetime64[M]")
+        ),
+        on="month", how="left"
+    )
+)
+
+# CAPM alpha per decile
+def capm_alpha(df):
+    m = smf.ols("ret ~ mkt_excess", data=df).fit()
+    return pd.Series({
+        "alpha": m.params["Intercept"],
+        "alpha_t": m.tvalues["Intercept"],
+        "avg_beta": df["avg_beta"].mean()
+    })
+
+decile_alphas = (
+    decile_returns
+    .groupby("beta_decile")
+    .apply(capm_alpha)
+    .reset_index()
+)
+
+print(decile_alphas)
+```
+
+```{python}
+# Security Market Line: empirical vs CAPM
+decile_avg = (
+    decile_returns
+    .groupby("beta_decile")
+    .agg(avg_ret=("ret", "mean"), avg_beta=("avg_beta", "mean"))
+    .reset_index()
+)
+
+mkt_mean = factors_ff3_monthly["mkt_excess"].mean()
+beta_range = pd.DataFrame({
+    "avg_beta": np.linspace(
+        decile_avg["avg_beta"].min() * 0.9,
+        decile_avg["avg_beta"].max() * 1.1, 100
+    )
+})
+beta_range["capm_ret"] = beta_range["avg_beta"] * mkt_mean
+
+(
+    ggplot(decile_avg, aes(x="avg_beta", y="avg_ret"))
+    + geom_point(size=3, color="steelblue")
+    + geom_smooth(method="lm", se=False, color="steelblue")
+    + geom_line(
+        data=beta_range,
+        mapping=aes(x="avg_beta", y="capm_ret"),
+        color="red", linetype="dashed"
+    )
+    + scale_y_continuous(labels=percent_format())
+    + labs(
+        x="Average Beta",
+        y="Average Monthly Excess Return",
+        caption="Solid blue: empirical SML. Red dashed: CAPM prediction."
+    )
+    + theme_minimal()
+).save("figures/sml.png", dpi=300, width=7, height=5)
+```
+
+```{python}
+# CAPM alpha by beta decile
+(
+    ggplot(
+        decile_alphas.assign(positive=lambda x: x["alpha"] > 0),
+        aes(x="beta_decile", y="alpha", fill="positive")
+    )
+    + geom_col(show_legend=False)
+    + scale_fill_manual(values={True: "#2196F3", False: "#F44336"})
+    + scale_x_continuous(breaks=list(range(1, 11)))
+    + scale_y_continuous(labels=percent_format())
+    + labs(x="Beta Decile", y="Monthly CAPM Alpha")
+    + theme_minimal()
+).save("figures/decile_alphas.png", dpi=300, width=7, height=5)
+```
+
+
+```{python}
+# Load daily half-spreads (computed in 03_data.qmd)
+crsp_daily_all = (
+    ds.dataset("data/crsp_daily", format="parquet", partitioning="hive")
+    .to_table()
+    .to_pandas()
+    [["permno", "date", "half_spread"]]
+    .dropna(subset=["half_spread"])
+)
+
+# Restrict to post-1993: CRSP bid-ask data only reliable from 1993 onwards
+crsp_daily_all = crsp_daily_all[crsp_daily_all["date"] >= "1993-01-01"]
+
+# Drop stale-quote entries: when dlybid=0, the formula gives half_spread=1.0.
+# Also winsorise at 10% to remove other extreme outliers (e.g. penny stocks).
+crsp_daily_all = crsp_daily_all[
+    (crsp_daily_all["half_spread"] > 0) &
+    (crsp_daily_all["half_spread"] <= 0.10)
+]
+
+# Monthly median of daily spreads — more robust than last() against end-of-month noise
+crsp_daily_all["month"] = crsp_daily_all["date"].values.astype("datetime64[M]")
+monthly_spread = (
+    crsp_daily_all
+    .groupby(["permno", "month"])["half_spread"]
+    .median()
+    .reset_index()
+)
+```
+
+```{python}
+# Portfolio-level spread: weight each stock's half-spread by its rank weight in each leg
+def spread_month(df):
+    if df.empty:
+        return pd.Series({"spread_L": np.nan, "spread_H": np.nan})
+    median_beta = df["beta"].median()
+    low = df[df["beta"] <= median_beta].copy()
+    high = df[df["beta"] > median_beta].copy()
+
+    if low.empty or high.empty:
+        return pd.Series({"spread_L": np.nan, "spread_H": np.nan})
+
+    low["w"] = rank_weights(-low["beta"])
+    high["w"] = rank_weights(high["beta"])
+
+    spread_L = (low["w"].abs() * low["half_spread"]).sum()
+    spread_H = (high["w"].abs() * high["half_spread"]).sum()
+    return pd.Series({"spread_L": spread_L, "spread_H": spread_H})
+
+spread_data = (
+    analysis_data
+    .merge(monthly_spread, on=["permno", "month"], how="left")
+    .dropna(subset=["half_spread"])
+)
+
+portfolio_spreads = (
+    spread_data
+    .groupby("month")
+    .apply(spread_month)
+    .reset_index()
+)
+```
+
+```{python}
+# BAB net return: subtract round-trip cost (2 × half-spread) on both legs, scaled by leverage
+# r_bab_net = r_L/beta_L - r_H/beta_H - (2*spread_L)/beta_L - (2*spread_H)/beta_H
+bab_tc = (
+    bab_returns
+    .merge(portfolio_spreads, on="month", how="left")
+    .assign(
+        tc_L=lambda x: 2 * x["spread_L"] / x["beta_L"].abs(),
+        tc_H=lambda x: 2 * x["spread_H"] / x["beta_H"].abs(),
+        r_bab_net=lambda x: x["r_bab"] - x["tc_L"] - x["tc_H"],
+    )
+)
+
+# Restrict to months where TC is available so gross and net are on the same sample
+bab_tc_sample = bab_tc.dropna(subset=["r_bab_net"])
+
+def ann_mean(s):
+    return s.mean() * 12
+
+def tstat(s):
+    return s.mean() / (s.std() / np.sqrt(s.notna().sum()))
+
+# Summary: gross vs net BAB returns over the matched post-1993 sample
+tc_summary = pd.DataFrame({
+    "Gross BAB": [
+        ann_mean(bab_tc_sample["r_bab"]),
+        tstat(bab_tc_sample["r_bab"]),
+    ],
+    "Net BAB (after TC)": [
+        ann_mean(bab_tc_sample["r_bab_net"]),
+        tstat(bab_tc_sample["r_bab_net"]),
+    ],
+    "Avg annual TC drag": [
+        ann_mean(bab_tc_sample["tc_L"] + bab_tc_sample["tc_H"]),
+        np.nan,
+    ],
+}, index=["Ann. mean return", "t-statistic"])
+
+print(tc_summary.round(4))
+```
