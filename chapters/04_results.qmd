@@ -1,113 +1,7 @@
 # Results
 In this chapter, we present the main results of our analysis. First we showcase the prevelance of the beta-anomoly by testing proposition 1 and then we present the performance of the BAB-portfolio to test proposition 2. Lastly, we present the results of our extension of proposition 2 by introducing transaction costs into our analysis.
 
-
-## BAB Portfolio Construction
-
-### Proposition 2: The BAB Factor
-
-Following Frazzini and Pedersen [@frazzinipedersen2014], at each month $t$ we rank stocks by their estimated beta. We form a low-beta portfolio (below-median beta) and a high-beta portfolio (above-median beta). Portfolio weights are rank-based and sum to one within each leg. The BAB factor return is:
-
-$$r^{BAB}_t = \frac{1}{\beta^L_t} r^L_t - \frac{1}{\beta^H_t} r^H_t$$
-
-where $\beta^L_t$ and $\beta^H_t$ are the value-weighted average betas of the low and high portfolios.
-
-```{python}
-# Merge betas into monthly data (beta estimated at t, applied at t+1)
-crsp_monthly = crsp_monthly.assign(
-    month=lambda x: x["date"].values.astype("datetime64[M]")
-)
-
-# Lag betas by one month so we use last month's beta to form this month's portfolio
-beta_lagged = (
-    beta_estimates
-    .assign(month=lambda x: (x["month"].values.astype("datetime64[M]") + np.timedelta64(1, "M")))
-)
-
-analysis_data = (
-    crsp_monthly
-    .merge(beta_lagged, on=["permno", "month"], how="inner")
-    .dropna(subset=["beta", "ret_excess", "mktcap_lag"])
-)
-
-def rank_weights(betas):
-    """Rank-based portfolio weights (Frazzini-Pedersen eq. 9)."""
-    k = betas.rank()
-    k = k - k.mean()
-    return k / k.abs().sum()
-
-def bab_month(df):
-    median_beta = df["beta"].median()
-    low = df[df["beta"] <= median_beta].copy()
-    high = df[df["beta"] > median_beta].copy()
-
-    if low.empty or high.empty:
-        return pd.Series({"r_bab": np.nan, "beta_L": np.nan, "beta_H": np.nan,
-                          "r_L": np.nan, "r_H": np.nan})
-
-    low["w"] = rank_weights(-low["beta"])   # flip so highest weight = lowest beta in low leg
-    high["w"] = rank_weights(high["beta"])  # highest weight = highest beta in high leg
-
-    beta_L = (low["w"] * low["beta"]).sum()
-    beta_H = (high["w"] * high["beta"]).sum()
-
-    r_L = (low["w"] * low["ret_excess"]).sum()
-    r_H = (high["w"] * high["ret_excess"]).sum()
-
-    r_bab = r_L / beta_L - r_H / beta_H
-
-    return pd.Series({
-        "r_bab": r_bab,
-        "beta_L": beta_L,
-        "beta_H": beta_H,
-        "r_L": r_L,
-        "r_H": r_H,
-    })
-
-bab_returns = (
-    analysis_data
-    .groupby("month")
-    .apply(bab_month)
-    .reset_index()
-)
-```
-
-```{python}
-# BAB summary statistics
-bab_summary = pd.DataFrame({
-    "BAB Factor": [
-        bab_returns["r_bab"].mean() * 12,
-        bab_returns["r_bab"].std() * np.sqrt(12),
-        bab_returns["r_bab"].mean() / bab_returns["r_bab"].std() * np.sqrt(12),
-        bab_returns["r_bab"].mean() / (bab_returns["r_bab"].std() / np.sqrt(bab_returns["r_bab"].notna().sum())),
-    ]
-}, index=["Ann. Mean Return", "Ann. Std Dev", "Sharpe Ratio", "t-statistic"])
-print(bab_summary.round(4))
-```
-
-```{python}
-# BAB cumulative return
-bab_cumret = (
-    bab_returns
-    .dropna(subset=["r_bab"])
-    .assign(
-        cum_bab=lambda x: (1 + x["r_bab"]).cumprod(),
-        date=lambda x: x["month"].astype("datetime64[ns]")
-    )
-)
-
-(
-    ggplot(bab_cumret, aes(x="date", y="cum_bab"))
-    + geom_line(color="steelblue", size=0.8)
-    + scale_x_datetime(date_breaks="10 years", date_labels="%Y")
-    + labs(x="Date", y="Cumulative Return ($1 Invested)")
-    + theme_minimal()
-).save("figures/bab_cumret.png", dpi=300, width=9, height=5)
-```
-
 ## Proposition 1: The Security Market Line
-
-Proposition 1 predicts that the empirical SML is flatter than CAML implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas.
 
 ```{python}
 # Fama-MacBeth: each month regress ret_excess on beta
@@ -234,6 +128,101 @@ beta_range["capm_ret"] = beta_range["avg_beta"] * mkt_mean
     + theme_minimal()
 ).save("figures/decile_alphas.png", dpi=300, width=7, height=5)
 ```
+
+## proposition 2
+```{python}
+# Merge betas into monthly data (beta estimated at t, applied at t+1)
+crsp_monthly = crsp_monthly.assign(
+    month=lambda x: x["date"].values.astype("datetime64[M]")
+)
+
+# Lag betas by one month so we use last month's beta to form this month's portfolio
+beta_lagged = (
+    beta_estimates
+    .assign(month=lambda x: (x["month"].values.astype("datetime64[M]") + np.timedelta64(1, "M")))
+)
+
+analysis_data = (
+    crsp_monthly
+    .merge(beta_lagged, on=["permno", "month"], how="inner")
+    .dropna(subset=["beta", "ret_excess", "mktcap_lag"])
+)
+
+def rank_weights(betas):
+    """Rank-based portfolio weights (Frazzini-Pedersen eq. 9)."""
+    k = betas.rank()
+    k = k - k.mean()
+    return k / k.abs().sum()
+
+def bab_month(df):
+    median_beta = df["beta"].median()
+    low = df[df["beta"] <= median_beta].copy()
+    high = df[df["beta"] > median_beta].copy()
+
+    if low.empty or high.empty:
+        return pd.Series({"r_bab": np.nan, "beta_L": np.nan, "beta_H": np.nan,
+                          "r_L": np.nan, "r_H": np.nan})
+
+    low["w"] = rank_weights(-low["beta"])   # flip so highest weight = lowest beta in low leg
+    high["w"] = rank_weights(high["beta"])  # highest weight = highest beta in high leg
+
+    beta_L = (low["w"] * low["beta"]).sum()
+    beta_H = (high["w"] * high["beta"]).sum()
+
+    r_L = (low["w"] * low["ret_excess"]).sum()
+    r_H = (high["w"] * high["ret_excess"]).sum()
+
+    r_bab = r_L / beta_L - r_H / beta_H
+
+    return pd.Series({
+        "r_bab": r_bab,
+        "beta_L": beta_L,
+        "beta_H": beta_H,
+        "r_L": r_L,
+        "r_H": r_H,
+    })
+
+bab_returns = (
+    analysis_data
+    .groupby("month")
+    .apply(bab_month)
+    .reset_index()
+)
+```
+
+```{python}
+# BAB summary statistics
+bab_summary = pd.DataFrame({
+    "BAB Factor": [
+        bab_returns["r_bab"].mean() * 12,
+        bab_returns["r_bab"].std() * np.sqrt(12),
+        bab_returns["r_bab"].mean() / bab_returns["r_bab"].std() * np.sqrt(12),
+        bab_returns["r_bab"].mean() / (bab_returns["r_bab"].std() / np.sqrt(bab_returns["r_bab"].notna().sum())),
+    ]
+}, index=["Ann. Mean Return", "Ann. Std Dev", "Sharpe Ratio", "t-statistic"])
+print(bab_summary.round(4))
+```
+
+```{python}
+# BAB cumulative return
+bab_cumret = (
+    bab_returns
+    .dropna(subset=["r_bab"])
+    .assign(
+        cum_bab=lambda x: (1 + x["r_bab"]).cumprod(),
+        date=lambda x: x["month"].astype("datetime64[ns]")
+    )
+)
+
+(
+    ggplot(bab_cumret, aes(x="date", y="cum_bab"))
+    + geom_line(color="steelblue", size=0.8)
+    + scale_x_datetime(date_breaks="10 years", date_labels="%Y")
+    + labs(x="Date", y="Cumulative Return ($1 Invested)")
+    + theme_minimal()
+).save("figures/bab_cumret.png", dpi=300, width=9, height=5)
+```
+
 
 
 ```{python}

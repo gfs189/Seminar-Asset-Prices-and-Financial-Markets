@@ -2,7 +2,7 @@
  "cells": [
   {
    "cell_type": "raw",
-   "id": "b8d5bd09",
+   "id": "6e4e6d3a",
    "metadata": {},
    "source": [
     "---\n",
@@ -16,7 +16,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "697801c1",
+   "id": "19ee444b",
    "metadata": {},
    "source": [
     "```{=latex}\n",
@@ -30,7 +30,7 @@
     "  Author(s):          & Tobias Dines Schlünssen (GFS189)\\\\\n",
     "                        & Conrad Frederik Kromann (RTL959)\\\\[1ex]\n",
     "  Title and subtitle: & Betting against beta\\\\\n",
-    "                        &- A study of proposition 1 \\& 2 in american equity markets \\\\[1ex]\n",
+    "                        &- A study of beta market anomoly in american equity markets \\\\[1ex]\n",
     "  Description:        & [Testing for beta-anomoly and performance of BABA strategy with transaction costs on US-equities.] \\\\[1ex]\n",
     "  Advisor:            & Jacob Lundbeck Serup\\\\[1ex]\n",
     "  Date:               & June 2nd, 2026 \\\\\n",
@@ -146,7 +146,7 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "098c78ee",
+   "id": "ec444a9a",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -160,7 +160,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "949a0601",
+   "id": "76517d51",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -190,7 +190,7 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "11006e6a",
+   "id": "ecfd3283",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -214,7 +214,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "f3f2ab9d",
+   "id": "17714720",
    "metadata": {},
    "source": [
     "## Fama-French Factors\n",
@@ -225,7 +225,7 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "5c8db886",
+   "id": "913aafe1",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -256,7 +256,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "2cb08708",
+   "id": "9d821e77",
    "metadata": {},
    "source": [
     "## Monthly CRSP Data\n",
@@ -267,7 +267,7 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "76e00e4b",
+   "id": "fc910647",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -282,7 +282,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "54acdfcc",
+   "id": "56313351",
    "metadata": {},
    "source": [
     "## Data Cleaning\n",
@@ -293,7 +293,7 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "4804932c",
+   "id": "f9cb68c2",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -326,7 +326,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "5c96e956",
+   "id": "e530ec4e",
    "metadata": {},
    "source": [
     "## Daily CRSP Data\n",
@@ -337,7 +337,7 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "c62035a1",
+   "id": "aa1f5bda",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -412,7 +412,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "28576748",
+   "id": "c420be3b",
    "metadata": {},
    "source": [
     "## Beta Estimation\n",
@@ -427,7 +427,7 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "775fb373",
+   "id": "78ecce66",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -444,7 +444,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "73eacb1d",
+   "id": "1925e4b3",
    "metadata": {},
    "source": [
     "### Volatility Component\n",
@@ -455,7 +455,7 @@
   {
    "cell_type": "code",
    "execution_count": 9,
-   "id": "80365c88",
+   "id": "fb205f6b",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -511,7 +511,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "26c68dd7",
+   "id": "d995095a",
    "metadata": {},
    "source": [
     "### Correlation Component\n",
@@ -522,14 +522,14 @@
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "78d3ddf4",
+   "id": "4c7c4cae",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_15424\\2606518727.py:19: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\2606518727.py:19: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
      ]
     }
    ],
@@ -561,7 +561,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "c4e9ca75",
+   "id": "810f3412",
    "metadata": {},
    "source": [
     "### Combined Beta Estimate\n",
@@ -574,7 +574,7 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "c154c951",
+   "id": "b3e6dcb7",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -591,28 +591,255 @@
    ]
   },
   {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "f464f88c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "crsp_monthly = crsp_monthly.assign(\n",
+    "    month=lambda x: x[\"date\"].values.astype(\"datetime64[M]\")\n",
+    ")\n",
+    "\n",
+    "beta_lagged = (\n",
+    "    beta_estimates\n",
+    "    .assign(month=lambda x: (x[\"month\"].values.astype(\"datetime64[M]\") + np.timedelta64(1, \"M\")))\n",
+    ")\n",
+    "\n",
+    "analysis_data = (\n",
+    "    crsp_monthly\n",
+    "    .merge(beta_lagged, on=[\"permno\", \"month\"], how=\"inner\")\n",
+    "    .dropna(subset=[\"beta\", \"ret_excess\", \"mktcap_lag\"])\n",
+    ")"
+   ]
+  },
+  {
    "cell_type": "markdown",
-   "id": "1db8832a",
+   "id": "066a7268",
    "metadata": {},
    "source": [
-    "## Transaction Costs\n",
+    "## Proposition 1: The Security Market Line\n",
     "\n",
-    "We estimate the round-trip transaction cost for the BAB strategy using daily bid-ask spreads from CRSP. The proportional half-spread on day $d$ for stock $i$ is\n",
+    "Proposition 1 predicts that the empirical SML is flatter than CAML implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "6f6f2843",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "               mean    t_stat\n",
+      "intercept  0.007863  5.836262\n",
+      "beta_coef  0.001418  0.703093\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\3242225005.py:10: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
+     ]
+    }
+   ],
+   "source": [
+    "def fmb_month(df):\n",
+    "    if len(df) < 10:\n",
+    "        return pd.Series({\"intercept\": np.nan, \"beta_coef\": np.nan})\n",
+    "    m = smf.ols(\"ret_excess ~ beta\", data=df).fit()\n",
+    "    return pd.Series({\"intercept\": m.params[\"Intercept\"], \"beta_coef\": m.params[\"beta\"]})\n",
     "\n",
-    "$$c_{i,d} = \\frac{\\text{ask}_{i,d} - \\text{bid}_{i,d}}{2 \\cdot \\text{mid}_{i,d}}$$\n",
+    "fmb_results = (\n",
+    "    analysis_data\n",
+    "    .groupby(\"month\")\n",
+    "    .apply(fmb_month)\n",
+    "    .reset_index()\n",
+    ")\n",
     "\n",
-    "where $\\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly spread for each stock is the median of its daily half-spreads within the month, which is robust to days with stale or missing bid/ask quotes. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg. Following Frazzini, Israel, and Moskowitz (2015), we assume full monthly rebalancing, so this is an upper bound on realised costs.\n",
+    "cols = [\"intercept\", \"beta_coef\"]\n",
+    "fmb_summary = pd.DataFrame({\n",
+    "    \"mean\": fmb_results[cols].mean(),\n",
+    "    \"t_stat\": fmb_results[cols].apply(\n",
+    "        lambda x: x.dropna().mean() / (x.dropna().std() / np.sqrt(x.dropna().count()))\n",
+    "    ),\n",
+    "})\n",
     "\n",
-    "Now we use this to test the prposisiton 1 and 2 with and without transaction costs to see the effect of transaction costs on the performance of the BAB strategy.\n",
+    "print(fmb_summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e8e573d4",
+   "metadata": {},
+   "source": [
+    "### Beta-Sorted Portfolio Alphas\n",
     "\n",
+    "We sort stocks into 10 beta-decile portfolios and compute each decile's monthly CAPM alpha to visualise the alpha-beta relationship."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "79acae38",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   beta_decile     alpha   alpha_t  avg_beta\n",
+      "0            1  0.002741  1.746439  0.511693\n",
+      "1            2  0.002154  2.450884  0.676983\n",
+      "2            3  0.002496  3.205053  0.804396\n",
+      "3            4  0.001591  2.259553  0.916394\n",
+      "4            5  0.001141  1.801973  1.024017\n",
+      "5            6 -0.000145 -0.198470  1.135270\n",
+      "6            7  0.000748  0.748097  1.260848\n",
+      "7            8 -0.001768 -1.290402  1.418103\n",
+      "8            9 -0.004623 -2.633372  1.641384\n",
+      "9           10 -0.008241 -3.164249  2.103706\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\3590452966.py:9: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n",
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\3590452966.py:33: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
+     ]
+    }
+   ],
+   "source": [
+    "analysis_data = analysis_data.assign(\n",
+    "    beta_decile=lambda x: pd.qcut(x[\"beta\"], q=10, labels=False) + 1\n",
+    ")\n",
     "\n",
-    "# Results\n",
-    "In this chapter, we present the main results of our analysis. First we showcase the prevelance of the beta-anomoly by testing proposition 1 and then we present the performance of the BAB-portfolio to test proposition 2. Lastly, we present the results of our extension of proposition 2 by introducing transaction costs into our analysis.\n",
+    "decile_returns = (\n",
+    "    analysis_data\n",
+    "    .assign(vw_ret=lambda x: x[\"ret_excess\"] * x[\"mktcap_lag\"])\n",
+    "    .groupby([\"month\", \"beta_decile\"])\n",
+    "    .apply(lambda df: pd.Series({\n",
+    "        \"ret\": df[\"vw_ret\"].sum() / df[\"mktcap_lag\"].sum(),\n",
+    "        \"avg_beta\": (df[\"beta\"] * df[\"mktcap_lag\"]).sum() / df[\"mktcap_lag\"].sum()\n",
+    "    }))\n",
+    "    .reset_index()\n",
+    "    .merge(\n",
+    "        factors_ff3_monthly[[\"date\", \"mkt_excess\"]].assign(\n",
+    "            month=lambda x: x[\"date\"].values.astype(\"datetime64[M]\")\n",
+    "        ),\n",
+    "        on=\"month\", how=\"left\"\n",
+    "    )\n",
+    ")\n",
     "\n",
+    "def capm_alpha(df):\n",
+    "    m = smf.ols(\"ret ~ mkt_excess\", data=df).fit()\n",
+    "    return pd.Series({\n",
+    "        \"alpha\": m.params[\"Intercept\"],\n",
+    "        \"alpha_t\": m.tvalues[\"Intercept\"],\n",
+    "        \"avg_beta\": df[\"avg_beta\"].mean()\n",
+    "    })\n",
     "\n",
-    "## BAB Portfolio Construction\n",
+    "decile_alphas = (\n",
+    "    decile_returns\n",
+    "    .groupby(\"beta_decile\")\n",
+    "    .apply(capm_alpha)\n",
+    "    .reset_index()\n",
+    ")\n",
     "\n",
-    "### Proposition 2: The BAB Factor\n",
+    "print(decile_alphas)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "b4c2a630",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:623: PlotnineWarning: Saving 7 x 5 in image.\n",
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:624: PlotnineWarning: Filename: figures/sml.png\n"
+     ]
+    }
+   ],
+   "source": [
+    "decile_avg = (\n",
+    "    decile_returns\n",
+    "    .groupby(\"beta_decile\")\n",
+    "    .agg(avg_ret=(\"ret\", \"mean\"), avg_beta=(\"avg_beta\", \"mean\"))\n",
+    "    .reset_index()\n",
+    ")\n",
+    "\n",
+    "mkt_mean = factors_ff3_monthly[\"mkt_excess\"].mean()\n",
+    "beta_range = pd.DataFrame({\n",
+    "    \"avg_beta\": np.linspace(\n",
+    "        decile_avg[\"avg_beta\"].min() * 0.9,\n",
+    "        decile_avg[\"avg_beta\"].max() * 1.1, 100\n",
+    "    )\n",
+    "})\n",
+    "beta_range[\"capm_ret\"] = beta_range[\"avg_beta\"] * mkt_mean\n",
+    "\n",
+    "(\n",
+    "    ggplot(decile_avg, aes(x=\"avg_beta\", y=\"avg_ret\"))\n",
+    "    + geom_point(size=3, color=\"steelblue\")\n",
+    "    + geom_smooth(method=\"lm\", se=False, color=\"steelblue\")\n",
+    "    + geom_line(\n",
+    "        data=beta_range,\n",
+    "        mapping=aes(x=\"avg_beta\", y=\"capm_ret\"),\n",
+    "        color=\"red\", linetype=\"dashed\"\n",
+    "    )\n",
+    "    + scale_y_continuous(labels=percent_format())\n",
+    "    + labs(\n",
+    "        x=\"Average Beta\",\n",
+    "        y=\"Average Monthly Excess Return\",\n",
+    "        caption=\"Solid blue: empirical SML. Red dashed: CAPM prediction.\"\n",
+    "    )\n",
+    "    + theme_minimal()\n",
+    ").save(\"figures/sml.png\", dpi=300, width=7, height=5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "0fe754b1",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:623: PlotnineWarning: Saving 7 x 5 in image.\n",
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:624: PlotnineWarning: Filename: figures/decile_alphas.png\n"
+     ]
+    }
+   ],
+   "source": [
+    "(\n",
+    "    ggplot(\n",
+    "        decile_alphas.assign(positive=lambda x: x[\"alpha\"] > 0),\n",
+    "        aes(x=\"beta_decile\", y=\"alpha\", fill=\"positive\")\n",
+    "    )\n",
+    "    + geom_col(show_legend=False)\n",
+    "    + scale_fill_manual(values={True: \"#2196F3\", False: \"#F44336\"})\n",
+    "    + scale_x_continuous(breaks=list(range(1, 11)))\n",
+    "    + scale_y_continuous(labels=percent_format())\n",
+    "    + labs(x=\"Beta Decile\", y=\"Monthly CAPM Alpha\")\n",
+    "    + theme_minimal()\n",
+    ").save(\"figures/decile_alphas.png\", dpi=300, width=7, height=5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5038ed1d",
+   "metadata": {},
+   "source": [
+    "## Proposition 2: The BAB Factor\n",
     "\n",
     "Following Frazzini and Pedersen [@frazzinipedersen2014], at each month $t$ we rank stocks by their estimated beta. We form a low-beta portfolio (below-median beta) and a high-beta portfolio (above-median beta). Portfolio weights are rank-based and sum to one within each leg. The BAB factor return is:\n",
     "\n",
@@ -623,15 +850,511 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 12,
-   "id": "eaf07553",
+   "execution_count": 17,
+   "id": "418ea6cb",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_15424\\2226851839.py:55: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\900507375.py:30: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
+     ]
+    }
+   ],
+   "source": [
+    "def rank_weights(betas):\n",
+    "    k = betas.rank()\n",
+    "    k = k - k.mean()\n",
+    "    return k / k.abs().sum()\n",
+    "\n",
+    "def bab_month(df):\n",
+    "    median_beta = df[\"beta\"].median()\n",
+    "    low = df[df[\"beta\"] <= median_beta].copy()\n",
+    "    high = df[df[\"beta\"] > median_beta].copy()\n",
+    "\n",
+    "    if low.empty or high.empty:\n",
+    "        return pd.Series({\"r_bab\": np.nan, \"beta_L\": np.nan, \"beta_H\": np.nan,\n",
+    "                          \"r_L\": np.nan, \"r_H\": np.nan})\n",
+    "\n",
+    "    low[\"w\"] = rank_weights(-low[\"beta\"])\n",
+    "    high[\"w\"] = rank_weights(high[\"beta\"])\n",
+    "\n",
+    "    beta_L = (low[\"w\"] * low[\"beta\"]).sum()\n",
+    "    beta_H = (high[\"w\"] * high[\"beta\"]).sum()\n",
+    "    r_L = (low[\"w\"] * low[\"ret_excess\"]).sum()\n",
+    "    r_H = (high[\"w\"] * high[\"ret_excess\"]).sum()\n",
+    "    r_bab = r_L / beta_L - r_H / beta_H\n",
+    "\n",
+    "    return pd.Series({\"r_bab\": r_bab, \"beta_L\": beta_L, \"beta_H\": beta_H,\n",
+    "                      \"r_L\": r_L, \"r_H\": r_H})\n",
+    "\n",
+    "bab_returns = (\n",
+    "    analysis_data\n",
+    "    .groupby(\"month\")\n",
+    "    .apply(bab_month)\n",
+    "    .reset_index()\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "615e4d9f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "                  BAB Factor\n",
+      "Ann. Mean Return      0.0672\n",
+      "Ann. Std Dev          0.2566\n",
+      "Sharpe Ratio          0.2620\n",
+      "t-statistic           2.0267\n"
+     ]
+    }
+   ],
+   "source": [
+    "bab_summary = pd.DataFrame({\n",
+    "    \"BAB Factor\": [\n",
+    "        bab_returns[\"r_bab\"].mean() * 12,\n",
+    "        bab_returns[\"r_bab\"].std() * np.sqrt(12),\n",
+    "        bab_returns[\"r_bab\"].mean() / bab_returns[\"r_bab\"].std() * np.sqrt(12),\n",
+    "        bab_returns[\"r_bab\"].mean() / (bab_returns[\"r_bab\"].std() / np.sqrt(bab_returns[\"r_bab\"].notna().sum())),\n",
+    "    ]\n",
+    "}, index=[\"Ann. Mean Return\", \"Ann. Std Dev\", \"Sharpe Ratio\", \"t-statistic\"])\n",
+    "print(bab_summary.round(4))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "f0aa6e4f",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:623: PlotnineWarning: Saving 9 x 5 in image.\n",
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:624: PlotnineWarning: Filename: figures/bab_cumret.png\n"
+     ]
+    }
+   ],
+   "source": [
+    "bab_cumret = (\n",
+    "    bab_returns\n",
+    "    .dropna(subset=[\"r_bab\"])\n",
+    "    .assign(\n",
+    "        cum_bab=lambda x: (1 + x[\"r_bab\"]).cumprod(),\n",
+    "        date=lambda x: x[\"month\"].astype(\"datetime64[ns]\")\n",
+    "    )\n",
+    ")\n",
+    "\n",
+    "(\n",
+    "    ggplot(bab_cumret, aes(x=\"date\", y=\"cum_bab\"))\n",
+    "    + geom_line(color=\"steelblue\", size=0.8)\n",
+    "    + scale_x_datetime(date_breaks=\"10 years\", date_labels=\"%Y\")\n",
+    "    + labs(x=\"Date\", y=\"Cumulative Return ($1 Invested)\")\n",
+    "    + theme_minimal()\n",
+    ").save(\"figures/bab_cumret.png\", dpi=300, width=9, height=5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "17f2f73f",
+   "metadata": {},
+   "source": [
+    "## Transaction Costs\n",
+    "\n",
+    "We estimate the round-trip transaction cost for the BAB strategy using daily bid-ask spreads from CRSP. The proportional half-spread on day $d$ for stock $i$ is\n",
+    "\n",
+    "$$c_{i,d} = \\frac{\\text{ask}_{i,d} - \\text{bid}_{i,d}}{2 \\cdot \\text{mid}_{i,d}}$$\n",
+    "\n",
+    "where $\\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly spread for each stock is the median of its daily half-spreads within the month, which is robust to days with stale or missing bid/ask quotes. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg. Following Frazzini, Israel, and Moskowitz (2015), we assume full monthly rebalancing, so this is an upper bound on realised costs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "79c7e86e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "crsp_daily_all = (\n",
+    "    ds.dataset(\"data/crsp_daily\", format=\"parquet\", partitioning=\"hive\")\n",
+    "    .to_table()\n",
+    "    .to_pandas()\n",
+    "    [[\"permno\", \"date\", \"half_spread\"]]\n",
+    "    .dropna(subset=[\"half_spread\"])\n",
+    ")\n",
+    "\n",
+    "crsp_daily_all = crsp_daily_all[crsp_daily_all[\"date\"] >= \"1993-01-01\"]\n",
+    "\n",
+    "crsp_daily_all = crsp_daily_all[\n",
+    "    (crsp_daily_all[\"half_spread\"] > 0) &\n",
+    "    (crsp_daily_all[\"half_spread\"] <= 0.10)\n",
+    "]\n",
+    "\n",
+    "crsp_daily_all[\"month\"] = crsp_daily_all[\"date\"].values.astype(\"datetime64[M]\")\n",
+    "monthly_spread = (\n",
+    "    crsp_daily_all\n",
+    "    .groupby([\"permno\", \"month\"])[\"half_spread\"]\n",
+    "    .median()\n",
+    "    .reset_index()\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "c71a1d83",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\1609424070.py:27: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
+     ]
+    }
+   ],
+   "source": [
+    "def spread_month(df):\n",
+    "    if df.empty:\n",
+    "        return pd.Series({\"spread_L\": np.nan, \"spread_H\": np.nan})\n",
+    "    median_beta = df[\"beta\"].median()\n",
+    "    low = df[df[\"beta\"] <= median_beta].copy()\n",
+    "    high = df[df[\"beta\"] > median_beta].copy()\n",
+    "\n",
+    "    if low.empty or high.empty:\n",
+    "        return pd.Series({\"spread_L\": np.nan, \"spread_H\": np.nan})\n",
+    "\n",
+    "    low[\"w\"] = rank_weights(-low[\"beta\"])\n",
+    "    high[\"w\"] = rank_weights(high[\"beta\"])\n",
+    "\n",
+    "    spread_L = (low[\"w\"].abs() * low[\"half_spread\"]).sum()\n",
+    "    spread_H = (high[\"w\"].abs() * high[\"half_spread\"]).sum()\n",
+    "    return pd.Series({\"spread_L\": spread_L, \"spread_H\": spread_H})\n",
+    "\n",
+    "spread_data = (\n",
+    "    analysis_data\n",
+    "    .merge(monthly_spread, on=[\"permno\", \"month\"], how=\"left\")\n",
+    "    .dropna(subset=[\"half_spread\"])\n",
+    ")\n",
+    "\n",
+    "portfolio_spreads = (\n",
+    "    spread_data\n",
+    "    .groupby(\"month\")\n",
+    "    .apply(spread_month)\n",
+    "    .reset_index()\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "c485e6b3",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "                  Gross BAB  Net BAB (after TC)  Avg annual TC drag\n",
+      "Ann. mean return     0.0556             -1.6157              1.6714\n",
+      "t-statistic          1.0664            -18.1386                 NaN\n"
+     ]
+    }
+   ],
+   "source": [
+    "bab_tc = (\n",
+    "    bab_returns\n",
+    "    .merge(portfolio_spreads, on=\"month\", how=\"left\")\n",
+    "    .assign(\n",
+    "        tc_L=lambda x: 2 * x[\"spread_L\"] / x[\"beta_L\"].abs(),\n",
+    "        tc_H=lambda x: 2 * x[\"spread_H\"] / x[\"beta_H\"].abs(),\n",
+    "        r_bab_net=lambda x: x[\"r_bab\"] - x[\"tc_L\"] - x[\"tc_H\"],\n",
+    "    )\n",
+    ")\n",
+    "\n",
+    "bab_tc_sample = bab_tc.dropna(subset=[\"r_bab_net\"])\n",
+    "\n",
+    "def ann_mean(s):\n",
+    "    return s.mean() * 12\n",
+    "\n",
+    "def tstat(s):\n",
+    "    return s.mean() / (s.std() / np.sqrt(s.notna().sum()))\n",
+    "\n",
+    "tc_summary = pd.DataFrame({\n",
+    "    \"Gross BAB\": [\n",
+    "        ann_mean(bab_tc_sample[\"r_bab\"]),\n",
+    "        tstat(bab_tc_sample[\"r_bab\"]),\n",
+    "    ],\n",
+    "    \"Net BAB (after TC)\": [\n",
+    "        ann_mean(bab_tc_sample[\"r_bab_net\"]),\n",
+    "        tstat(bab_tc_sample[\"r_bab_net\"]),\n",
+    "    ],\n",
+    "    \"Avg annual TC drag\": [\n",
+    "        ann_mean(bab_tc_sample[\"tc_L\"] + bab_tc_sample[\"tc_H\"]),\n",
+    "        np.nan,\n",
+    "    ],\n",
+    "}, index=[\"Ann. mean return\", \"t-statistic\"])\n",
+    "\n",
+    "print(tc_summary.round(4))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9d610aab",
+   "metadata": {},
+   "source": [
+    "Now we use this to test the prposisiton 1 and 2 with and without transaction costs to see the effect of transaction costs on the performance of the BAB strategy.\n",
+    "\n",
+    "\n",
+    "# Results\n",
+    "In this chapter, we present the main results of our analysis. First we showcase the prevelance of the beta-anomoly by testing proposition 1 and then we present the performance of the BAB-portfolio to test proposition 2. Lastly, we present the results of our extension of proposition 2 by introducing transaction costs into our analysis.\n",
+    "\n",
+    "## Proposition 1: The Security Market Line"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "6048b25d",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "               mean    t_stat\n",
+      "intercept  0.007863  5.836262\n",
+      "beta_coef  0.001418  0.703093\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\3590990250.py:11: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Fama-MacBeth: each month regress ret_excess on beta\n",
+    "def fmb_month(df):\n",
+    "    if len(df) < 10:\n",
+    "        return pd.Series({\"intercept\": np.nan, \"beta_coef\": np.nan})\n",
+    "    m = smf.ols(\"ret_excess ~ beta\", data=df).fit()\n",
+    "    return pd.Series({\"intercept\": m.params[\"Intercept\"], \"beta_coef\": m.params[\"beta\"]})\n",
+    "\n",
+    "fmb_results = (\n",
+    "    analysis_data\n",
+    "    .groupby(\"month\")\n",
+    "    .apply(fmb_month)\n",
+    "    .reset_index()\n",
+    ")\n",
+    "\n",
+    "# Time-series average and Newey-West t-stats (1 lag)\n",
+    "cols = [\"intercept\", \"beta_coef\"]\n",
+    "fmb_summary = pd.DataFrame({\n",
+    "    \"mean\": fmb_results[cols].mean(),\n",
+    "    \"t_stat\": fmb_results[cols].apply(\n",
+    "        lambda x: x.dropna().mean() / (x.dropna().std() / np.sqrt(x.dropna().count()))\n",
+    "    ),\n",
+    "})\n",
+    "\n",
+    "print(fmb_summary)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f264a882",
+   "metadata": {},
+   "source": [
+    "### Beta-Sorted Portfolio Alphas\n",
+    "\n",
+    "We sort stocks into 10 beta-decile portfolios and compute each decile's monthly CAPM alpha to visualise the alpha-beta relationship."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "cc3baeca",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "   beta_decile     alpha   alpha_t  avg_beta\n",
+      "0            1  0.002741  1.746439  0.511693\n",
+      "1            2  0.002154  2.450884  0.676983\n",
+      "2            3  0.002496  3.205053  0.804396\n",
+      "3            4  0.001591  2.259553  0.916394\n",
+      "4            5  0.001141  1.801973  1.024017\n",
+      "5            6 -0.000145 -0.198470  1.135270\n",
+      "6            7  0.000748  0.748097  1.260848\n",
+      "7            8 -0.001768 -1.290402  1.418103\n",
+      "8            9 -0.004623 -2.633372  1.641384\n",
+      "9           10 -0.008241 -3.164249  2.103706\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\51200107.py:10: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n",
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\51200107.py:35: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
+     ]
+    }
+   ],
+   "source": [
+    "analysis_data = analysis_data.assign(\n",
+    "    beta_decile=lambda x: pd.qcut(x[\"beta\"], q=10, labels=False) + 1\n",
+    ")\n",
+    "\n",
+    "# Value-weighted returns per decile per month\n",
+    "decile_returns = (\n",
+    "    analysis_data\n",
+    "    .assign(vw_ret=lambda x: x[\"ret_excess\"] * x[\"mktcap_lag\"])\n",
+    "    .groupby([\"month\", \"beta_decile\"])\n",
+    "    .apply(lambda df: pd.Series({\n",
+    "        \"ret\": df[\"vw_ret\"].sum() / df[\"mktcap_lag\"].sum(),\n",
+    "        \"avg_beta\": (df[\"beta\"] * df[\"mktcap_lag\"]).sum() / df[\"mktcap_lag\"].sum()\n",
+    "    }))\n",
+    "    .reset_index()\n",
+    "    .merge(\n",
+    "        factors_ff3_monthly[[\"date\", \"mkt_excess\"]].assign(\n",
+    "            month=lambda x: x[\"date\"].values.astype(\"datetime64[M]\")\n",
+    "        ),\n",
+    "        on=\"month\", how=\"left\"\n",
+    "    )\n",
+    ")\n",
+    "\n",
+    "# CAPM alpha per decile\n",
+    "def capm_alpha(df):\n",
+    "    m = smf.ols(\"ret ~ mkt_excess\", data=df).fit()\n",
+    "    return pd.Series({\n",
+    "        \"alpha\": m.params[\"Intercept\"],\n",
+    "        \"alpha_t\": m.tvalues[\"Intercept\"],\n",
+    "        \"avg_beta\": df[\"avg_beta\"].mean()\n",
+    "    })\n",
+    "\n",
+    "decile_alphas = (\n",
+    "    decile_returns\n",
+    "    .groupby(\"beta_decile\")\n",
+    "    .apply(capm_alpha)\n",
+    "    .reset_index()\n",
+    ")\n",
+    "\n",
+    "print(decile_alphas)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "d5411c63",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:623: PlotnineWarning: Saving 7 x 5 in image.\n",
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:624: PlotnineWarning: Filename: figures/sml.png\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Security Market Line: empirical vs CAPM\n",
+    "decile_avg = (\n",
+    "    decile_returns\n",
+    "    .groupby(\"beta_decile\")\n",
+    "    .agg(avg_ret=(\"ret\", \"mean\"), avg_beta=(\"avg_beta\", \"mean\"))\n",
+    "    .reset_index()\n",
+    ")\n",
+    "\n",
+    "mkt_mean = factors_ff3_monthly[\"mkt_excess\"].mean()\n",
+    "beta_range = pd.DataFrame({\n",
+    "    \"avg_beta\": np.linspace(\n",
+    "        decile_avg[\"avg_beta\"].min() * 0.9,\n",
+    "        decile_avg[\"avg_beta\"].max() * 1.1, 100\n",
+    "    )\n",
+    "})\n",
+    "beta_range[\"capm_ret\"] = beta_range[\"avg_beta\"] * mkt_mean\n",
+    "\n",
+    "(\n",
+    "    ggplot(decile_avg, aes(x=\"avg_beta\", y=\"avg_ret\"))\n",
+    "    + geom_point(size=3, color=\"steelblue\")\n",
+    "    + geom_smooth(method=\"lm\", se=False, color=\"steelblue\")\n",
+    "    + geom_line(\n",
+    "        data=beta_range,\n",
+    "        mapping=aes(x=\"avg_beta\", y=\"capm_ret\"),\n",
+    "        color=\"red\", linetype=\"dashed\"\n",
+    "    )\n",
+    "    + scale_y_continuous(labels=percent_format())\n",
+    "    + labs(\n",
+    "        x=\"Average Beta\",\n",
+    "        y=\"Average Monthly Excess Return\",\n",
+    "        caption=\"Solid blue: empirical SML. Red dashed: CAPM prediction.\"\n",
+    "    )\n",
+    "    + theme_minimal()\n",
+    ").save(\"figures/sml.png\", dpi=300, width=7, height=5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "id": "4900bb7a",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:623: PlotnineWarning: Saving 7 x 5 in image.\n",
+      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:624: PlotnineWarning: Filename: figures/decile_alphas.png\n"
+     ]
+    }
+   ],
+   "source": [
+    "# CAPM alpha by beta decile\n",
+    "(\n",
+    "    ggplot(\n",
+    "        decile_alphas.assign(positive=lambda x: x[\"alpha\"] > 0),\n",
+    "        aes(x=\"beta_decile\", y=\"alpha\", fill=\"positive\")\n",
+    "    )\n",
+    "    + geom_col(show_legend=False)\n",
+    "    + scale_fill_manual(values={True: \"#2196F3\", False: \"#F44336\"})\n",
+    "    + scale_x_continuous(breaks=list(range(1, 11)))\n",
+    "    + scale_y_continuous(labels=percent_format())\n",
+    "    + labs(x=\"Beta Decile\", y=\"Monthly CAPM Alpha\")\n",
+    "    + theme_minimal()\n",
+    ").save(\"figures/decile_alphas.png\", dpi=300, width=7, height=5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4ad24fd9",
+   "metadata": {},
+   "source": [
+    "## proposition 2"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "id": "bb6bca7c",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\2226851839.py:55: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
      ]
     }
    ],
@@ -697,8 +1420,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 13,
-   "id": "eab70a64",
+   "execution_count": 28,
+   "id": "43acccd2",
    "metadata": {},
    "outputs": [
     {
@@ -728,8 +1451,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 14,
-   "id": "aa9b695c",
+   "execution_count": 29,
+   "id": "8f057c13",
    "metadata": {},
    "outputs": [
     {
@@ -762,236 +1485,9 @@
    ]
   },
   {
-   "cell_type": "markdown",
-   "id": "924e0b95",
-   "metadata": {},
-   "source": [
-    "## Proposition 1: The Security Market Line\n",
-    "\n",
-    "Proposition 1 predicts that the empirical SML is flatter than CAML implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas."
-   ]
-  },
-  {
    "cell_type": "code",
-   "execution_count": 15,
-   "id": "e0dabff0",
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "               mean    t_stat\n",
-      "intercept  0.007863  5.836262\n",
-      "beta_coef  0.001418  0.703093\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_15424\\3590990250.py:11: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
-     ]
-    }
-   ],
-   "source": [
-    "# Fama-MacBeth: each month regress ret_excess on beta\n",
-    "def fmb_month(df):\n",
-    "    if len(df) < 10:\n",
-    "        return pd.Series({\"intercept\": np.nan, \"beta_coef\": np.nan})\n",
-    "    m = smf.ols(\"ret_excess ~ beta\", data=df).fit()\n",
-    "    return pd.Series({\"intercept\": m.params[\"Intercept\"], \"beta_coef\": m.params[\"beta\"]})\n",
-    "\n",
-    "fmb_results = (\n",
-    "    analysis_data\n",
-    "    .groupby(\"month\")\n",
-    "    .apply(fmb_month)\n",
-    "    .reset_index()\n",
-    ")\n",
-    "\n",
-    "# Time-series average and Newey-West t-stats (1 lag)\n",
-    "cols = [\"intercept\", \"beta_coef\"]\n",
-    "fmb_summary = pd.DataFrame({\n",
-    "    \"mean\": fmb_results[cols].mean(),\n",
-    "    \"t_stat\": fmb_results[cols].apply(\n",
-    "        lambda x: x.dropna().mean() / (x.dropna().std() / np.sqrt(x.dropna().count()))\n",
-    "    ),\n",
-    "})\n",
-    "\n",
-    "print(fmb_summary)"
-   ]
-  },
-  {
-   "cell_type": "markdown",
-   "id": "e8369a68",
-   "metadata": {},
-   "source": [
-    "### Beta-Sorted Portfolio Alphas\n",
-    "\n",
-    "We sort stocks into 10 beta-decile portfolios and compute each decile's monthly CAPM alpha to visualise the alpha-beta relationship."
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 16,
-   "id": "90f72192",
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stdout",
-     "output_type": "stream",
-     "text": [
-      "   beta_decile     alpha   alpha_t  avg_beta\n",
-      "0            1  0.002741  1.746439  0.511693\n",
-      "1            2  0.002154  2.450884  0.676983\n",
-      "2            3  0.002496  3.205053  0.804396\n",
-      "3            4  0.001591  2.259553  0.916394\n",
-      "4            5  0.001141  1.801973  1.024017\n",
-      "5            6 -0.000145 -0.198470  1.135270\n",
-      "6            7  0.000748  0.748097  1.260848\n",
-      "7            8 -0.001768 -1.290402  1.418103\n",
-      "8            9 -0.004623 -2.633372  1.641384\n",
-      "9           10 -0.008241 -3.164249  2.103706\n"
-     ]
-    },
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_15424\\51200107.py:10: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n",
-      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_15424\\51200107.py:35: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
-     ]
-    }
-   ],
-   "source": [
-    "analysis_data = analysis_data.assign(\n",
-    "    beta_decile=lambda x: pd.qcut(x[\"beta\"], q=10, labels=False) + 1\n",
-    ")\n",
-    "\n",
-    "# Value-weighted returns per decile per month\n",
-    "decile_returns = (\n",
-    "    analysis_data\n",
-    "    .assign(vw_ret=lambda x: x[\"ret_excess\"] * x[\"mktcap_lag\"])\n",
-    "    .groupby([\"month\", \"beta_decile\"])\n",
-    "    .apply(lambda df: pd.Series({\n",
-    "        \"ret\": df[\"vw_ret\"].sum() / df[\"mktcap_lag\"].sum(),\n",
-    "        \"avg_beta\": (df[\"beta\"] * df[\"mktcap_lag\"]).sum() / df[\"mktcap_lag\"].sum()\n",
-    "    }))\n",
-    "    .reset_index()\n",
-    "    .merge(\n",
-    "        factors_ff3_monthly[[\"date\", \"mkt_excess\"]].assign(\n",
-    "            month=lambda x: x[\"date\"].values.astype(\"datetime64[M]\")\n",
-    "        ),\n",
-    "        on=\"month\", how=\"left\"\n",
-    "    )\n",
-    ")\n",
-    "\n",
-    "# CAPM alpha per decile\n",
-    "def capm_alpha(df):\n",
-    "    m = smf.ols(\"ret ~ mkt_excess\", data=df).fit()\n",
-    "    return pd.Series({\n",
-    "        \"alpha\": m.params[\"Intercept\"],\n",
-    "        \"alpha_t\": m.tvalues[\"Intercept\"],\n",
-    "        \"avg_beta\": df[\"avg_beta\"].mean()\n",
-    "    })\n",
-    "\n",
-    "decile_alphas = (\n",
-    "    decile_returns\n",
-    "    .groupby(\"beta_decile\")\n",
-    "    .apply(capm_alpha)\n",
-    "    .reset_index()\n",
-    ")\n",
-    "\n",
-    "print(decile_alphas)"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 17,
-   "id": "3a87cd52",
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:623: PlotnineWarning: Saving 7 x 5 in image.\n",
-      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:624: PlotnineWarning: Filename: figures/sml.png\n"
-     ]
-    }
-   ],
-   "source": [
-    "# Security Market Line: empirical vs CAPM\n",
-    "decile_avg = (\n",
-    "    decile_returns\n",
-    "    .groupby(\"beta_decile\")\n",
-    "    .agg(avg_ret=(\"ret\", \"mean\"), avg_beta=(\"avg_beta\", \"mean\"))\n",
-    "    .reset_index()\n",
-    ")\n",
-    "\n",
-    "mkt_mean = factors_ff3_monthly[\"mkt_excess\"].mean()\n",
-    "beta_range = pd.DataFrame({\n",
-    "    \"avg_beta\": np.linspace(\n",
-    "        decile_avg[\"avg_beta\"].min() * 0.9,\n",
-    "        decile_avg[\"avg_beta\"].max() * 1.1, 100\n",
-    "    )\n",
-    "})\n",
-    "beta_range[\"capm_ret\"] = beta_range[\"avg_beta\"] * mkt_mean\n",
-    "\n",
-    "(\n",
-    "    ggplot(decile_avg, aes(x=\"avg_beta\", y=\"avg_ret\"))\n",
-    "    + geom_point(size=3, color=\"steelblue\")\n",
-    "    + geom_smooth(method=\"lm\", se=False, color=\"steelblue\")\n",
-    "    + geom_line(\n",
-    "        data=beta_range,\n",
-    "        mapping=aes(x=\"avg_beta\", y=\"capm_ret\"),\n",
-    "        color=\"red\", linetype=\"dashed\"\n",
-    "    )\n",
-    "    + scale_y_continuous(labels=percent_format())\n",
-    "    + labs(\n",
-    "        x=\"Average Beta\",\n",
-    "        y=\"Average Monthly Excess Return\",\n",
-    "        caption=\"Solid blue: empirical SML. Red dashed: CAPM prediction.\"\n",
-    "    )\n",
-    "    + theme_minimal()\n",
-    ").save(\"figures/sml.png\", dpi=300, width=7, height=5)"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 18,
-   "id": "f61579be",
-   "metadata": {},
-   "outputs": [
-    {
-     "name": "stderr",
-     "output_type": "stream",
-     "text": [
-      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:623: PlotnineWarning: Saving 7 x 5 in image.\n",
-      "C:\\Users\\schlu\\Desktop\\PYTHON\\Datascience\\course-repository\\.venv\\Lib\\site-packages\\plotnine\\ggplot.py:624: PlotnineWarning: Filename: figures/decile_alphas.png\n"
-     ]
-    }
-   ],
-   "source": [
-    "# CAPM alpha by beta decile\n",
-    "(\n",
-    "    ggplot(\n",
-    "        decile_alphas.assign(positive=lambda x: x[\"alpha\"] > 0),\n",
-    "        aes(x=\"beta_decile\", y=\"alpha\", fill=\"positive\")\n",
-    "    )\n",
-    "    + geom_col(show_legend=False)\n",
-    "    + scale_fill_manual(values={True: \"#2196F3\", False: \"#F44336\"})\n",
-    "    + scale_x_continuous(breaks=list(range(1, 11)))\n",
-    "    + scale_y_continuous(labels=percent_format())\n",
-    "    + labs(x=\"Beta Decile\", y=\"Monthly CAPM Alpha\")\n",
-    "    + theme_minimal()\n",
-    ").save(\"figures/decile_alphas.png\", dpi=300, width=7, height=5)"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 19,
-   "id": "4aaa3820",
+   "execution_count": 30,
+   "id": "6ddf2e32",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -1026,15 +1522,15 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 20,
-   "id": "51f4efa3",
+   "execution_count": 31,
+   "id": "8af6c681",
    "metadata": {},
    "outputs": [
     {
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_15424\\2760488451.py:28: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
+      "C:\\Users\\schlu\\AppData\\Local\\Temp\\ipykernel_16712\\2760488451.py:28: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.\n"
      ]
     }
    ],
@@ -1073,8 +1569,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 21,
-   "id": "e94d01eb",
+   "execution_count": 32,
+   "id": "18d11ee8",
    "metadata": {},
    "outputs": [
     {
@@ -1130,7 +1626,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "92ef5fcd",
+   "id": "80f24247",
    "metadata": {},
    "source": [
     "# Discussion\n",
