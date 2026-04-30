@@ -7,7 +7,23 @@ To test proposition 1 we run Fama-MacBeth cross-sectional regressions of monthly
 
 ```{python}
 #| label: tbl-fmb-results
-print(fmb_summary)
+#| output: asis
+fmb_display = pd.DataFrame({
+    "Mean (\\%/month)": (fmb_summary["mean"] * 100).round(4),
+    "$t$-statistic": fmb_summary["t_stat"].round(2)
+})
+fmb_display.index = ["Intercept", "Beta"]
+print(tabulate(
+    fmb_display,
+    headers=["", "Mean (\\%/month)", "$t$-statistic"],
+    tablefmt="latex_booktabs",
+    floatfmt=".4f"
+))
+```
+
+```{=latex}
+\vspace{1mm}
+\noindent{\footnotesize\textit{Note: Time-series averages of monthly cross-sectional Fama-MacBeth regression coefficients of excess returns on lagged beta. The mean is expressed in percent per month. $t$-statistics are computed from the time-series standard error of the monthly estimates. Sample: US equities, January 1963 to December 2025.}}
 ```
 
 ### Beta-Sorted Portfolio Alphas
@@ -16,11 +32,42 @@ The Fama-MacBeth results are complemented by an analysis of CAPM alphas across b
 
 ```{python}
 #| label: tbl-decile-alphas
-print(decile_alphas)
+#| output: asis
+max_abs = decile_alphas["alpha"].abs().max()
+
+lines = [
+    r"\begin{tabular}{rccr}",
+    r"\toprule",
+    r"Decile & Avg.\ $\hat{\beta}$ & Monthly $\alpha$ (\%) & $t$-statistic \\",
+    r"\midrule",
+]
+for _, row in decile_alphas.sort_values("beta_decile").iterrows():
+    alpha = row["alpha"]
+    alpha_t = row["alpha_t"]
+    avg_beta = row["avg_beta"]
+    decile = int(row["beta_decile"])
+    pct = min(int(80 * abs(alpha) / max_abs), 80) if max_abs > 0 else 0
+    color = "green!" + str(pct) if alpha >= 0 else "red!" + str(pct)
+    sign = "+" if alpha >= 0 else ""
+    lines.append(
+        "\\rowcolor{" + color + "} "
+        + str(decile) + " & "
+        + f"{avg_beta:.2f}" + " & "
+        + sign + f"{alpha * 100:.2f}" + " & "
+        + f"{alpha_t:.2f}" + " \\\\"
+    )
+lines += [r"\bottomrule", r"\end{tabular}"]
+print("\n".join(lines))
+```
+
+```{=latex}
+\vspace{1mm}
+\noindent{\footnotesize\textit{Note: Value-weighted CAPM alpha for each beta-decile portfolio, estimated from time-series regressions of portfolio excess returns on the market excess return. Deciles are formed monthly by sorting all stocks on their lagged Vasicek-shrunk beta estimate. Green shading indicates positive alpha; red shading indicates negative alpha. Intensity is proportional to the magnitude of the alpha. Sample: US equities, January 1963 to December 2025.}}
 ```
 
 ```{python}
 #| label: fig-sml-results
+#| fig-cap: "Empirical security market line (solid blue) estimated through decile-average betas and returns, against the CAPM prediction (red dashed). The flatter slope of the empirical line is consistent with the beta anomaly."
 (
     ggplot(decile_avg, aes(x="avg_beta", y="avg_ret"))
     + geom_point(size=3, color="steelblue")
@@ -34,7 +81,6 @@ print(decile_alphas)
     + labs(
         x="Average Beta",
         y="Average Monthly Excess Return",
-        caption="Solid blue: empirical SML. Red dashed: CAPM prediction."
     )
     + theme_minimal()
 )
@@ -42,6 +88,7 @@ print(decile_alphas)
 
 ```{python}
 #| label: fig-decile-alphas-results
+#| fig-cap: "Monthly CAPM alpha by beta decile. Blue bars indicate positive alphas (low-beta deciles); red bars indicate negative alphas (high-beta deciles). The monotone decline from left to right is consistent with proposition 1."
 (
     ggplot(
         decile_alphas.assign(positive=lambda x: x["alpha"] > 0),
@@ -62,11 +109,24 @@ Having established the presence of the beta anomaly, we now turn to proposition 
 
 ```{python}
 #| label: tbl-bab-results
-print(bab_summary.round(4))
+#| output: asis
+bab_display = bab_summary.round(4).copy()
+print(tabulate(
+    bab_display,
+    headers=["", "BAB Factor"],
+    tablefmt="latex_booktabs",
+    floatfmt=".4f"
+))
+```
+
+```{=latex}
+\vspace{1mm}
+\noindent{\footnotesize\textit{Note: Performance statistics for the BAB factor constructed following Frazzini and Pedersen (2014). Mean return and standard deviation are annualised by multiplying monthly values by 12 and $\sqrt{12}$, respectively. The Sharpe ratio is the ratio of annualised mean to annualised standard deviation. The $t$-statistic tests whether the mean monthly return differs from zero. Sample: US equities, January 1963 to December 2025.}}
 ```
 
 ```{python}
 #| label: fig-bab-cumret-results
+#| fig-cap: "Cumulative return of the BAB factor, assuming $1 invested at inception. The strategy grows substantially through the late 1990s, retraces during 2000-2010, and partially recovers thereafter."
 (
     ggplot(bab_cumret, aes(x="date", y="cum_bab"))
     + geom_line(color="steelblue", size=0.8)
@@ -82,5 +142,18 @@ While the gross BAB factor earns positive returns, a real-world investor must al
 
 ```{python}
 #| label: tbl-tc-results
-print(tc_summary.round(4))
+#| output: asis
+tc_display = tc_summary.round(4).copy()
+print(tabulate(
+    tc_display,
+    headers=[""] + list(tc_display.columns),
+    tablefmt="latex_booktabs",
+    floatfmt=".4f",
+    missingval="---"
+))
+```
+
+```{=latex}
+\vspace{1mm}
+\noindent{\footnotesize\textit{Note: Gross and net annualised BAB returns over the transaction cost subsample (January 1993 to December 2025). Transaction costs are estimated from CRSP daily bid-ask half-spreads, assuming full monthly rebalancing. Net BAB deducts the round-trip cost on both legs of the portfolio. Avg annual TC drag is the mean annual cost (no $t$-statistic reported). $t$-statistics test whether the mean monthly return differs from zero.}}
 ```

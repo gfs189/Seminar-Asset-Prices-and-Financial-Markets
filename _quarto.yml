@@ -15,6 +15,9 @@ format:
         \let\frontmatter\relax
         \let\mainmatter\relax
         \let\backmatter\relax
+        \usepackage{booktabs}
+        \usepackage{xcolor}
+        \usepackage{colortbl}
     number-sections: true
     colorlinks: true
     geometry:
