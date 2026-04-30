@@ -1,5 +1,5 @@
 # Results
-In this chapter, we present the main results of our analysis. First we showcase the prevelance of the beta-anomoly by testing proposition 1 and then we present the performance of the BAB-portfolio to test proposition 2. Lastly, we present the results of our extension of proposition 2 by introducing transaction costs into our analysis.
+In this chapter, we present the main results of our analysis. First we showcase the prevalence of the beta anomaly by testing proposition 1 and then we present the performance of the BAB-portfolio to test proposition 2. Lastly, we present the results of our extension of proposition 2 by introducing transaction costs into our analysis.
 
 ## Proposition 1: The Security Market Line
 

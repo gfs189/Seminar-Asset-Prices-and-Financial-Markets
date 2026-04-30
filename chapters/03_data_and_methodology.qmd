@@ -1,9 +1,9 @@
 # Data and Methodology
-In this chapter we describe the data and methodology used to test the propositions of Frazzini and Pedersen (2014) [@frazzinipedersen2014]. We first summarize the charactertics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test proposition 1 and 2. Finally, we discuss how we introduce and estimate transaction costs for the BAB strategy.
+In this chapter we describe the data and methodology used to test the propositions of Frazzini and Pedersen (2014) [@frazzinipedersen2014]. We first summarize the characteristics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test proposition 1 and 2. Finally, we discuss how we introduce and estimate transaction costs for the BAB strategy.
 
 ## Data Description
 
-This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pedersen [@frazzinipedersen2014] for the US equity market using CRSP data accessed through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025. The choice of this period is driven by data availability and to ensure a long enough time series for robust beta estimation and portfolio construction. The
+This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pedersen [@frazzinipedersen2014] for the US equity market using CRSP data accessed through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025. The choice of this period is driven by data availability and to ensure a long enough time series for robust beta estimation and portfolio construction.
 
 
 
@@ -15,7 +15,7 @@ This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pede
 
 : Data sources {#tbl-data}
 
-WRDS credentials are stored by `tidyfinance` in its own configuration file. Run the one-time setup below before the first download. Leave this cell commented out once credentials are saved.
+The WRDS credentials are stored by `tidyfinance` in its own configuration file. Run the one-time setup below before the first download. Leave this cell commented out once credentials are saved.
 
 ```{python}
 #| eval: false
@@ -239,7 +239,7 @@ crsp_daily = (
 
 ### Volatility Component
 
-We estimate annualised standard deviations using a 252-day rolling window of daily excess returns (minimum 120 observations).
+We estimate annualised standard deviations using a 252-day rolling window of daily excess return based on yearly bussiness days.
 
 ```{python}
 # Merge market daily volatility
@@ -654,4 +654,4 @@ tc_summary = pd.DataFrame({
 
 ```
 
-Now we use this to test the prposisiton 1 and 2 with and without transaction costs to see the effect of transaction costs on the performance of the BAB strategy.
+Now we use this to test propositions 1 and 2 with and without transaction costs to see the effect of transaction costs on the performance of the BAB strategy.

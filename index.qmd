@@ -16,8 +16,8 @@ date-format: "D MMMM YYYY"
   Author(s):          & Tobias Dines Schlünssen (GFS189)\\
                         & Conrad Frederik Kromann (RTL959)\\[1ex]
   Title and subtitle: & Betting against beta\\
-                        &- A study of beta market anomoly in american equity markets \\[1ex]
-  Description:        & [Testing for beta-anomoly and performance of BABA strategy with transaction costs on US-equities.] \\[1ex]
+                        &- A study of beta market anomaly in american equity markets \\[1ex]
+  Description:        & Testing for beta anomaly and performance of BAB strategy with transaction costs on US-equities. \\[1ex]
   Advisor:            & Jacob Lundbeck Serup\\[1ex]
   Date:               & June 2nd, 2026 \\
 \end{tabular}
@@ -31,7 +31,7 @@ Using data from US equity markets we test proposition 1 by examining the
 relationship between beta and alpha to test for the presence of the market anomaly. To test 
 proposition 2, we construct a BAB-portfolio to examine the performance of a strategy which 
 exploits this market anomaly by going long on low beta stocks and short on high beta stocks.
-We find evidence of a negative relationship between beta and alpha, which supports proposition 1 and that the beta-anomoly is present leading to a flatter market security line. We also find that the BAB-portfolio generates positive returns, which supports proposition 2. However, when we introduce transaction costs into our analysis, we find that the performance of the BAB-portfolio is significantly reduced, suggesting that the strategy may not be as effective as initially thought when accounting for real-world trading frictions.
+We find evidence of a negative relationship between beta and alpha, which supports proposition 1 and that the beta anomaly is present leading to a flatter market security line. We also find that the BAB-portfolio generates positive returns, which supports proposition 2. However, when we introduce transaction costs into our analysis, we find that the performance of the BAB-portfolio is significantly reduced, suggesting that the strategy may not be as effective as initially thought when accounting for real-world trading frictions.
 \end{abstract}
 
 \clearpage

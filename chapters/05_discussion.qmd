@@ -2,7 +2,7 @@
 In this chapter, we discuss the implications of our findings and how they relate to existing literature on the beta anomaly and the performance of the BAB-portfolio. We also discuss the limitations of our analysis and suggest avenues for future research.
 
 relate to main paper..
-suggest further improvements such as transaction costs, risk-adjusted returns, and other markets.
+suggest further improvements such as transaction costs( bid ask spread), risk-adjusted returns, and other markets.
 
 explore shortcomings of data and methodology such as the use of historical data, the choice of time period, and the potential for survivorship bias.
 
