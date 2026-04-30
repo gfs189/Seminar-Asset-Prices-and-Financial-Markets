@@ -384,7 +384,6 @@ fmb_summary = pd.DataFrame({
     ),
 })
 
-print(fmb_summary)
 ```
 
 ### Beta-Sorted Portfolio Alphas
@@ -428,7 +427,6 @@ decile_alphas = (
     .reset_index()
 )
 
-print(decile_alphas)
 ```
 
 ```{python}
@@ -534,7 +532,6 @@ bab_summary = pd.DataFrame({
         bab_returns["r_bab"].mean() / (bab_returns["r_bab"].std() / np.sqrt(bab_returns["r_bab"].notna().sum())),
     ]
 }, index=["Ann. Mean Return", "Ann. Std Dev", "Sharpe Ratio", "t-statistic"])
-print(bab_summary.round(4))
 ```
 
 ```{python}
@@ -655,7 +652,6 @@ tc_summary = pd.DataFrame({
     ],
 }, index=["Ann. mean return", "t-statistic"])
 
-print(tc_summary.round(4))
 ```
 
 Now we use this to test the prposisiton 1 and 2 with and without transaction costs to see the effect of transaction costs on the performance of the BAB strategy.
