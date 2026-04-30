@@ -15,6 +15,11 @@ This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pede
 
 : Data sources {#tbl-data}
 
+```{=latex}
+\vspace{1mm}
+{\small\textit{Note: CRSP data is accessed via WRDS through the \texttt{tidyfinance} Python package. Fama-French factors are downloaded from the Kenneth French data library. All data covers January 1963 to December 2025.}}
+```
+
 The WRDS credentials are stored by `tidyfinance` in its own configuration file. Run the one-time setup below before the first download. Leave this cell commented out once credentials are saved.
 
 ```{python}
@@ -26,6 +31,7 @@ import tidyfinance as tf
 ```
 
 ```{python}
+#| label: setup
 import pandas as pd
 import numpy as np
 import tidyfinance as tf
@@ -35,16 +41,7 @@ import pyarrow.dataset as ds
 import os
 import yaml
 import statsmodels.formula.api as smf
-
-from plotnine import *
-from mizani.formatters import comma_format, percent_format
-from datetime import datetime
-import os
-import pandas as pd
-import numpy as np
-import pyarrow.dataset as ds
-import statsmodels.formula.api as smf
-
+from tabulate import tabulate
 from plotnine import *
 from mizani.formatters import comma_format, percent_format
 ```
@@ -226,6 +223,8 @@ $$\hat{\beta}_i = \hat{\rho}_i \cdot \frac{\hat{\sigma}_i}{\hat{\sigma}_m}$$
 The correlation $\hat{\rho}_i$ is estimated from a 5-year rolling window of monthly excess returns (minimum 3 years), while the volatility ratio is estimated from a 1-year rolling window of daily excess returns (minimum 120 observations). This two-component approach improves precision by using higher-frequency data for the noisier volatility estimate.
 
 ```{python}
+#| label: load-data
+#| cache: true
 crsp_monthly = pd.read_parquet("data/crsp_monthly.parquet")
 factors_ff3_monthly = pd.read_parquet("data/factors_ff3_monthly.parquet")
 factors_ff3_daily = pd.read_parquet("data/factors_ff3_daily.parquet")
@@ -242,7 +241,8 @@ crsp_daily = (
 We estimate annualised standard deviations using a 252-day rolling window of daily excess return based on yearly bussiness days.
 
 ```{python}
-# Merge market daily volatility
+#| label: compute-volatility
+#| cache: true
 daily_vol = (
     crsp_daily
     .merge(factors_ff3_daily[["date", "mkt_excess"]], on="date", how="left")
@@ -297,7 +297,8 @@ vol_ratio = (
 We estimate the correlation with the market from a 60-month rolling window of monthly excess returns (minimum 36 months).
 
 ```{python}
-# Pivot to wide: rows = date, cols = permno
+#| label: compute-correlation
+#| cache: true
 monthly_wide = (
     crsp_monthly[["permno", "date", "ret_excess"]]
     .merge(factors_ff3_monthly[["date", "mkt_excess"]], on="date", how="left")
@@ -329,6 +330,8 @@ The two components are combined into a time-series beta $\hat{\beta}_i^{ts} = \h
 $$\hat{\beta}_i = 0.6 \cdot \hat{\beta}_i^{ts} + 0.4 \cdot 1$$
 
 ```{python}
+#| label: compute-beta
+#| cache: true
 beta_ts = (
     corr_component
     .merge(vol_ratio, on=["permno", "month"], how="inner")
@@ -342,6 +345,8 @@ beta_estimates = beta_ts.assign(beta=lambda x: 0.6 * x["beta_ts"] + 0.4)[["permn
 ```
 
 ```{python}
+#| label: build-analysis-data
+#| cache: true
 crsp_monthly = crsp_monthly.assign(
     month=lambda x: x["date"].values.astype("datetime64[M]")
 )
@@ -358,11 +363,80 @@ analysis_data = (
 )
 ```
 
+## Sample Description
+
+The final sample consists of all stock-month observations for which a valid beta estimate, excess return, and lagged market capitalisation are available. @tbl-summary reports summary statistics for the three key variables: monthly excess returns, estimated beta, and market capitalisation. @fig-beta-dist shows the cross-sectional distribution of estimated betas and @fig-nstocks shows how the number of stocks in the sample evolves over time.
+
+```{python}
+#| label: tbl-summary
+#| cache: true
+#| output: asis
+summary_stats = (
+    analysis_data[["ret_excess", "beta", "mktcap"]]
+    .rename(columns={"ret_excess": "Excess Return", "beta": "Beta", "mktcap": "Mkt Cap ($M)"})
+    .describe(percentiles=[0.05, 0.25, 0.5, 0.75, 0.95])
+    .T
+    .drop(columns=["count"])
+    .rename(columns={"mean": "Mean", "std": "Std",
+                     "5%": "P5", "25%": "P25", "50%": "Median", "75%": "P75", "95%": "P95"})
+    [["Mean", "Std", "P5", "P25", "Median", "P75", "P95"]]
+)
+n_stocks = analysis_data["permno"].nunique()
+n_obs = len(analysis_data)
+print(tabulate(
+    summary_stats.round(4),
+    headers=["", "Mean", "Std", "P5", "P25", "Median", "P75", "P95"],
+    tablefmt="latex_booktabs",
+    floatfmt=".4f"
+))
+```
+
+```{=latex}
+\vspace{1mm}
+{\small\textit{Note: Summary statistics for the final analysis sample covering January 1963 to December 2025. Excess Return is monthly and expressed as a decimal. Market Cap is in millions of USD. Beta is estimated following Frazzini and Pedersen (2014) as the product of a 60-month rolling correlation and a 252-day rolling volatility ratio, shrunk toward one.}}
+```
+
+```{python}
+#| label: fig-beta-dist
+#| cache: true
+#| fig-cap: "Cross-sectional distribution of estimated betas. The red dashed line marks beta = 1."
+(
+    ggplot(analysis_data, aes(x="beta"))
+    + geom_histogram(bins=60, fill="steelblue", color="white", alpha=0.8)
+    + geom_vline(xintercept=1, linetype="dashed", color="red", size=0.8)
+    + labs(x="Estimated Beta", y="Stock-month observations")
+    + theme_minimal()
+)
+```
+
+```{python}
+#| label: fig-nstocks
+#| cache: true
+#| fig-cap: "Number of stocks in the sample per month."
+stocks_per_month = (
+    analysis_data
+    .groupby("month")["permno"]
+    .nunique()
+    .reset_index()
+    .rename(columns={"permno": "n_stocks"})
+    .assign(date=lambda x: x["month"].astype("datetime64[ns]"))
+)
+(
+    ggplot(stocks_per_month, aes(x="date", y="n_stocks"))
+    + geom_line(color="steelblue", size=0.6)
+    + scale_x_datetime(date_breaks="10 years", date_labels="%Y")
+    + labs(x="", y="Number of stocks")
+    + theme_minimal()
+)
+```
+
 ## Proposition 1: The Security Market Line
 
 Proposition 1 predicts that the empirical SML is flatter than CAML implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas.
 
 ```{python}
+#| label: compute-fmb
+#| cache: true
 def fmb_month(df):
     if len(df) < 10:
         return pd.Series({"intercept": np.nan, "beta_coef": np.nan})
@@ -391,6 +465,8 @@ fmb_summary = pd.DataFrame({
 We sort stocks into 10 beta-decile portfolios and compute each decile's monthly CAPM alpha to visualise the alpha-beta relationship.
 
 ```{python}
+#| label: compute-decile-alphas
+#| cache: true
 analysis_data = analysis_data.assign(
     beta_decile=lambda x: pd.qcut(x["beta"], q=10, labels=False) + 1
 )
@@ -430,6 +506,8 @@ decile_alphas = (
 ```
 
 ```{python}
+#| label: fig-sml
+#| cache: true
 decile_avg = (
     decile_returns
     .groupby("beta_decile")
@@ -466,6 +544,8 @@ beta_range["capm_ret"] = beta_range["avg_beta"] * mkt_mean
 ```
 
 ```{python}
+#| label: fig-decile-alphas
+#| cache: true
 (
     ggplot(
         decile_alphas.assign(positive=lambda x: x["alpha"] > 0),
@@ -489,6 +569,8 @@ $$r^{BAB}_t = \frac{1}{\beta^L_t} r^L_t - \frac{1}{\beta^H_t} r^H_t$$
 where $\beta^L_t$ and $\beta^H_t$ are the value-weighted average betas of the low and high portfolios.
 
 ```{python}
+#| label: compute-bab
+#| cache: true
 def rank_weights(betas):
     k = betas.rank()
     k = k - k.mean()
@@ -524,6 +606,8 @@ bab_returns = (
 ```
 
 ```{python}
+#| label: compute-bab-summary
+#| cache: true
 bab_summary = pd.DataFrame({
     "BAB Factor": [
         bab_returns["r_bab"].mean() * 12,
@@ -535,6 +619,8 @@ bab_summary = pd.DataFrame({
 ```
 
 ```{python}
+#| label: compute-bab-cumret
+#| cache: true
 bab_cumret = (
     bab_returns
     .dropna(subset=["r_bab"])
@@ -562,6 +648,8 @@ $$c_{i,d} = \frac{\text{ask}_{i,d} - \text{bid}_{i,d}}{2 \cdot \text{mid}_{i,d}}
 where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly spread for each stock is the median of its daily half-spreads within the month, which is robust to days with stale or missing bid/ask quotes. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg. Following Frazzini, Israel, and Moskowitz (2015), we assume full monthly rebalancing, so this is an upper bound on realised costs.
 
 ```{python}
+#| label: load-tc-data
+#| cache: true
 crsp_daily_all = (
     ds.dataset("data/crsp_daily", format="parquet", partitioning="hive")
     .to_table()
@@ -587,6 +675,8 @@ monthly_spread = (
 ```
 
 ```{python}
+#| label: compute-spreads
+#| cache: true
 def spread_month(df):
     if df.empty:
         return pd.Series({"spread_L": np.nan, "spread_H": np.nan})
@@ -619,6 +709,8 @@ portfolio_spreads = (
 ```
 
 ```{python}
+#| label: compute-bab-tc
+#| cache: true
 bab_tc = (
     bab_returns
     .merge(portfolio_spreads, on="month", how="left")
