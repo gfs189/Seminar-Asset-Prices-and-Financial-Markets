@@ -218,16 +218,10 @@ for j in range(1, batches + 1):
 disconnect_connection(wrds_conn)
 ```
 
-## Beta Estimation
-
-Following Frazzini and Pedersen [@frazzinipedersen2014], we estimate beta as the product of a correlation component and a volatility component:
-
-$$\hat{\beta}_i = \hat{\rho}_i \cdot \frac{\hat{\sigma}_i}{\hat{\sigma}_m}$$
-
-The correlation $\hat{\rho}_i$ is estimated from a 5-year rolling window of monthly excess returns (minimum 3 years), while the volatility ratio is estimated from a 1-year rolling window of daily excess returns (minimum 120 observations). This two-component approach improves precision by using higher-frequency data for the noisier volatility estimate.
-
 ```{python}
 #| label: load-data
+#| echo: false
+#| output: false
 #| cache: true
 crsp_monthly = pd.read_parquet("data/crsp_monthly.parquet")
 factors_ff3_monthly = pd.read_parquet("data/factors_ff3_monthly.parquet")
@@ -240,19 +234,16 @@ crsp_daily = (
 )
 ```
 
-### Volatility Component
-
-We estimate annualised standard deviations using a 252-day rolling window of daily excess return based on yearly bussiness days.
-
 ```{python}
 #| label: compute-volatility
+#| echo: false
+#| output: false
 #| cache: true
 daily_vol = (
     crsp_daily
     .merge(factors_ff3_daily[["date", "mkt_excess"]], on="date", how="left")
 )
 
-# Stock volatility: 252-day rolling std of daily excess returns
 stock_vol = (
     daily_vol
     .sort_values(["permno", "date"])
@@ -264,7 +255,6 @@ stock_vol = (
     .rename(columns={"ret_excess": "sigma_i"})
 )
 
-# Market volatility: same window on mkt_excess
 market_vol = (
     daily_vol
     .drop_duplicates("date")
@@ -275,7 +265,6 @@ market_vol = (
     .reset_index(drop=True)
 )
 
-# Attach date back to market vol
 market_vol_df = (
     daily_vol
     .drop_duplicates("date")[["date"]]
@@ -296,12 +285,10 @@ vol_ratio = (
 )
 ```
 
-### Correlation Component
-
-We estimate the correlation with the market from a 60-month rolling window of monthly excess returns (minimum 36 months).
-
 ```{python}
 #| label: compute-correlation
+#| echo: false
+#| output: false
 #| cache: true
 monthly_wide = (
     crsp_monthly[["permno", "date", "ret_excess"]]
@@ -327,14 +314,10 @@ corr_component = (
 )
 ```
 
-### Combined Beta Estimate
-
-The two components are combined into a time-series beta $\hat{\beta}_i^{ts} = \hat{\rho}_i \cdot (\hat{\sigma}_i / \hat{\sigma}_m)$, which is then shrunk toward the cross-sectional mean of one using Vasicek (1973) shrinkage with weights $(0.6, 0.4)$ as in Frazzini and Pedersen [@frazzinipedersen2014]:
-
-$$\hat{\beta}_i = 0.6 \cdot \hat{\beta}_i^{ts} + 0.4 \cdot 1$$
-
 ```{python}
 #| label: compute-beta
+#| echo: false
+#| output: false
 #| cache: true
 beta_ts = (
     corr_component
@@ -343,13 +326,13 @@ beta_ts = (
     [["permno", "month", "beta_ts"]]
 )
 
-# Vasicek (1973) shrinkage toward the cross-sectional mean of 1, following F&P (2014)
-# β̂ᵢ = 0.6 × β̂ᵢᵀˢ + 0.4 × 1
 beta_estimates = beta_ts.assign(beta=lambda x: 0.6 * x["beta_ts"] + 0.4)[["permno", "month", "beta"]]
 ```
 
 ```{python}
 #| label: build-analysis-data
+#| echo: false
+#| output: false
 #| cache: true
 crsp_monthly = crsp_monthly.assign(
     month=lambda x: x["date"].values.astype("datetime64[M]")
@@ -434,9 +417,33 @@ stocks_per_month = (
 )
 ```
 
+## Beta Estimation
+
+Following Frazzini and Pedersen [@frazzinipedersen2014], we estimate beta as the product of a correlation component and a volatility component:
+
+$$\hat{\beta}_i = \hat{\rho}_i \cdot \frac{\hat{\sigma}_i}{\hat{\sigma}_m}$$
+
+The correlation $\hat{\rho}_i$ is estimated from a 5-year rolling window of monthly excess returns (minimum 3 years), while the volatility ratio is estimated from a 1-year rolling window of daily excess returns (minimum 120 observations). This two-component approach improves precision by using higher-frequency data for the noisier volatility estimate.
+
+### Volatility Component
+
+We estimate annualised standard deviations using a 252-day rolling window of daily excess returns based on yearly business days. The stock's standard deviation $\hat{\sigma}_i$ and the market standard deviation $\hat{\sigma}_m$ are estimated over the same window to ensure comparability. For each stock-month, we retain the last available daily estimate within the month.
+
+### Correlation Component
+
+We estimate the correlation with the market $\hat{\rho}_i$ from a 60-month rolling window of monthly excess returns, requiring a minimum of 36 months of observations to obtain a valid estimate.
+
+### Combined Beta Estimate
+
+The two components are combined into a time-series beta $\hat{\beta}_i^{ts} = \hat{\rho}_i \cdot (\hat{\sigma}_i / \hat{\sigma}_m)$, which is then shrunk toward the cross-sectional mean of one using Vasicek (1973) shrinkage with weights $(0.6, 0.4)$ as in Frazzini and Pedersen [@frazzinipedersen2014]:
+
+$$\hat{\beta}_i = 0.6 \cdot \hat{\beta}_i^{ts} + 0.4 \cdot 1$$
+
+Beta estimates are lagged by one month before merging with returns to avoid a look-ahead bias in portfolio construction.
+
 ## Proposition 1: The Security Market Line
 
-Proposition 1 predicts that the empirical SML is flatter than CAML implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas.
+Proposition 1 predicts that the empirical SML is flatter than CAPM implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas.
 
 ```{python}
 #| label: compute-fmb
