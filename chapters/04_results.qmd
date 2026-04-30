@@ -6,6 +6,7 @@ In this chapter, we present the main results of our analysis. First we showcase 
 To test proposition 1 we run Fama-MacBeth cross-sectional regressions of monthly excess returns on lagged betas. The results are presented below. The intercept is positive and highly statistically significant with a mean of 0.79% per month and a t-statistic of 5.84, indicating that there is a substantial return that is unrelated to market beta. More central to proposition 1, the slope coefficient on beta is 0.14% per month with a t-statistic of only 0.70, which is statistically indistinguishable from zero. Under the CAPM, this slope should equal the market excess return, which over our sample averages considerably higher. The near-zero and insignificant beta coefficient therefore indicates that the cross-sectional compensation for bearing systematic risk is far smaller than the CAPM predicts, consistent with a flatter-than-predicted security market line and with the beta anomaly. We note that the empirical SML plotted below appears to slope slightly downward, while the Fama-MacBeth coefficient is slightly positive. This apparent tension reflects different weighting: Fama-MacBeth weights all individual stocks equally within each month, so the moderate-beta stocks that constitute the bulk of the cross-section determine the average slope. The decile-based SML, by contrast, fits a line through ten equally-weighted group averages, giving the extreme high-beta decile (average beta ≈ 2.1) disproportionate leverage on the fitted slope. Both results are fully consistent with the beta anomaly and proposition 1: the empirical compensation for beta is economically negligible and statistically indistinguishable from zero, far below the CAPM prediction.
 
 ```{python}
+#| label: tbl-fmb-results
 print(fmb_summary)
 ```
 
@@ -14,10 +15,12 @@ print(fmb_summary)
 The Fama-MacBeth results are complemented by an analysis of CAPM alphas across beta-sorted decile portfolios. Sorting all stocks into ten groups by their estimated beta and computing each decile's average monthly CAPM alpha reveals a striking monotone pattern. Low-beta deciles earn positive and statistically significant alphas: decile 1 (average beta of 0.51) earns 0.27% per month, while deciles 2 and 3 earn 0.22% and 0.25% per month, both significant at conventional levels with t-statistics above 2.4 and 3.2, respectively. Moving up the beta distribution, alphas decline steadily. Decile 6 is essentially zero ($-$0.01%, t$=$−0.20), and the three highest-beta deciles earn negative and increasingly significant alphas. Decile 9 (average beta 1.64) earns $-$0.46% per month (t$=$−2.63), and the top decile (average beta 2.10) earns $-$0.82% per month (t$=$−3.16). This monotone decline in alpha across the beta distribution is precisely what proposition 1 predicts. The two panels below visualise this result: the upper panel plots the empirical security market line (solid blue) against the CAPM prediction (red dashed), showing that the empirical line is clearly flatter; the lower panel displays the CAPM alpha for each decile, illustrating the transition from positive alphas at the low end to large negative alphas at the high end.
 
 ```{python}
+#| label: tbl-decile-alphas
 print(decile_alphas)
 ```
 
 ```{python}
+#| label: fig-sml-results
 (
     ggplot(decile_avg, aes(x="avg_beta", y="avg_ret"))
     + geom_point(size=3, color="steelblue")
@@ -38,6 +41,7 @@ print(decile_alphas)
 ```
 
 ```{python}
+#| label: fig-decile-alphas-results
 (
     ggplot(
         decile_alphas.assign(positive=lambda x: x["alpha"] > 0),
@@ -57,10 +61,12 @@ print(decile_alphas)
 Having established the presence of the beta anomaly, we now turn to proposition 2 and examine whether a BAB portfolio that exploits this anomaly generates positive excess returns. Following Frazzini and Pedersen (2014), we construct the BAB factor each month by going long a leveraged portfolio of below-median-beta stocks and short a de-leveraged portfolio of above-median-beta stocks, with both legs scaled to a beta of one. The performance statistics are reported below. The BAB factor earns an annualised mean return of 6.72% with an annualised standard deviation of 25.66%, yielding a Sharpe ratio of 0.262. The associated t-statistic of 2.03 indicates that the positive mean return is statistically significant at the 5% level, providing support for proposition 2. The cumulative return chart below illustrates the time-series behaviour of the strategy: starting from $1 in the early 1960s, the portfolio grows to a peak of approximately $7.50 around the turn of the millennium before declining, and recovers to a similar level by the end of the sample in the early 2020s. The strategy thus generates meaningful returns over the full sample period, albeit with considerable variation across sub-periods.
 
 ```{python}
+#| label: tbl-bab-results
 print(bab_summary.round(4))
 ```
 
 ```{python}
+#| label: fig-bab-cumret-results
 (
     ggplot(bab_cumret, aes(x="date", y="cum_bab"))
     + geom_line(color="steelblue", size=0.8)
@@ -75,5 +81,6 @@ print(bab_summary.round(4))
 While the gross BAB factor earns positive returns, a real-world investor must also bear the transaction costs of monthly rebalancing. To assess this, we estimate round-trip costs from daily CRSP bid-ask spreads and apply them to the turnover of each portfolio leg. The results, reported below, reveal a dramatic impact of trading frictions. Over the subsample for which transaction cost data are available, the gross BAB strategy earns an annualised mean return of 5.56% (t$=$1.07), but after deducting estimated transaction costs the net return falls to $-$161.6% per year (t$=$−18.14). The average annual transaction cost drag amounts to 167.1 percentage points, far exceeding the gross return. This implies that, under the assumption of full monthly rebalancing, the BAB strategy is entirely non-viable after accounting for realistic trading frictions. The result should be interpreted as an upper bound on actual transaction costs, since in practice investors would rebalance less frequently and only trade when the cost savings exceed the friction. Nonetheless, it highlights that the gross profitability documented in section 4.2 is highly sensitive to implementation costs, particularly given the wide bid-ask spreads prevalent in CRSP data for earlier decades prior to market decimalization.
 
 ```{python}
+#| label: tbl-tc-results
 print(tc_summary.round(4))
 ```

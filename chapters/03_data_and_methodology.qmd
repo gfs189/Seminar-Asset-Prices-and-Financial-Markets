@@ -17,8 +17,11 @@ This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pede
 
 ```{=latex}
 \vspace{1mm}
-{\small\textit{Note: CRSP data is accessed via WRDS through the \texttt{tidyfinance} Python package. Fama-French factors are downloaded from the Kenneth French data library. All data covers January 1963 to December 2025.}}
+\noindent{\footnotesize\textit{Note: CRSP data is accessed via WRDS through the \texttt{tidyfinance} Python package. Fama-French factors are downloaded from the Kenneth French data library. All data covers January 1963 to December 2025.}}
 ```
+
+
+
 
 The WRDS credentials are stored by `tidyfinance` in its own configuration file. Run the one-time setup below before the first download. Leave this cell commented out once credentials are saved.
 
@@ -214,6 +217,7 @@ for j in range(1, batches + 1):
 
 disconnect_connection(wrds_conn)
 ```
+
 ## Beta Estimation
 
 Following Frazzini and Pedersen [@frazzinipedersen2014], we estimate beta as the product of a correlation component and a volatility component:
@@ -393,7 +397,7 @@ print(tabulate(
 
 ```{=latex}
 \vspace{1mm}
-{\small\textit{Note: Summary statistics for the final analysis sample covering January 1963 to December 2025. Excess Return is monthly and expressed as a decimal. Market Cap is in millions of USD. Beta is estimated following Frazzini and Pedersen (2014) as the product of a 60-month rolling correlation and a 252-day rolling volatility ratio, shrunk toward one.}}
+\noindent{\footnotesize\textit{Note: Summary statistics for the final analysis sample covering January 1963 to December 2025. Excess Return is monthly and expressed as a decimal. Market Cap is in millions of USD. Beta is estimated following Frazzini and Pedersen (2014) as the product of a 60-month rolling correlation and a 252-day rolling volatility ratio, shrunk toward one. Source: CRSP via WRDS and Kenneth French data library.}}
 ```
 
 ```{python}
