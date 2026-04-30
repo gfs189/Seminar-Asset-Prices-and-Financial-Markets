@@ -352,7 +352,7 @@ analysis_data = (
 
 ## Sample Description
 
-The final sample consists of all stock-month observations for which a valid beta estimate, excess return, and lagged market capitalisation are available. @tbl-summary reports summary statistics for the three key variables: monthly excess returns, estimated beta, and market capitalisation. @fig-beta-dist shows the cross-sectional distribution of estimated betas and @fig-nstocks shows how the number of stocks in the sample evolves over time.
+Table @tbl-summary reports summary statistics for the key variables. Figure @fig-nstocks shows how many stocks are available each month, establishing the scope of the data, while Figure @fig-beta-dist shows the cross-sectional distribution of estimated betas, which motivates the beta anomaly analysis that follows.
 
 ```{python}
 #| label: tbl-summary
@@ -384,22 +384,9 @@ print(tabulate(
 ```
 
 ```{python}
-#| label: fig-beta-dist
-#| cache: true
-#| fig-cap: "Cross-sectional distribution of estimated betas. The red dashed line marks beta = 1."
-(
-    ggplot(analysis_data, aes(x="beta"))
-    + geom_histogram(bins=60, fill="steelblue", color="white", alpha=0.8)
-    + geom_vline(xintercept=1, linetype="dashed", color="red", size=0.8)
-    + labs(x="Estimated Beta", y="Stock-month observations")
-    + theme_minimal()
-)
-```
-
-```{python}
 #| label: fig-nstocks
 #| cache: true
-#| fig-cap: "Number of stocks in the sample per month."
+#| fig-cap: "Number of distinct stocks included in the sample each month. Coverage grows steadily from around 500 stocks in the early 1960s to a peak of over 4,000 in the late 1990s before declining as NASDAQ listings contracted following the dot-com bubble. The pattern reflects the expansion of US equity markets and the availability of valid beta estimates."
 stocks_per_month = (
     analysis_data
     .groupby("month")["permno"]
@@ -413,6 +400,19 @@ stocks_per_month = (
     + geom_line(color="steelblue", size=0.6)
     + scale_x_datetime(date_breaks="10 years", date_labels="%Y")
     + labs(x="", y="Number of stocks")
+    + theme_minimal()
+)
+```
+
+```{python}
+#| label: fig-beta-dist
+#| cache: true
+#| fig-cap: "Cross-sectional distribution of estimated betas across all stock-month observations in the sample. The distribution is centred slightly below one with a long right tail driven by high-volatility small-cap stocks. The red dashed line marks a beta of one, which corresponds to the market portfolio under the CAPM."
+(
+    ggplot(analysis_data, aes(x="beta"))
+    + geom_histogram(bins=60, fill="steelblue", color="white", alpha=0.8)
+    + geom_vline(xintercept=1, linetype="dashed", color="red", size=0.8)
+    + labs(x="Estimated Beta", y="Stock-month observations")
     + theme_minimal()
 )
 ```
