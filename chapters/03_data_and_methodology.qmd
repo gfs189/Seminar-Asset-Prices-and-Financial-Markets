@@ -348,7 +348,7 @@ analysis_data = (
 
 ## Sample Description
 
-Table @tbl-summary reports summary statistics for the key variables. Figure @fig-nstocks shows how many stocks are available each month, establishing the scope of the data, while Figure @fig-beta-dist shows the cross-sectional distribution of estimated betas, which motivates the beta anomaly analysis that follows.
+@tbl-summary reports summary statistics for the key variables. @fig-nstocks shows how many stocks are available each month, establishing the scope of the data, while @fig-beta-dist shows the cross-sectional distribution of estimated betas, which motivates the beta anomaly analysis that follows.
 
 ```{python}
 #| label: tbl-summary
@@ -770,4 +770,4 @@ tc_summary = pd.DataFrame({
 
 ```
 
-Because reliable CRSP bid-ask data are only available from January 1993 onward, the TC analysis covers a shorter period than the main BAB analysis (January 1963 to December 2025). The gross BAB return over the TC subsample is 5.56% per year, compared to 6.72% over the full sample, so the two figures are not directly comparable.
+Because reliable CRSP bid-ask data are only available from January 1993 onward, the TC analysis covers a shorter period than the main BAB analysis (January 1963 to December 2025). The gross BAB return over the TC subsample is 9.18% per year, compared to 8.85% over the full sample, so the two figures are not directly comparable.

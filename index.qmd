@@ -2,7 +2,7 @@
 title: "Betting against beta"
 subtitle: "a study of proposition 1 & 2 in american equity markets"
 author: "Tobias Dines Schlünssen & Conrad Frederik Kromann"
-date: June 2nd, 2026
+date: "2026-06-02"
 date-format: "D MMMM YYYY"
 ---
 ```{=latex}
@@ -19,12 +19,12 @@ date-format: "D MMMM YYYY"
                         &- A study of proposition 1 and 2 in american equity markets \\[1ex]
   Description:        & Testing for beta anomaly and performance of BAB strategy with transaction costs on US-equities. \\[1ex]
   Advisor:            & Jacob Lundbeck Serup\\[1ex]
-  Date:               & June 1st, 2026 \\
+  Date:               & June 2nd, 2026 \\
 \end{tabular}
 \clearpage
 % Abstract page
 \begin{abstract}
-This paper examines the beta market anomaly, where stocks with higher betas tends to have lower 
+This paper examines the beta market anomaly, where stocks with higher betas tend to have lower
 alphas than those with lower betas, contradicting a fundamental prediction by the CAPM-model. This is done by testing the proposition 1 and 2 from 
 the paper of Frazzini and Pedersen (2014).
 Using data from US equity markets we test proposition 1 by examining the 
