@@ -2,7 +2,7 @@
 title: "Betting against beta"
 subtitle: "a study of proposition 1 & 2 in american equity markets"
 author: "Tobias Dines Schlünssen & Conrad Frederik Kromann"
-date: today
+date: June 2nd, 2026
 date-format: "D MMMM YYYY"
 ---
 ```{=latex}
@@ -16,10 +16,10 @@ date-format: "D MMMM YYYY"
   Author(s):          & Tobias Dines Schlünssen (GFS189)\\
                         & Conrad Frederik Kromann (RTL959)\\[1ex]
   Title and subtitle: & Betting against beta\\
-                        &- A study of beta market anomaly in american equity markets \\[1ex]
+                        &- A study of proposition 1 and 2 in american equity markets \\[1ex]
   Description:        & Testing for beta anomaly and performance of BAB strategy with transaction costs on US-equities. \\[1ex]
   Advisor:            & Jacob Lundbeck Serup\\[1ex]
-  Date:               & June 2nd, 2026 \\
+  Date:               & June 1st, 2026 \\
 \end{tabular}
 \clearpage
 % Abstract page
@@ -36,7 +36,7 @@ We find evidence of a negative relationship between beta and alpha, which suppor
 
 \clearpage
 
-\renewcommand{\contentsname}{Table of content}
+\renewcommand{\contentsname}{Table of contents}
 \tableofcontents
 \clearpage
 
@@ -54,6 +54,14 @@ We find evidence of a negative relationship between beta and alpha, which suppor
 {{< include chapters/05_discussion.qmd >}}
 
 {{< include chapters/06_conclusion.qmd >}}
+
+# Appendix
+
+## Code Availability
+
+The full replication code for this paper is available at the following GitHub repository:
+
+[https://github.com/gfs189/Seminar-Asset-Prices-and-Financial-Markets](https://github.com/gfs189/Seminar-Asset-Prices-and-Financial-Markets)
 
 # References
 ::::{#refs}

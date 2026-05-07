@@ -1,8 +1,7 @@
 # Data and Methodology
-In this chapter we describe the data and methodology used to test the propositions of Frazzini and Pedersen (2014) [@frazzinipedersen2014]. We first summarize the characteristics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test proposition 1 and 2. Finally, we discuss how we introduce and estimate transaction costs for the BAB strategy.
+In this chapter we describe the data and methodology used to test the propositions of Frazzini and Pedersen (2014) [@frazzinipedersen2014]. We first summarize the characteristics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test proposition 1 and 2. Finally, we discuss how we introduce and estimate transaction costs for the BAB strategy, while including comments for transparency and reproducability, regarding how the underlying analysis has been made.
 
 ## Data Description
-
 This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pedersen [@frazzinipedersen2014] for the US equity market using CRSP data accessed through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025. The choice of this period is driven by data availability and to ensure a long enough time series for robust beta estimation and portfolio construction.
 
 
@@ -21,9 +20,6 @@ This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pede
 ```
 
 
-
-
-The WRDS credentials are stored by `tidyfinance` in its own configuration file. Run the one-time setup below before the first download. Leave this cell commented out once credentials are saved.
 
 ```{python}
 #| eval: false
@@ -322,7 +318,7 @@ corr_component = (
 beta_ts = (
     corr_component
     .merge(vol_ratio, on=["permno", "month"], how="inner")
-    .assign(beta_ts=lambda x: (x["rho"] * x["vol_ratio"]).clip(lower=0.001))
+    .assign(beta_ts=lambda x: x["rho"] * x["vol_ratio"])
     [["permno", "month", "beta_ts"]]
 )
 
@@ -443,7 +439,7 @@ Beta estimates are lagged by one month before merging with returns to avoid a lo
 
 ## Proposition 1: The Security Market Line
 
-Proposition 1 predicts that the empirical SML is flatter than CAPM implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas.
+Proposition 1 predicts that the empirical SML is flatter than CAPM implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas. In the first pass, a separate OLS regression of excess returns on beta is estimated for each month, yielding a time series of monthly slope and intercept estimates. In the second pass, the reported coefficients are the time-series averages of these monthly estimates, and the associated $t$-statistics are computed by dividing each average by its time-series standard error, $\hat{\sigma} / \sqrt{T}$, where $T$ is the number of monthly observations.
 
 ```{python}
 #| label: compute-fmb
@@ -573,31 +569,36 @@ beta_range["capm_ret"] = beta_range["avg_beta"] * mkt_mean
 
 ## Proposition 2: The BAB Factor
 
-Following Frazzini and Pedersen [@frazzinipedersen2014], at each month $t$ we rank stocks by their estimated beta. We form a low-beta portfolio (below-median beta) and a high-beta portfolio (above-median beta). Portfolio weights are rank-based and sum to one within each leg. The BAB factor return is:
+Following Frazzini and Pedersen [@frazzinipedersen2014], at each month $t$ we rank all stocks by their estimated beta across the full cross-section. Let $z_i = \text{rank}(\hat{\beta}_i)$ and $\bar{z} = \frac{1}{n}\sum_i z_i$ be the average rank. The low-beta portfolio contains all stocks with $z_i < \bar{z}$ and the high-beta portfolio all stocks with $z_i > \bar{z}$. Portfolio weights are:
 
-$$r^{BAB}_t = \frac{1}{\beta^L_t} r^L_t - \frac{1}{\beta^H_t} r^H_t$$
+$$w_i^L = k(\bar{z} - z_i), \quad w_i^H = k(z_i - \bar{z}), \quad k = \frac{2}{\sum_i |z_i - \bar{z}|}$$
 
-where $\beta^L_t$ and $\beta^H_t$ are the value-weighted average betas of the low and high portfolios.
+where $k$ is a single normalizing constant applied to both legs, ensuring each portfolio's weights sum to one and that stocks furthest from the median in beta space receive the largest weight. The BAB factor return is:
+
+$$r^{BAB}_t = \frac{1}{\beta^L_t}(r^L_t - r^f) - \frac{1}{\beta^H_t}(r^H_t - r^f)$$
+
+where $\beta^L_t = \sum_i w_i^L \hat{\beta}_i$ and $\beta^H_t = \sum_i w_i^H \hat{\beta}_i$ are the rank-weighted average betas of the two portfolios.
 
 ```{python}
 #| label: compute-bab
 #| cache: true
-def rank_weights(betas):
-    k = betas.rank()
-    k = k - k.mean()
-    return k / k.abs().sum()
-
 def bab_month(df):
-    median_beta = df["beta"].median()
-    low = df[df["beta"] <= median_beta].copy()
-    high = df[df["beta"] > median_beta].copy()
+    df = df.copy()
+    z = df["beta"].rank()
+    z_bar = z.mean()
+    centered = z - z_bar
+    k = 2 / centered.abs().sum()
+    low_mask = centered < 0
+    high_mask = centered > 0
+    low = df[low_mask].copy()
+    high = df[high_mask].copy()
 
     if low.empty or high.empty:
         return pd.Series({"r_bab": np.nan, "beta_L": np.nan, "beta_H": np.nan,
                           "r_L": np.nan, "r_H": np.nan})
 
-    low["w"] = rank_weights(-low["beta"])
-    high["w"] = rank_weights(high["beta"])
+    low["w"] = (k * (-centered[low_mask])).values
+    high["w"] = (k * centered[high_mask]).values
 
     beta_L = (low["w"] * low["beta"]).sum()
     beta_H = (high["w"] * high["beta"]).sum()
@@ -658,6 +659,12 @@ $$c_{i,d} = \frac{\text{ask}_{i,d} - \text{bid}_{i,d}}{2 \cdot \text{mid}_{i,d}}
 
 where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly spread for each stock is the median of its daily half-spreads within the month, which is robust to days with stale or missing bid/ask quotes. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg. Following Frazzini, Israel, and Moskowitz (2015), we assume full monthly rebalancing, so this is an upper bound on realised costs.
 
+Because the BAB factor scales each portfolio leg by the inverse of its beta, the transaction cost on each leg must be scaled accordingly. The round-trip cost borne per unit of BAB capital from the long leg is:
+
+$$TC^L = \frac{2 \bar{c}^L}{\beta^L}, \qquad TC^H = \frac{2 \bar{c}^H}{\beta^H}$$
+
+where $\bar{c}^L = \sum_i w_i^L c_i$ and $\bar{c}^H = \sum_i w_i^H c_i$ are the portfolio-weighted average monthly half-spreads of the low- and high-beta legs, respectively, and the factor of two reflects the full round-trip (entry and exit). The total net BAB return is then $r^{BAB,\text{net}} = r^{BAB} - TC^L - TC^H$.
+
 ```{python}
 #| label: load-tc-data
 #| cache: true
@@ -691,18 +698,24 @@ monthly_spread = (
 def spread_month(df):
     if df.empty:
         return pd.Series({"spread_L": np.nan, "spread_H": np.nan})
-    median_beta = df["beta"].median()
-    low = df[df["beta"] <= median_beta].copy()
-    high = df[df["beta"] > median_beta].copy()
+    df = df.copy()
+    z = df["beta"].rank()
+    z_bar = z.mean()
+    centered = z - z_bar
+    k = 2 / centered.abs().sum()
+    low_mask = centered < 0
+    high_mask = centered > 0
+    low = df[low_mask].copy()
+    high = df[high_mask].copy()
 
     if low.empty or high.empty:
         return pd.Series({"spread_L": np.nan, "spread_H": np.nan})
 
-    low["w"] = rank_weights(-low["beta"])
-    high["w"] = rank_weights(high["beta"])
+    low["w"] = (k * (-centered[low_mask])).values
+    high["w"] = (k * centered[high_mask]).values
 
-    spread_L = (low["w"].abs() * low["half_spread"]).sum()
-    spread_H = (high["w"].abs() * high["half_spread"]).sum()
+    spread_L = (low["w"] * low["half_spread"]).sum()
+    spread_H = (high["w"] * high["half_spread"]).sum()
     return pd.Series({"spread_L": spread_L, "spread_H": spread_H})
 
 spread_data = (
@@ -757,4 +770,4 @@ tc_summary = pd.DataFrame({
 
 ```
 
-Now we use this to test propositions 1 and 2 with and without transaction costs to see the effect of transaction costs on the performance of the BAB strategy.
+Because reliable CRSP bid-ask data are only available from January 1993 onward, the TC analysis covers a shorter period than the main BAB analysis (January 1963 to December 2025). The gross BAB return over the TC subsample is 5.56% per year, compared to 6.72% over the full sample, so the two figures are not directly comparable.
