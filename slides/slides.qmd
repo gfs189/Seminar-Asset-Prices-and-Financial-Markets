@@ -24,6 +24,7 @@ format:
     height: 720
     margin: 0.08
     highlight-style: github-dark
+    embed-resources: true
 bibliography: ../references.bib
 ---
 
@@ -35,8 +36,8 @@ bibliography: ../references.bib
   <li>Motivation & Research Question</li>
   <li>Theoretical Framework — CAPM & Leverage Constraints</li>
   <li>Propositions 1 & 2 (Frazzini & Pedersen, 2014)</li>
-  <li>Data & Methodology</li>
-  <li>Results — Proposition 1: The Security Market Line</li>
+  <li>Data & Methodology — incl. Transaction Cost Construction</li>
+  <li>Results (So Far) — Proposition 1: The Security Market Line</li>
   <li>Results — Proposition 2: BAB Factor Performance</li>
   <li>Results — Transaction Costs</li>
   <li>Discussion & Conclusion</li>
@@ -234,7 +235,42 @@ Also compute CAPM $\alpha$ for each **beta-sorted decile portfolio**.
 :::
 :::
 
-# Results {.section-slide background="linear-gradient(135deg, #A31D20 0%, #6e1215 100%)"}
+## Transaction Cost Methodology
+
+::: {.columns-custom}
+::: {}
+
+**Step 1 — Estimate the cost per trade**
+
+From CRSP daily data, compute each stock's proportional **bid-ask half-spread**:
+
+$$\text{half-spread}_{i,t} = \frac{\text{ask}_{i,t} - \text{bid}_{i,t}}{2 \times \text{mid}_{i,t}}$$
+
+The **round-trip cost** for a full buy-then-sell is:
+
+$$c_{i,t} = 2 \times \text{half-spread}_{i,t}$$
+
+:::
+::: {}
+
+**Step 2 — Apply costs to portfolio turnover**
+
+Each month, the BAB strategy rebalances both legs. The TC drag on leg $k \in \{L, H\}$ is:
+
+$$TC^k_t = \sum_i \left| \Delta w^k_{i,t} \right| \cdot c_{i,t}$$
+
+where $\Delta w^k_{i,t}$ is the weight change for stock $i$.
+
+::: {.highlight-box}
+**Net BAB return** = Gross BAB return − TC drag (long leg) − TC drag (short leg)
+
+This assumes **full monthly rebalancing** — an upper bound on true turnover.
+:::
+
+:::
+:::
+
+# Results (So Far) {.section-slide background="linear-gradient(135deg, #A31D20 0%, #6e1215 100%)"}
 
 ## Proposition 1: Fama-MacBeth Results
 
