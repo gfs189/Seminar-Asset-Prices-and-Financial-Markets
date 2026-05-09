@@ -5,6 +5,7 @@ author:
   - "Tobias Dines Schlünssen (GFS189)"
   - "Conrad Frederik Kromann (RTL959)"
 date: "June 2, 2026"
+date-format: "D MMMM YYYY"
 institute: "Department of Economics · University of Copenhagen"
 format:
   revealjs:
@@ -26,6 +27,7 @@ format:
     highlight-style: github-dark
     embed-resources: true
 bibliography: ../references.bib
+suppress-bibliography: true
 ---
 
 # Agenda {.section-slide background="linear-gradient(135deg, #A31D20 0%, #6e1215 100%)"}
@@ -38,8 +40,8 @@ bibliography: ../references.bib
   <li>Propositions 1 & 2 (Frazzini & Pedersen, 2014)</li>
   <li>Data & Methodology — incl. Transaction Cost Construction</li>
   <li>Results (So Far) — Proposition 1: The Security Market Line</li>
-  <li>Results — Proposition 2: BAB Factor Performance</li>
-  <li>Results — Transaction Costs</li>
+  <li>Results (So Far) — Proposition 2: BAB Factor Performance</li>
+  <li>Results (So Far) — Transaction Costs</li>
   <li>Discussion & Conclusion</li>
 </ul>
 
@@ -335,7 +337,7 @@ Time-series averages of monthly cross-sectional Fama-MacBeth coefficients. *t*-s
 - **Decile 10** (avg $\beta = 2.10$): $\alpha = -0.82\%$/month, $t = -3.16$
 
 ::: {.result-box}
-Alpha spread (decile 1 → 10): approximately **−1.1 pp/month** — the pattern is monotone and statistically significant across multiple deciles, not just at the extremes.
+Alpha spread (decile 1 → 10): approximately **−1.1 pp/month** — the pattern is broadly declining and statistically significant across multiple deciles, not just at the extremes.
 :::
 :::
 ::: {}
@@ -519,8 +521,6 @@ This is an *upper bound* — realistic implementation costs would be substantial
 :::
 :::
 
----
-
 ## {.center background="linear-gradient(135deg, #1a1a2e 0%, #0f3460 60%, #A31D20 100%)"}
 
 ::: {style="text-align: center; padding: 3rem;"}
@@ -540,7 +540,20 @@ Seminar: Asset Prices and Financial Markets · June 2026
 
 :::
 
-## References {.smaller}
 
-::: {#refs}
-:::
+```{=html}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var titleSlide   = document.getElementById('title-slide');
+  var affiliation  = titleSlide && titleSlide.querySelector('.quarto-title-affiliation');
+  var date         = titleSlide && titleSlide.querySelector('.date');
+  if (affiliation && date) {
+    affiliation.style.textAlign = 'center';
+    affiliation.style.width = '100%';
+    affiliation.style.paddingLeft = '0';
+    affiliation.style.marginTop = '0.6rem';
+    titleSlide.insertBefore(affiliation, date);
+  }
+});
+</script>
+```
