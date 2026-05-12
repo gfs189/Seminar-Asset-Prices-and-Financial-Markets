@@ -1200,7 +1200,7 @@ Discussion &amp; Conclusion
 <p>Data accessed via the <code>tidyfinance</code> Python package through WRDS; Fama-French data from Kenneth French Data Library.</p>
 </div>
 </section>
-<section id="beta-estimation" class="slide level2">
+<section id="beta-estimation" class="slide level2 smaller">
 <h2>Beta Estimation</h2>
 <p>Following <span class="citation" data-cites="frazzinipedersen2014">Frazzini and Pedersen (2014)</span>, beta is estimated in <strong>two components</strong>:</p>
 <div class="columns-custom">
@@ -1218,27 +1218,28 @@ Discussion &amp; Conclusion
 </div>
 </div>
 </section>
-<section id="bab-factor-construction" class="slide level2">
-<h2>BAB Factor Construction</h2>
+<section id="empirical-strategy" class="slide level2 smaller">
+<h2>Empirical Strategy</h2>
 <div class="columns-custom">
 <div>
-<p><strong>Each month:</strong></p>
+<p><strong>BAB Portfolio Construction (each month):</strong></p>
 <ol type="1">
 <li>Sort stocks by <span class="math inline">\(\hat{\beta}^{shrunk}\)</span> into <strong>above-</strong> and <strong>below-median</strong> halves</li>
-<li>Assign <strong>rank weights</strong> within each half — more extreme betas receive more weight (lowest-beta stocks dominate the long leg; highest-beta stocks dominate the short leg)</li>
+<li>Assign <strong>rank weights</strong>: <span class="math inline">\(w_i \propto |z_i - \bar{z}|\)</span> where <span class="math inline">\(z_i\)</span> is the beta rank, scaled to sum to 1 within each leg</li>
 <li>Compute leg betas <span class="math inline">\(\hat{\beta}^L\)</span>, <span class="math inline">\(\hat{\beta}^H\)</span></li>
 <li>Scale both legs to unit beta and compute BAB return</li>
+<li>Risk-free rate <span class="math inline">\(r^f\)</span> = 1-month T-bill rate (Fama-French data library)</li>
 </ol>
 </div>
 <div>
 <p><strong>Testing Proposition 1 — Fama-MacBeth:</strong></p>
 <p>Each month estimate: <span class="math display">\[r^{excess}_{i,t} = \gamma_0 + \gamma_1 \hat{\beta}_{i,t-1} + \varepsilon_{i,t}\]</span></p>
-<p>Time-series average <span class="math inline">\(\bar{\gamma}_1\)</span> should be <strong>near zero</strong> (anomaly present) vs. CAPM prediction of <span class="math inline">\(\bar{\gamma}_1 \approx \bar{r}^{excess}_m\)</span>.</p>
-<p>Also compute CAPM <span class="math inline">\(\alpha\)</span> for each <strong>beta-sorted decile portfolio</strong>.</p>
+<p>Time-series average <span class="math inline">\(\bar{\gamma}_1\)</span> should be <strong>near zero</strong> (anomaly present) vs. CAPM prediction of <span class="math inline">\(\bar{\gamma}_1 \approx \bar{r}^{excess}_m\)</span>. Standard errors are <strong>Newey-West corrected</strong> for autocorrelation.</p>
+<p><strong>Decile alpha analysis:</strong> stocks sorted into 10 beta-sorted portfolios each month; CAPM <span class="math inline">\(\alpha\)</span> estimated via time-series regression for each decile: <span class="math display">\[r^{excess}_{p,t} = \alpha_p + \beta_p r^{excess}_{m,t} + \varepsilon_{p,t}\]</span></p>
 </div>
 </div>
 </section>
-<section id="transaction-cost-methodology" class="slide level2">
+<section id="transaction-cost-methodology" class="slide level2 smaller">
 <h2>Transaction Cost Methodology</h2>
 <div class="columns-custom">
 <div>

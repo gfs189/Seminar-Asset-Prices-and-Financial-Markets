@@ -183,7 +183,7 @@ Increasing in the beta spread and funding constraint tightness $\psi_t$.
 Data accessed via the `tidyfinance` Python package through WRDS; Fama-French data from Kenneth French Data Library.
 :::
 
-## Beta Estimation
+## Beta Estimation {.smaller}
 
 Following @frazzinipedersen2014, beta is estimated in **two components**:
 
@@ -211,17 +211,18 @@ This reduces estimation error for stocks with short histories.
 :::
 :::
 
-## BAB Factor Construction
+## Empirical Strategy {.smaller}
 
 ::: {.columns-custom}
 ::: {}
 
-**Each month:**
+**BAB Portfolio Construction (each month):**
 
 1. Sort stocks by $\hat{\beta}^{shrunk}$ into **above-** and **below-median** halves
-2. Assign **rank weights** within each half — more extreme betas receive more weight (lowest-beta stocks dominate the long leg; highest-beta stocks dominate the short leg)
+2. Assign **rank weights**: $w_i \propto |z_i - \bar{z}|$ where $z_i$ is the beta rank, scaled to sum to 1 within each leg
 3. Compute leg betas $\hat{\beta}^L$, $\hat{\beta}^H$
 4. Scale both legs to unit beta and compute BAB return
+5. Risk-free rate $r^f$ = 1-month T-bill rate (Fama-French data library)
 
 :::
 ::: {}
@@ -230,14 +231,15 @@ This reduces estimation error for stocks with short histories.
 Each month estimate:
 $$r^{excess}_{i,t} = \gamma_0 + \gamma_1 \hat{\beta}_{i,t-1} + \varepsilon_{i,t}$$
 
-Time-series average $\bar{\gamma}_1$ should be **near zero** (anomaly present) vs. CAPM prediction of $\bar{\gamma}_1 \approx \bar{r}^{excess}_m$.
+Time-series average $\bar{\gamma}_1$ should be **near zero** (anomaly present) vs. CAPM prediction of $\bar{\gamma}_1 \approx \bar{r}^{excess}_m$. Standard errors are **Newey-West corrected** for autocorrelation.
 
-Also compute CAPM $\alpha$ for each **beta-sorted decile portfolio**.
+**Decile alpha analysis:** stocks sorted into 10 beta-sorted portfolios each month; CAPM $\alpha$ estimated via time-series regression for each decile:
+$$r^{excess}_{p,t} = \alpha_p + \beta_p r^{excess}_{m,t} + \varepsilon_{p,t}$$
 
 :::
 :::
 
-## Transaction Cost Methodology
+## Transaction Cost Methodology {.smaller}
 
 ::: {.columns-custom}
 ::: {}
