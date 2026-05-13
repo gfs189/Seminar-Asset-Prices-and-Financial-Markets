@@ -9,7 +9,7 @@ date-format: "D MMMM YYYY"
 institute: "Department of Economics · University of Copenhagen"
 format:
   revealjs:
-    theme: [dark, custom.scss]
+    theme: [light, custom.scss]
     slide-number: true
     progress: true
     history: false
@@ -39,9 +39,9 @@ suppress-bibliography: true
   <li>Theoretical Framework — CAPM & Leverage Constraints</li>
   <li>Propositions 1 & 2 (Frazzini & Pedersen, 2014)</li>
   <li>Data & Methodology — incl. Transaction Cost Construction</li>
-  <li>Results (So Far) — Proposition 1: The Security Market Line</li>
-  <li>Results (So Far) — Proposition 2: BAB Factor Performance</li>
-  <li>Results (So Far) — Transaction Costs</li>
+  <li>Results  — Proposition 1: The Security Market Line</li>
+  <li>Results — Proposition 2: BAB Factor Performance</li>
+  <li>Results — Transaction Costs</li>
   <li>Discussion & Conclusion</li>
 </ul>
 
@@ -242,37 +242,35 @@ Also compute CAPM $\alpha$ for each **beta-sorted decile portfolio**.
 ::: {.columns-custom}
 ::: {}
 
-**Step 1 — Estimate the cost per trade**
+**Step 1 — Estimate the monthly cost per stock**
 
-From CRSP daily data, compute each stock's proportional **bid-ask half-spread**:
+From CRSP daily data, compute each stock's daily proportional **bid-ask half-spread**:
 
-$$\text{half-spread}_{i,t} = \frac{\text{ask}_{i,t} - \text{bid}_{i,t}}{2 \times \text{mid}_{i,t}}$$
+$$c_{i,d} = \frac{\text{ask}_{i,d} - \text{bid}_{i,d}}{2 \cdot \text{mid}_{i,d}}$$
 
-The **round-trip cost** for a full buy-then-sell is:
-
-$$c_{i,t} = 2 \times \text{half-spread}_{i,t}$$
+Aggregate to a **monthly cost** by taking the **median** of daily half-spreads within each month — robust to stale or missing quotes.
 
 :::
 ::: {}
 
-**Step 2 — Apply costs to portfolio turnover**
+**Step 2 — Apply costs to each portfolio leg**
 
-Each month, the BAB strategy rebalances both legs. The TC drag on leg $k \in \{L, H\}$ is:
+Assume **full monthly rebalancing** (upper bound on turnover). Compute the rank-weighted average monthly half-spread for each leg:
 
-$$TC^k_t = \sum_i \left| \Delta w^k_{i,t} \right| \cdot c_{i,t}$$
+$$\bar{c}^L = \sum_i w_i^L\, c_i, \qquad \bar{c}^H = \sum_i w_i^H\, c_i$$
 
-where $\Delta w^k_{i,t}$ is the weight change for stock $i$.
+Apply the same beta-inverse scaling as the BAB return — the round-trip cost (×2) per unit of BAB capital is:
+
+$$TC^L = \frac{2\,\bar{c}^L}{\beta^L}, \qquad TC^H = \frac{2\,\bar{c}^H}{\beta^H}$$
 
 ::: {.highlight-box}
-**Net BAB return** = Gross BAB return − TC drag (long leg) − TC drag (short leg)
-
-This assumes **full monthly rebalancing** — an upper bound on true turnover.
+**Net BAB return** $= r^{BAB} - TC^L - TC^H$
 :::
 
 :::
 :::
 
-# Results (So Far) {.section-slide background="linear-gradient(135deg, #A31D20 0%, #6e1215 100%)"}
+# Results {.section-slide background="linear-gradient(135deg, #A31D20 0%, #6e1215 100%)"}
 
 ## Proposition 1: Fama-MacBeth Results
 
@@ -331,9 +329,9 @@ Time-series averages of monthly cross-sectional Fama-MacBeth coefficients. *t*-s
 **Broadly declining alpha across deciles:**
 
 - **Decile 1** (avg $\beta = 0.49$): $\alpha = +0.27\%$/month (significant)
-- **Decile 2**: $\alpha = +0.22\%$/month, $t > 2.4$
-- **Decile 3**: $\alpha = +0.25\%$/month, $t > 3.2$
-- **Decile 6** (avg $\beta \approx 1.0$): $\alpha \approx 0\%$
+- **Decile 2**: $\alpha = +0.22\%$/month, $t = 2.45$
+- **Decile 3**: $\alpha = +0.25\%$/month, $t = 3.21$
+- **Decile 6** (avg $\beta = 1.14$): $\alpha \approx 0\%$
 - **Decile 10** (avg $\beta = 2.10$): $\alpha = -0.82\%$/month, $t = -3.16$
 
 ::: {.result-box}
@@ -388,7 +386,7 @@ The strategy generates meaningful returns over the full sample, with considerabl
 | Avg. Annual TC Drag | | **60.30 pp** |
 
 ::: {.caption}
-TC subsample: January 1993 – December 2025 (start date driven by CRSP bid-ask spread data availability). Round-trip costs from CRSP daily bid-ask half-spreads, assuming full monthly rebalancing.
+TC subsample: January 1993 – December 2025 (CRSP bid-ask data unavailable before 1993). Round-trip costs from CRSP daily bid-ask half-spreads, assuming full monthly rebalancing. The gross BAB of 9.18% (TC subsample) and 8.85% (full sample) cover different periods and are **not directly comparable**.
 :::
 
 ::: {.highlight-box}
@@ -514,8 +512,8 @@ This is an *upper bound* — realistic implementation costs would be substantial
 **Future Research**
 
 - International replication
-- Effective spread estimates & post-decimalization costs
-- Sub-period analysis (pre/post 2001)
+- Survey studies of transaction costs
+- Sub-period analysis (pre/post 2001) - no significant BAB
 - Delisting return corrections
 
 :::
