@@ -4,7 +4,7 @@ subtitle: "Testing Proposition 1 & 2 in American Equity Markets"
 author:
   - "Tobias Dines Schlünssen (GFS189)"
   - "Conrad Frederik Kromann (RTL959)"
-date: "June 2, 2026"
+date: "May 13, 2026"
 date-format: "D MMMM YYYY"
 institute: "Department of Economics · University of Copenhagen"
 format:
@@ -325,7 +325,7 @@ Time-series averages of monthly cross-sectional Fama-MacBeth coefficients. *t*-s
 - The extreme high-beta decile (avg $\hat{\beta} \approx 2.1$) earns clearly *below* its CAPM-predicted return
 
 ::: {.highlight-box}
-**Apparent tension:** The FMB slope (0.14%) is slightly *positive*, yet the decile SML appears to slope *downward*. Both are consistent with the anomaly — Fama-MacBeth weights all stocks equally so moderate-beta stocks dominate the slope, while the decile plot gives the extreme high-beta group disproportionate leverage on the fitted line.
+The FMB slope (0.14%) is slightly *positive* and the decile SML slopes down.
 :::
 
 :::
@@ -340,14 +340,12 @@ Time-series averages of monthly cross-sectional Fama-MacBeth coefficients. *t*-s
 ::: {}
 **Broadly declining alpha across deciles:**
 
-- **Decile 1** (avg $\beta = 0.49$): $\alpha = +0.27\%$/month (significant)
-- **Decile 2**: $\alpha = +0.22\%$/month, $t = 2.45$
-- **Decile 3**: $\alpha = +0.25\%$/month, $t = 3.21$
-- **Decile 6** (avg $\beta = 1.14$): $\alpha \approx 0\%$
-- **Decile 10** (avg $\beta = 2.10$): $\alpha = -0.82\%$/month, $t = -3.16$
+- **Decile 1** $\alpha = +0.27\%$/month
+- **Decile 6** : $\alpha \approx 0\%$
+- **Decile 10** : $\alpha = -0.82\%$/month, $t = -3.16$
 
 ::: {.result-box}
-Alpha spread (decile 1 → 10): approximately **−1.1 pp/month** — the pattern is broadly declining and statistically significant across multiple deciles, not just at the extremes.
+Alpha spread (decile 1 → 10): approximately **−1.1 pp/month**
 :::
 :::
 ::: {}
@@ -385,7 +383,6 @@ Performance statistics for the BAB factor following @frazzinipedersen2014. Mean 
 - Partial retrace during **2000–2010**
 - Recovery and further compounding toward **2025**
 
-The strategy generates meaningful returns over the full sample, with considerable sub-period variation.
 :::
 :::
 
@@ -417,8 +414,6 @@ TC subsample: January 1993 – December 2025 (CRSP bid-ask data unavailable befo
 - @famafrench1992 — beta loses explanatory power once size & book-to-market included
 - @famafrench2004 — CAPM core prediction contradicted by data
 
-Our results **replicate** the core finding of @frazzinipedersen2014 on an extended US sample (1963–2025).
-
 :::
 ::: {}
 ::: {.finding-box}
@@ -428,7 +423,6 @@ Our results **replicate** the core finding of @frazzinipedersen2014 on an extend
 - Alpha spread (decile 1 to 10): ≈ −1.1 pp/month
 - Both economically large and statistically significant at the distribution extremes
 
-Extends @frazzinipedersen2014's sample period by ~13 years with consistent conclusions.
 :::
 :::
 :::
@@ -444,17 +438,13 @@ Extends @frazzinipedersen2014's sample period by ~13 years with consistent concl
 - Full sample (1963–2025): **8.85%** (*t* = 6.08)
 - The anomaly appears **persistent** into the more recent period
 
-@bakerbradleywurgler2011 predict decay as capital flows to exploit the anomaly — our data do **not** strongly support this narrative.
 
 :::
 ::: {}
 **Transaction costs are overstated:**
 
-Our TC estimate is an *extreme upper bound*. @frazziniisraelmoskowitz2015 use proprietary execution data and find effective implementation costs of **tens of basis points** per year — the strategy remains profitable after realistic costs.
+Our TC estimate is an *extreme upper bound*. @frazziniisraelmoskowitz2015 find costs of in the **tens of basis points**.
 
-::: {.highlight-box}
-Our TC result is best read as a **sensitivity analysis**, not a verdict on strategy viability.
-:::
 :::
 :::
 
@@ -470,24 +460,19 @@ Our TC result is best read as a **sensitivity analysis**, not a verdict on strat
 
 **TC methodology:**
 
-- CRSP quoted spreads are wide pre-2001 (⅛ dollar tick)
+- CRSP quoted spreads are wide
 - Full monthly rebalancing → upper bound on turnover
-- Effective spreads ≈ ½ of quoted spreads for large institutions
+- Effective spreads
 
 :::
 ::: {}
 
 **Construction & bias:**
 
-- High-beta stocks more likely to be small, volatile, distressed
+- High-beta stocks more likely to be small, volatile and distressed
 - Delisting return corrections could affect top-decile alpha estimates
 
-**Sub-period analysis:**
-
-- No split by pre/post-decimalization (2001)
-- Growing institutional awareness of BAB post-2014
-
-:::
+::: 
 :::
 
 # Conclusion {.section-slide background="linear-gradient(135deg, #A31D20 0%, #6e1215 100%)"}
@@ -501,7 +486,7 @@ Our TC result is best read as a **sensitivity analysis**, not a verdict on strat
 ::: {.result-box}
 Strong evidence of a **negative beta–alpha relationship** in US equities (1963–2025).
 
-FMB beta slope: 0.14%/month (*t* = 0.75) — far below the CAPM prediction.
+FMB insignificant and small FMB slope (0.14%/month (t=0.75)).
 
 Alpha spread across deciles: ≈ −1.1 pp/month.
 :::
@@ -509,7 +494,7 @@ Alpha spread across deciles: ≈ −1.1 pp/month.
 **Proposition 2**
 
 ::: {.result-box}
-BAB factor earns **8.85% annualised** (SR = 0.79, *t* = 6.08) — strongly supporting positive expected returns from the strategy.
+BAB factor earns **8.85% annualised** (SR = 0.79, *t* = 6.08)
 :::
 :::
 ::: {}
@@ -518,15 +503,15 @@ BAB factor earns **8.85% annualised** (SR = 0.79, *t* = 6.08) — strongly suppo
 ::: {.highlight-box}
 Under full monthly rebalancing with CRSP quoted spreads, TC drag of **60.30 pp/year** renders the net BAB return **−51.12%**.
 
-This is an *upper bound* — realistic implementation costs would be substantially lower [@frazziniisraelmoskowitz2015].
+Frazzini et al (2015), indicate 10 basis point TC
 :::
 
 **Future Research**
 
+- Estimation of TC
+- Delisting problem
+- Sub-period analysis
 - International replication
-- Survey studies of transaction costs
-- Sub-period analysis (pre/post 2001) - no significant BAB
-- Delisting return corrections
 
 :::
 :::
