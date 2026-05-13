@@ -1,0 +1,289 @@
+/*-- scss:defaults --*/
+
+// KU / SAMF colour palette (from Presentation seminar.pptx theme)
+$primary:    #A31D20;   // KU dark red
+$secondary:  #415570;   // steel blue
+$accent:     #197F8E;   // teal
+$dark:       #1a1a2e;   // near-black background
+$light:      #f5f5f5;   // off-white
+$muted:      #6E6E6E;   // medium grey
+
+// Slide backgrounds
+$body-bg:    $dark;
+$body-color: $light;
+
+// Fonts
+$font-family-sans-serif: "Gill Sans", "Trebuchet MS", Arial, sans-serif;
+$presentation-heading-font: "Gill Sans", "Trebuchet MS", Arial, sans-serif;
+$presentation-heading-color: $light;
+
+// Heading sizes
+$presentation-h1-font-size: 2.0em;
+$presentation-h2-font-size: 1.45em;
+$presentation-h3-font-size: 1.15em;
+
+// Link colour
+$link-color: #197F8E;
+
+/*-- scss:rules --*/
+
+// ── Title slide ──────────────────────────────────────────────────────────────
+.reveal .title-slide,
+.reveal .slides section.title-slide {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+  text-align: left;
+  padding: 2.5rem 3rem;
+}
+
+.reveal .title-slide h1.title {
+  color: $light;
+  font-size: 2.2em;
+  font-weight: 700;
+  line-height: 1.15;
+  border-left: 6px solid $primary;
+  padding-left: 0.8rem;
+  margin-bottom: 0.4rem;
+}
+
+.reveal .title-slide p.subtitle {
+  color: #c8d8e8;
+  font-size: 1.1em;
+  font-style: italic;
+  padding-left: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.reveal .title-slide .author,
+.reveal .title-slide .date {
+  color: #9bb0c9;
+  font-size: 0.88em;
+  padding-left: 1rem;
+}
+
+.reveal .title-slide .institute,
+.reveal .quarto-title-block .institute {
+  color: #9bb0c9;
+  font-size: 0.88em;
+  text-align: center !important;
+  width: 100% !important;
+  padding: 0.4rem 0 0 0 !important;
+  display: block;
+}
+
+// Stack authors vertically, left-aligned
+.reveal .quarto-title-block .quarto-title-authors {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0.3rem !important;
+}
+
+.reveal .quarto-title-block .quarto-title-author {
+  width: 100% !important;
+}
+
+// Move institute above the date by using flex ordering on the title block
+.reveal .quarto-title-block {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.reveal .quarto-title-block .quarto-title-authors { order: 1; }
+.reveal .quarto-title-block .institute           { order: 2; }
+.reveal .quarto-title-block .date,
+.reveal .quarto-title-block .quarto-title-meta   { order: 3; }
+
+// ── Section title slides ─────────────────────────────────────────────────────
+.reveal .slide-background.section-slide {
+  background: linear-gradient(135deg, $primary 0%, #6e1215 100%);
+}
+
+.reveal h1 {
+  color: $light;
+  border-bottom: 3px solid $primary;
+  padding-bottom: 0.3rem;
+}
+
+// ── Regular slides ───────────────────────────────────────────────────────────
+.reveal .slides section {
+  background: $dark;
+}
+
+.reveal h2 {
+  color: $light;
+  font-size: 1.4em;
+  font-weight: 600;
+  border-left: 5px solid $primary;
+  padding-left: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.reveal h3 {
+  color: #c8d8e8;
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-top: 0.6rem;
+}
+
+// ── Body text ────────────────────────────────────────────────────────────────
+.reveal p, .reveal li {
+  color: $light;
+  font-size: 0.88em;
+  line-height: 1.55;
+}
+
+.reveal ul, .reveal ol {
+  margin-left: 1.2rem;
+}
+
+.reveal li {
+  margin-bottom: 0.35rem;
+}
+
+// ── Highlight / callout boxes ─────────────────────────────────────────────────
+.highlight-box {
+  background: rgba(163, 29, 32, 0.15);
+  border-left: 4px solid $primary;
+  border-radius: 4px;
+  padding: 0.6rem 0.9rem;
+  margin: 0.6rem 0;
+  font-size: 0.86em;
+}
+
+.result-box {
+  background: rgba(25, 127, 142, 0.15);
+  border-left: 4px solid $accent;
+  border-radius: 4px;
+  padding: 0.6rem 0.9rem;
+  margin: 0.6rem 0;
+  font-size: 0.86em;
+}
+
+.finding-box {
+  background: rgba(65, 85, 112, 0.25);
+  border-left: 4px solid $secondary;
+  border-radius: 4px;
+  padding: 0.6rem 0.9rem;
+  margin: 0.6rem 0;
+  font-size: 0.86em;
+}
+
+// ── Tables ───────────────────────────────────────────────────────────────────
+.reveal table {
+  font-size: 0.80em;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.reveal table th {
+  background: $primary;
+  color: white;
+  padding: 0.4rem 0.7rem;
+  text-align: left;
+  border: none;
+}
+
+.reveal table td {
+  padding: 0.35rem 0.7rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  color: $light;
+}
+
+.reveal table tr:nth-child(even) td {
+  background: rgba(255,255,255,0.05);
+}
+
+// ── Two-column layout ─────────────────────────────────────────────────────────
+.columns-custom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.columns-60-40 {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+// ── Key number callout ────────────────────────────────────────────────────────
+.key-stat {
+  display: inline-block;
+  background: $primary;
+  color: white;
+  border-radius: 6px;
+  padding: 0.15rem 0.5rem;
+  font-weight: 700;
+  font-size: 1.05em;
+}
+
+// ── Footer / slide number ─────────────────────────────────────────────────────
+.reveal .slide-number {
+  color: $muted;
+  font-size: 0.7em;
+}
+
+// ── Horizontal rule ───────────────────────────────────────────────────────────
+.reveal hr {
+  border: none;
+  border-top: 2px solid $primary;
+  margin: 0.5rem 0 0.8rem 0;
+}
+
+// ── Math ──────────────────────────────────────────────────────────────────────
+.reveal .MathJax {
+  color: $light !important;
+}
+
+// ── Agenda list styling ───────────────────────────────────────────────────────
+.agenda-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.agenda-list li {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.8rem;
+  margin-bottom: 0.4rem;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  font-size: 0.9em;
+}
+
+.agenda-list li::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: $primary;
+  margin-right: 0.8rem;
+  flex-shrink: 0;
+}
+
+// ── Tag badges ────────────────────────────────────────────────────────────────
+.badge {
+  display: inline-block;
+  background: $secondary;
+  color: white;
+  border-radius: 3px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.72em;
+  font-weight: 600;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+
+.badge-red   { background: $primary; }
+.badge-teal  { background: $accent; }
+
+// ── Captions ─────────────────────────────────────────────────────────────────
+.caption, figcaption {
+  color: $muted;
+  font-size: 0.72em;
+  font-style: italic;
+  margin-top: 0.3rem;
+}
