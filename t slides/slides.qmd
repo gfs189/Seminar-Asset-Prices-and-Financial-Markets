@@ -47,7 +47,7 @@ suppress-bibliography: true
 
 # Motivation {.section-slide background="linear-gradient(135deg, #A31D20 0%, #6e1215 100%)"}
 
-## The Beta Anomaly
+## The Beta Anomaly {.smaller}
 
 ::: {.columns-custom}
 ::: {}
@@ -55,11 +55,15 @@ suppress-bibliography: true
 
 The Capital Asset Pricing Model predicts a *positive, linear* relationship between beta and expected return:
 
-$$R_i - r_f = \alpha + \beta(R_m - r_f) + \varepsilon$$
+$$E(R_i) - r_f = \beta_i\,(E(R_m) - r_f)$$
 
-- Higher $\beta$ → higher expected return
+Empirically tested via the time-series regression:
+
+$$R_i - r_f = \alpha_i + \beta_i(R_m - r_f) + \varepsilon_i$$
+
+- Higher $\beta_i$ → higher expected return
 - All assets lie on the **Security Market Line (SML)**
-- $\alpha = 0$ for all assets in equilibrium
+- CAPM predicts $\alpha_i = 0$ for all assets in equilibrium
 
 :::
 ::: {}
@@ -141,7 +145,7 @@ $$\alpha^s_t = \psi_t\,(1 - \beta^s_t)$$
 :::
 :::
 
-## Proposition 2: The BAB Factor
+## Proposition 2: The BAB Factor {.smaller}
 
 Let $w^L_t$ be weights on low-beta stocks (return $r^L$) and $w^H_t$ on high-beta stocks (return $r^H$):
 
@@ -169,7 +173,7 @@ Increasing in the beta spread and funding constraint tightness $\psi_t$.
 
 # Data & Methodology {.section-slide background="linear-gradient(135deg, #A31D20 0%, #6e1215 100%)"}
 
-## Data
+## Data {.smaller}
 
 | Dataset | Frequency | Content | Purpose |
 |---|---|---|---|
@@ -178,6 +182,10 @@ Increasing in the beta spread and funding constraint tightness $\psi_t$.
 | Fama-French factors | Monthly & Daily | Risk-free rate, market excess return | Excess returns; correlation (β) |
 
 **Sample:** January 1963 – December 2025 · NYSE, AMEX, NASDAQ
+
+::: {.finding-box}
+**Survivorship bias:** CRSP includes delisted and bankrupt stocks — not just survivors. A dataset of only surviving firms would overstate returns by excluding poorly performing stocks. This is most relevant for the high-beta decile, where stocks are disproportionately small, volatile, and distressed.
+:::
 
 ::: {.caption}
 Data accessed via the `tidyfinance` Python package through WRDS; Fama-French data from Kenneth French Data Library.

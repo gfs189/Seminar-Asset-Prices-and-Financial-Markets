@@ -1049,17 +1049,19 @@ Discussion &amp; Conclusion
 <h1>Motivation</h1>
 
 </section>
-<section id="the-beta-anomaly" class="slide level2">
+<section id="the-beta-anomaly" class="slide level2 smaller">
 <h2>The Beta Anomaly</h2>
 <div class="columns-custom">
 <div>
 <p><strong>CAPM Prediction</strong></p>
 <p>The Capital Asset Pricing Model predicts a <em>positive, linear</em> relationship between beta and expected return:</p>
-<p><span class="math display">\[R_i - r_f = \alpha + \beta(R_m - r_f) + \varepsilon\]</span></p>
+<p><span class="math display">\[E(R_i) - r_f = \beta_i\,(E(R_m) - r_f)\]</span></p>
+<p>Empirically tested via the time-series regression:</p>
+<p><span class="math display">\[R_i - r_f = \alpha_i + \beta_i(R_m - r_f) + \varepsilon_i\]</span></p>
 <ul>
-<li>Higher <span class="math inline">\(\beta\)</span> → higher expected return</li>
+<li>Higher <span class="math inline">\(\beta_i\)</span> → higher expected return</li>
 <li>All assets lie on the <strong>Security Market Line (SML)</strong></li>
-<li><span class="math inline">\(\alpha = 0\)</span> for all assets in equilibrium</li>
+<li>CAPM predicts <span class="math inline">\(\alpha_i = 0\)</span> for all assets in equilibrium</li>
 </ul>
 </div>
 <div>
@@ -1131,7 +1133,7 @@ Discussion &amp; Conclusion
 </div>
 </div>
 </section>
-<section id="proposition-2-the-bab-factor" class="slide level2">
+<section id="proposition-2-the-bab-factor" class="slide level2 smaller">
 <h2>Proposition 2: The BAB Factor</h2>
 <p>Let <span class="math inline">\(w^L_t\)</span> be weights on low-beta stocks (return <span class="math inline">\(r^L\)</span>) and <span class="math inline">\(w^H_t\)</span> on high-beta stocks (return <span class="math inline">\(r^H\)</span>):</p>
 <p><span class="math display">\[r^{BAB}_{t+1} = \frac{1}{\beta^L_t}(r^L_{t+1} - r^f) - \frac{1}{\beta^H_t}(r^H_{t+1} - r^f)\]</span></p>
@@ -1157,7 +1159,7 @@ Discussion &amp; Conclusion
 <h1>Data &amp; Methodology</h1>
 
 </section>
-<section id="data" class="slide level2">
+<section id="data" class="slide level2 smaller">
 <h2>Data</h2>
 <table class="caption-top">
 <colgroup>
@@ -1196,6 +1198,9 @@ Discussion &amp; Conclusion
 </tbody>
 </table>
 <p><strong>Sample:</strong> January 1963 – December 2025 · NYSE, AMEX, NASDAQ</p>
+<div class="finding-box">
+<p><strong>Survivorship bias:</strong> CRSP includes delisted and bankrupt stocks — not just survivors. A dataset of only surviving firms would overstate returns by excluding poorly performing stocks. This is most relevant for the high-beta decile, where stocks are disproportionately small, volatile, and distressed.</p>
+</div>
 <div class="caption">
 <p>Data accessed via the <code>tidyfinance</code> Python package through WRDS; Fama-French data from Kenneth French Data Library.</p>
 </div>
