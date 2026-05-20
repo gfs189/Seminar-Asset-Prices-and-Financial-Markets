@@ -18,8 +18,12 @@ format:
         \usepackage{booktabs}
         \usepackage{xcolor}
         \usepackage{colortbl}
+        \usepackage[section]{placeins}
+        \usepackage{float}
     number-sections: true
     colorlinks: true
+    tbl-pos: "H"
+    fig-pos: "H"
     geometry:
       - top=20mm
       - left=20mm

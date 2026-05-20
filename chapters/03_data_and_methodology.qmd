@@ -352,8 +352,14 @@ analysis_data = (
 
 @tbl-summary reports summary statistics for the key variables. @fig-nstocks shows how many stocks are available each month, establishing the scope of the data, while @fig-beta-dist shows the cross-sectional distribution of estimated betas, which motivates the beta anomaly analysis that follows.
 
+```{=latex}
+\setcounter{table}{5}
+```
+
 ```{python}
 #| label: tbl-summary
+#| tbl-cap: "Summary statistics for the final analysis sample covering January 1963 to December 2025. Excess Return is monthly and expressed as a decimal. Market Cap is in millions of USD. Beta is estimated following Frazzini and Pedersen (2014) as the product of a 60-month rolling correlation and a 252-day rolling volatility ratio, shrunk toward one. Source: CRSP via WRDS and Kenneth French data library."
+#| tbl-pos: "H"
 #| cache: true
 #| output: asis
 summary_stats = (
@@ -433,7 +439,7 @@ We estimate the correlation with the market $\hat{\rho}_i$ from a 60-month rolli
 
 ### Combined Beta Estimate
 
-The two components are combined into a time-series beta $\hat{\beta}_i^{ts} = \hat{\rho}_i \cdot (\hat{\sigma}_i / \hat{\sigma}_m)$, which is then shrunk toward the cross-sectional mean of one using Vasicek (1973) shrinkage with weights $(0.6, 0.4)$ as in Frazzini and Pedersen [@frazzinipedersen2014]:
+The two components are combined into a time-series beta $\hat{\beta}_i^{ts} = \hat{\rho}_i \cdot (\hat{\sigma}_i / \hat{\sigma}_m)$, which is then shrunk toward the cross-sectional mean of one using Vasicek [-@vasicek1973] shrinkage with weights $(0.6, 0.4)$ as in Frazzini and Pedersen [@frazzinipedersen2014]:
 
 $$\hat{\beta}_i = 0.6 \cdot \hat{\beta}_i^{ts} + 0.4 \cdot 1$$
 
