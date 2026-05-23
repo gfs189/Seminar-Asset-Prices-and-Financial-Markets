@@ -12,12 +12,8 @@ This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pede
 | CRSP stock data | Daily | Excess returns, bid-ask prices | Volatility component of beta; proportional half-spreads for transaction costs |
 | Fama-French factors | Monthly & daily | Risk-free rate, market excess return | Excess return computation; correlation component of beta |
 
-: Data sources {#tbl-data}
+: *Data sources used in the analysis. CRSP data is accessed via WRDS through the `tidyfinance` Python package. Fama-French factors are downloaded from the Kenneth French data library. All data covers January 1963 to December 2025.* {#tbl-data}
 
-```{=latex}
-\vspace{1mm}
-\noindent{\footnotesize\textit{Note: CRSP data is accessed via WRDS through the \texttt{tidyfinance} Python package. Fama-French factors are downloaded from the Kenneth French data library. All data covers January 1963 to December 2025.}}
-```
 
 
 
@@ -382,10 +378,6 @@ print(tabulate(
 ))
 ```
 
-```{=latex}
-\vspace{1mm}
-\noindent{\footnotesize\textit{Note: Summary statistics for the final analysis sample covering January 1963 to December 2025. Excess Return is monthly and expressed as a decimal. Market Cap is in millions of USD. Beta is estimated following Frazzini and Pedersen (2014) as the product of a 60-month rolling correlation and a 252-day rolling volatility ratio, shrunk toward one. Source: CRSP via WRDS and Kenneth French data library.}}
-```
 
 ```{python}
 #| label: fig-nstocks
@@ -439,7 +431,7 @@ We estimate the correlation with the market $\hat{\rho}_i$ from a 60-month rolli
 
 ### Combined Beta Estimate
 
-The two components are combined into a time-series beta $\hat{\beta}_i^{ts} = \hat{\rho}_i \cdot (\hat{\sigma}_i / \hat{\sigma}_m)$, which is then shrunk toward the cross-sectional mean of one using Vasicek [-@vasicek1973] shrinkage with weights $(0.6, 0.4)$ as in Frazzini and Pedersen [@frazzinipedersen2014]:
+The two components are combined into a time-series beta $\hat{\beta}_i^{ts} = \hat{\rho}_i \cdot (\hat{\sigma}_i / \hat{\sigma}_m)$, which is then shrunk toward the cross-sectional mean of one using Vasicek shrinkage [@vasicek1973] with weights $(0.6, 0.4)$ as in Frazzini and Pedersen [@frazzinipedersen2014]:
 
 $$\hat{\beta}_i = 0.6 \cdot \hat{\beta}_i^{ts} + 0.4 \cdot 1$$
 

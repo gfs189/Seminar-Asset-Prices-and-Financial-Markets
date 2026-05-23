@@ -20,6 +20,8 @@ format:
         \usepackage{colortbl}
         \usepackage[section]{placeins}
         \usepackage{float}
+        \usepackage{caption}
+        \captionsetup[table]{font={small,it},labelfont={small,bf,it},skip=4pt}
     number-sections: true
     colorlinks: true
     tbl-pos: "H"

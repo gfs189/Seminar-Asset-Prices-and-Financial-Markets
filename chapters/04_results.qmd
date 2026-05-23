@@ -23,10 +23,6 @@ print(tabulate(
 ))
 ```
 
-```{=latex}
-\vspace{1mm}
-\noindent{\footnotesize\textit{Note: Time-series averages of monthly cross-sectional Fama-MacBeth regression coefficients of excess returns on lagged beta. The mean is expressed in percent per month. $t$-statistics are computed from the time-series standard error of the monthly estimates. Sample: US equities, January 1963 to December 2025.}}
-```
 
 ```{=latex}
 \FloatBarrier
@@ -68,10 +64,6 @@ lines += [r"\bottomrule", r"\end{tabular}"]
 print("\n".join(lines))
 ```
 
-```{=latex}
-\vspace{1mm}
-\noindent{\footnotesize\textit{Note: Value-weighted CAPM alpha for each beta-decile portfolio, estimated from time-series regressions of portfolio excess returns on the market excess return. Deciles are formed monthly by sorting all stocks on their lagged Vasicek-shrunk beta estimate. Green shading indicates positive alpha; red shading indicates negative alpha. Intensity is proportional to the magnitude of the alpha. Sample: US equities, January 1963 to December 2025.}}
-```
 
 ```{python}
 #| label: fig-sml-results
@@ -133,10 +125,6 @@ print(tabulate(
 ))
 ```
 
-```{=latex}
-\vspace{1mm}
-\noindent{\footnotesize\textit{Note: Performance statistics for the BAB factor constructed following Frazzini and Pedersen (2014). Mean return and standard deviation are annualised by multiplying monthly values by 12 and $\sqrt{12}$, respectively. The Sharpe ratio is the ratio of annualised mean to annualised standard deviation. The $t$-statistic tests whether the mean monthly return differs from zero. Sample: US equities, January 1963 to December 2025.}}
-```
 
 ```{python}
 #| label: fig-bab-cumret-results
@@ -173,7 +161,3 @@ print(tabulate(
 ))
 ```
 
-```{=latex}
-\vspace{1mm}
-\noindent{\footnotesize\textit{Note: Gross and net annualised BAB returns over the transaction cost subsample (January 1993 to December 2025). Transaction costs are estimated from CRSP daily bid-ask half-spreads, assuming full monthly rebalancing. Net BAB deducts the round-trip cost on both legs of the portfolio. Avg annual TC drag is the mean annual cost (no $t$-statistic reported). $t$-statistics test whether the mean monthly return differs from zero.}}
-```
