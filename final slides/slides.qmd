@@ -1,6 +1,6 @@
 ---
 title: "Betting Against Beta"
-subtitle: "Testing Proposition 1 & 2 in American Equity Markets"
+subtitle: "A study of proposition 1 & 2 in American Equity Markets"
 author:
   - "Tobias Dines Schlünssen (GFS189)"
   - "Conrad Frederik Kromann (RTL959)"
@@ -39,9 +39,9 @@ suppress-bibliography: true
   <li>Theoretical Framework — CAPM & Leverage Constraints</li>
   <li>Propositions 1 & 2 (Frazzini & Pedersen, 2014)</li>
   <li>Data & Methodology — incl. Transaction Cost Construction</li>
-  <li>Results (So Far) — Proposition 1: The Security Market Line</li>
-  <li>Results (So Far) — Proposition 2: BAB Factor Performance</li>
-  <li>Results (So Far) — Transaction Costs</li>
+  <li>Results — Proposition 1: The Security Market Line</li>
+  <li>Results — Proposition 2: BAB Factor Performance</li>
+  <li>Results — Transaction Costs</li>
   <li>Discussion & Conclusion</li>
 </ul>
 
@@ -462,7 +462,6 @@ Our TC estimate is an *extreme upper bound*. @frazziniisraelmoskowitz2015 find c
 
 - CRSP quoted spreads are wide
 - Full monthly rebalancing → upper bound on turnover
-- Effective spreads
 
 :::
 ::: {}
