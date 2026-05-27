@@ -17,6 +17,7 @@ data/processed/
 
 # Jupyter
 .ipynb_checkpoints/
+.jupyter_cache/
 
 # Credentials
 config.yaml
