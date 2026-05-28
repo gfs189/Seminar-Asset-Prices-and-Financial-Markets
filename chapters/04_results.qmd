@@ -142,6 +142,119 @@ print(tabulate(
 \FloatBarrier
 ```
 
+```{python}
+#| label: compute-bab-legs
+#| cache: true
+bab_valid = bab_returns.dropna(subset=["r_bab"])
+avg_lev_long = (1 / bab_valid["beta_L"].abs()).mean()
+avg_lev_short = (1 / bab_valid["beta_H"].abs()).mean()
+
+bab_legs = (
+    bab_valid
+    .assign(
+        cum_bab=lambda x: (1 + x["r_bab"]).cumprod(),
+        cum_long=lambda x: (1 + x["r_L"] / x["beta_L"].abs()).cumprod(),
+        cum_short=lambda x: (1 + -(x["r_H"] / x["beta_H"].abs())).cumprod(),
+        date=lambda x: x["month"].astype("datetime64[ns]")
+    )
+)
+
+bab_legs_melt = pd.melt(
+    bab_legs[["date", "cum_bab", "cum_long", "cum_short"]],
+    id_vars="date",
+    value_vars=["cum_bab", "cum_long", "cum_short"],
+    var_name="series",
+    value_name="cum_ret"
+).assign(
+    series=lambda x: x["series"].map({
+        "cum_bab": "BAB total",
+        "cum_long": "Long leg",
+        "cum_short": "Short leg"
+    })
+)
+```
+
+The strong cumulative returns in @fig-bab-cumret-results are achieved with embedded leverage. The long leg scales returns by $1/\beta^L$, and since the low-beta portfolio has $\beta^L < 1$, the long side invests on margin. Over our sample the average leverage multiple on the long leg is `{python} f"{avg_lev_long:.2f}"` — meaning every \$1 of BAB capital controls roughly \$`{python} f"{avg_lev_long:.2f}"` of low-beta exposure — while the short leg is de-levered to a scaling factor of `{python} f"{avg_lev_short:.2f}"`. The impressive compounding visible in the figure therefore partly reflects this structural leverage, and returns would be materially lower if the long leg were held unlevered.
+
+@fig-bab-legs decomposes the cumulative return into its long and short leg contributions separately, clarifying which side drives performance and when.
+
+```{python}
+#| label: fig-bab-legs
+#| fig-cap: "Cumulative return decomposition of the BAB factor by leg. The long leg compounds $(1 + r^L_e/\\beta^L)$ and the short leg compounds $(1 - r^H_e/\\beta^H)$, each starting from \\$1. A rising short leg indicates the de-levered short position in high-beta stocks contributed positively. The BAB total combines both. Sample: US equities, January 1963 to December 2025."
+(
+    ggplot(bab_legs_melt, aes(x="date", y="cum_ret", color="series", linetype="series"))
+    + geom_line(size=0.8)
+    + scale_x_datetime(date_breaks="10 years", date_labels="%Y")
+    + scale_y_log10()
+    + scale_color_manual(values={
+        "BAB total": "steelblue",
+        "Long leg": "#2ca02c",
+        "Short leg": "#d62728"
+    })
+    + scale_linetype_manual(values={
+        "BAB total": "solid",
+        "Long leg": "dashed",
+        "Short leg": "dotted"
+    })
+    + labs(x="Date", y="Cumulative Return (\\$1 Invested, log scale)", color="", linetype="")
+    + theme_minimal()
+    + theme(legend_position="bottom")
+)
+```
+
+@tbl-bab-subperiod decomposes BAB performance across four sub-periods to examine when the strategy performs and when it falters. The periods reflect structural transitions in the data: the pre-1990 early period; the strong 1990s bull market; the 2001–2009 decade encompassing the dot-com crash and the global financial crisis; and the post-crisis period from 2010 onward.
+
+```{python}
+#| label: compute-bab-subperiod
+#| cache: true
+def subperiod_stats(r, label):
+    r = r.dropna()
+    n = len(r)
+    ann_mean = r.mean() * 12
+    ann_std = r.std() * np.sqrt(12)
+    sharpe = ann_mean / ann_std if ann_std > 0 else np.nan
+    t = r.mean() / (r.std() / np.sqrt(n)) if n > 1 else np.nan
+    return pd.Series({"Period": label, "Ann. Mean": ann_mean,
+                      "Ann. Std": ann_std, "Sharpe": sharpe,
+                      "t-stat": t, "N": int(n)})
+
+bab_ts = bab_returns.dropna(subset=["r_bab"]).copy()
+bab_ts["year"] = pd.DatetimeIndex(bab_ts["month"]).year
+
+period_masks = [
+    (bab_ts["year"] < 1990, "1963--1989"),
+    ((bab_ts["year"] >= 1990) & (bab_ts["year"] < 2001), "1990--2000"),
+    ((bab_ts["year"] >= 2001) & (bab_ts["year"] < 2010), "2001--2009"),
+    (bab_ts["year"] >= 2010, "2010--2025"),
+]
+
+subperiod_df = pd.DataFrame([
+    subperiod_stats(bab_ts.loc[mask, "r_bab"], label)
+    for mask, label in period_masks
+]).set_index("Period")
+```
+
+```{python}
+#| label: tbl-bab-subperiod
+#| tbl-cap: "BAB factor performance by sub-period. Ann.~Mean and Ann.~Std are annualised (multiplied by 12 and $\\sqrt{12}$). Sharpe is the ratio of annualised mean to annualised standard deviation. The $t$-statistic tests whether the mean monthly return differs from zero. $N$ is the number of months in each sub-period."
+#| tbl-pos: "H"
+#| output: asis
+_sp_display = subperiod_df[["Ann. Mean", "Ann. Std", "Sharpe", "t-stat", "N"]].copy()
+_sp_display[["Ann. Mean", "Ann. Std", "Sharpe", "t-stat"]] = _sp_display[["Ann. Mean", "Ann. Std", "Sharpe", "t-stat"]].round(4)
+_sp_display["N"] = _sp_display["N"].astype(int)
+print(tabulate(
+    _sp_display,
+    headers=["", "Ann. Mean", "Ann. Std", "Sharpe", "$t$-stat", "$N$"],
+    tablefmt="latex_booktabs",
+    floatfmt=".4f",
+    intfmt="d"
+))
+```
+
+```{=latex}
+\FloatBarrier
+```
+
 ## Transaction Costs
 
 While the gross BAB factor earns positive returns, a real-world investor must also bear the transaction costs of monthly rebalancing. To assess this, we estimate round-trip costs from daily CRSP bid-ask spreads and apply them to the turnover of each portfolio leg. The results, reported below, reveal a dramatic impact of trading frictions. Over the subsample for which transaction cost data are available, the gross BAB strategy earns an annualised mean return of 9.18% (t$=$3.94), but after deducting estimated transaction costs the net return falls to $-$51.12% per year (t$=$−13.98). The average annual transaction cost drag amounts to 60.30 percentage points, far exceeding the gross return. This implies that, under the assumption of full monthly rebalancing, the BAB strategy is entirely non-viable after accounting for realistic trading frictions. The result should be interpreted as an upper bound on actual transaction costs, since in practice investors would rebalance less frequently and only trade when the cost savings exceed the friction. Notably, the estimated annual TC drag of 60.30 percentage points exceeds even the full-sample gross BAB return of 8.85%, meaning the strategy would be non-viable under these cost assumptions regardless of which sample period is used to measure gross returns. Nonetheless, the result highlights that the gross profitability documented in section 4.2 is highly sensitive to implementation costs, particularly given the wide bid-ask spreads prevalent in CRSP data for earlier decades prior to market decimalization.
