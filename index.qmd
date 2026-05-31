@@ -15,8 +15,8 @@ date-format: "D MMMM YYYY"
   Faculty:            & Faculty of Social Sciences (SAMF) \\[1ex]
   Author(s):          & Tobias Dines Schlünssen (GFS189)\\
                         & Conrad Frederik Kromann (RTL959)\\[1ex]
-  Title and subtitle: & Betting against beta\\
-                        &- A study of proposition 1 and 2 in american equity markets \\[1ex]
+  Title and subtitle: & Betting Against Beta\\
+                        &- A Study of Proposition 1 and 2 in American Equity Markets \\[1ex]
   Description:        & Testing for beta anomaly and performance of BAB strategy with transaction costs on US-equities. \\[1ex]
   Advisor:            & Jacob Lundbeck Serup\\[1ex]
   Date:               & June 2nd, 2026 \\

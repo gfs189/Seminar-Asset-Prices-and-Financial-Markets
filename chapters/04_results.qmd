@@ -1,17 +1,50 @@
 # Results
 In this chapter, we present the main results of our analysis. First we showcase the prevalence of the beta anomaly by testing proposition 1 and then we present the performance of the BAB-portfolio to test proposition 2. Lastly, we present the results of our extension of proposition 2 by introducing transaction costs into our analysis.
 
+```{python}
+#| label: compute-text-vars
+#| cache: true
+
+# FMB
+fmb_int_mean  = fmb_summary.loc["intercept",  "mean"] * 100
+fmb_int_t     = fmb_summary.loc["intercept",  "t_stat"]
+fmb_beta_mean = fmb_summary.loc["beta_coef",  "mean"] * 100
+fmb_beta_t    = fmb_summary.loc["beta_coef",  "t_stat"]
+
+# Decile alphas
+_d     = decile_alphas.sort_values("beta_decile").set_index("beta_decile")
+d1_beta  = _d.loc[1,  "avg_beta"]; d1_a  = _d.loc[1,  "alpha"] * 100; d1_t  = _d.loc[1,  "alpha_t"]
+d2_a     = _d.loc[2,  "alpha"] * 100; d2_t  = _d.loc[2,  "alpha_t"]
+d3_a     = _d.loc[3,  "alpha"] * 100; d3_t  = _d.loc[3,  "alpha_t"]
+d6_a     = _d.loc[6,  "alpha"] * 100; d6_t  = _d.loc[6,  "alpha_t"]
+d9_beta  = _d.loc[9,  "avg_beta"]; d9_a  = _d.loc[9,  "alpha"] * 100; d9_t  = _d.loc[9,  "alpha_t"]
+d10_beta = _d.loc[10, "avg_beta"]; d10_a = _d.loc[10, "alpha"] * 100; d10_t = _d.loc[10, "alpha_t"]
+
+# BAB
+bab_mean_pct = bab_summary.loc["Ann. Mean Return", "BAB Factor"] * 100
+bab_std_pct  = bab_summary.loc["Ann. Std Dev",     "BAB Factor"] * 100
+bab_sharpe   = bab_summary.loc["Sharpe Ratio",     "BAB Factor"]
+bab_tstat    = bab_summary.loc["t-statistic",      "BAB Factor"]
+
+# TC
+tc_gross_pct = tc_summary.loc["Ann. mean return", "Gross BAB"] * 100
+tc_gross_t   = tc_summary.loc["t-statistic",      "Gross BAB"]
+tc_net_pct   = tc_summary.loc["Ann. mean return", "Net BAB (after TC)"] * 100
+tc_net_t     = tc_summary.loc["t-statistic",      "Net BAB (after TC)"]
+tc_drag_pct  = tc_summary.loc["Ann. mean return", "Avg annual TC drag"] * 100
+```
+
 ## Proposition 1: The Security Market Line
 
-To test proposition 1 we run Fama-MacBeth cross-sectional regressions of monthly excess returns on lagged betas. The results are presented below. The intercept is positive and highly statistically significant with a mean of 0.79% per month and a t-statistic of 5.89, indicating that there is a substantial return that is unrelated to market beta. More central to proposition 1, the slope coefficient on beta is 0.14% per month with a t-statistic of only 0.75, which is statistically indistinguishable from zero. Under the CAPM, this slope should equal the market excess return, which over our sample averages considerably higher. The near-zero and insignificant beta coefficient therefore indicates that the cross-sectional compensation for bearing systematic risk is far smaller than the CAPM predicts, consistent with a flatter-than-predicted security market line and with the beta anomaly. We note that the empirical SML plotted below appears to slope slightly downward, while the Fama-MacBeth coefficient is slightly positive. This apparent tension reflects different weighting: Fama-MacBeth weights all individual stocks equally within each month, so the moderate-beta stocks that constitute the bulk of the cross-section determine the average slope. The decile-based SML, by contrast, fits a line through ten equally-weighted group averages, giving the extreme high-beta decile (average beta ≈ 2.1) disproportionate leverage on the fitted slope. Both results are fully consistent with the beta anomaly and proposition 1: the empirical compensation for beta is economically negligible and statistically indistinguishable from zero, far below the CAPM prediction.
+To test proposition 1 we run Fama-MacBeth cross-sectional regressions of monthly excess returns on lagged betas. The results are presented below. The intercept is positive and highly statistically significant with a mean of `{python} f"{fmb_int_mean:.2f}"`% per month and a t-statistic of `{python} f"{fmb_int_t:.2f}"`, indicating that there is a substantial return that is unrelated to market beta. More central to proposition 1, the slope coefficient on beta is `{python} f"{fmb_beta_mean:.2f}"`% per month with a t-statistic of only `{python} f"{fmb_beta_t:.2f}"`, which is statistically indistinguishable from zero. Under the CAPM, this slope should equal the market excess return, which over our sample averages considerably higher. The near-zero and insignificant beta coefficient therefore indicates that the cross-sectional compensation for bearing systematic risk is far smaller than the CAPM predicts, consistent with a flatter-than-predicted security market line and with the beta anomaly. We note that the Fama-MacBeth slope of `{python} f"{fmb_beta_mean:.2f}"`% per month is only marginally negative, whereas the empirical SML plotted below appears to slope more clearly downward. This difference in magnitude reflects different weighting: Fama-MacBeth weights all individual stocks equally within each month, so the large mass of moderate-beta stocks that constitute the bulk of the cross-section anchors the average slope close to zero. The decile-based SML, by contrast, fits a line through ten equally-weighted group averages, giving the extreme high-beta decile (average beta ≈ `{python} f"{d10_beta:.1f}"`) disproportionate leverage on the fitted slope and pulling it further negative. Both results are fully consistent with the beta anomaly and proposition 1: the empirical compensation for beta is economically negligible and statistically indistinguishable from zero, far below the CAPM prediction.
 
 ```{python}
 #| label: tbl-fmb-results
-#| tbl-cap: "Fama-MacBeth regression results. Time-series averages of monthly cross-sectional coefficients of excess returns on lagged beta. The mean is expressed in percent per month. $t$-statistics are computed from the time-series standard error of the monthly estimates. Sample: US equities, January 1963 to December 2025."
+#| tbl-cap: "Fama-MacBeth regression results. Time-series averages of monthly cross-sectional coefficients of excess returns on lagged beta. The mean is expressed in percent per month. $t$-statistics use Newey-West standard errors with four lags. Sample: US equities, January 1963 to December 2025."
 #| tbl-pos: "H"
 #| output: asis
 fmb_display = pd.DataFrame({
-    "Mean (\\%/month)": (fmb_summary["mean"] * 100).round(4),
+    "Mean (\\%/month)": (fmb_summary["mean"] * 100).round(2),
     "$t$-statistic": fmb_summary["t_stat"].round(2)
 })
 fmb_display.index = ["Intercept", "Beta"]
@@ -19,7 +52,7 @@ print(tabulate(
     fmb_display,
     headers=["", "Mean (\\%/month)", "$t$-statistic"],
     tablefmt="latex_booktabs",
-    floatfmt=".4f"
+    floatfmt=".2f"
 ))
 ```
 
@@ -30,7 +63,7 @@ print(tabulate(
 
 ### Beta-Sorted Portfolio Alphas
 
-The Fama-MacBeth results are complemented by an analysis of CAPM alphas across beta-sorted decile portfolios. Sorting all stocks into ten groups by their estimated beta and computing each decile's average monthly CAPM alpha reveals a striking monotone pattern. Low-beta deciles earn positive and statistically significant alphas: decile 1 (average beta of 0.49) earns 0.27% per month, while deciles 2 and 3 earn 0.22% and 0.25% per month, both significant at conventional levels with t-statistics above 2.4 and 3.2, respectively. Moving up the beta distribution, alphas decline steadily. Decile 6 is essentially zero (-0.01%, t=−0.20), and the three highest-beta deciles earn negative and increasingly significant alphas. Decile 9 (average beta 1.64) earns -0.46% per month (t=−2.63), and the top decile (average beta 2.10) earns -0.82% per month (t=−3.16). This monotone decline in alpha across the beta distribution is precisely what proposition 1 predicts. The two panels below visualise this result: the upper panel plots the empirical security market line (solid blue) against the CAPM prediction (red dashed), showing that the empirical line is clearly flatter; the lower panel displays the CAPM alpha for each decile, illustrating the transition from positive alphas at the low end to large negative alphas at the high end.
+The Fama-MacBeth results are complemented by an analysis of CAPM alphas across beta-sorted decile portfolios. Sorting all stocks into ten groups by their estimated beta and computing each decile's average monthly CAPM alpha reveals a striking monotone pattern. Low-beta deciles earn positive and statistically significant alphas: decile 1 (average beta of `{python} f"{d1_beta:.2f}"`) earns `{python} f"{d1_a:.2f}"`% per month, while deciles 2 and 3 earn `{python} f"{d2_a:.2f}"`% and `{python} f"{d3_a:.2f}"`% per month, both significant at conventional levels with t-statistics of `{python} f"{d2_t:.2f}"` and `{python} f"{d3_t:.2f}"`, respectively. Moving up the beta distribution, alphas decline steadily. Decile 6 is essentially zero (`{python} f"{d6_a:.2f}"`%, t=`{python} f"{d6_t:.2f}"`), and the three highest-beta deciles earn negative and increasingly significant alphas. Decile 9 (average beta `{python} f"{d9_beta:.2f}"`) earns `{python} f"{d9_a:.2f}"`% per month (t=`{python} f"{d9_t:.2f}"`), and the top decile (average beta `{python} f"{d10_beta:.2f}"`) earns `{python} f"{d10_a:.2f}"`% per month (t=`{python} f"{d10_t:.2f}"`). This monotone decline in alpha across the beta distribution is precisely what proposition 1 predicts. The two panels below visualise this result: the upper panel plots the empirical security market line (solid blue) against the CAPM prediction (red dashed), showing that the empirical line is clearly flatter; the lower panel displays the CAPM alpha for each decile, illustrating the transition from positive alphas at the low end to large negative alphas at the high end.
 
 ```{python}
 #| label: tbl-decile-alphas
@@ -109,7 +142,7 @@ print("\n".join(lines))
 
 ## Proposition 2: The BAB Factor
 
-Having established the presence of the beta anomaly, we now turn to proposition 2 and examine whether a BAB portfolio that exploits this anomaly generates positive excess returns. Following Frazzini and Pedersen (2014), we construct the BAB factor each month by going long a leveraged portfolio of below-median-beta stocks and short a de-leveraged portfolio of above-median-beta stocks, with both legs scaled to a beta of one. The performance statistics are reported below. The BAB factor earns an annualised mean return of 8.85% with an annualised standard deviation of 11.26%, yielding a Sharpe ratio of 0.79. The associated t-statistic of 6.08 indicates that the positive mean return is highly statistically significant, providing strong support for proposition 2. The cumulative return chart below illustrates the time-series behaviour of the strategy: starting from $1 in the early 1960s, the portfolio grows substantially through the 1990s, partially retraces during 2000–2010, before recovering and compounding further toward the end of the sample. The strategy thus generates meaningful returns over the full sample period, albeit with considerable variation across sub-periods.
+Having established the presence of the beta anomaly, we now turn to proposition 2 and examine whether a BAB portfolio that exploits this anomaly generates positive excess returns. Following Frazzini and Pedersen (2014), we construct the BAB factor each month by going long a leveraged portfolio of below-median-beta stocks and short a de-leveraged portfolio of above-median-beta stocks, with both legs scaled to a beta of one. The performance statistics are reported below. The BAB factor earns an annualised mean return of `{python} f"{bab_mean_pct:.2f}"`% with an annualised standard deviation of `{python} f"{bab_std_pct:.2f}"`%, yielding a Sharpe ratio of `{python} f"{bab_sharpe:.2f}"`. The associated t-statistic of `{python} f"{bab_tstat:.2f}"` indicates that the positive mean return is highly statistically significant, providing strong support for proposition 2. The cumulative return chart below illustrates the time-series behaviour of the strategy: starting from $1 in the early 1960s, the portfolio grows substantially through the 1990s, partially retraces during 2000–2010, before recovering and compounding further toward the end of the sample. The strategy thus generates meaningful returns over the full sample period, albeit with considerable variation across sub-periods.
 
 ```{python}
 #| label: tbl-bab-results
@@ -125,6 +158,28 @@ print(tabulate(
 ))
 ```
 
+
+```{python}
+#| label: compute-bab-neutrality
+#| cache: true
+bab_market = (
+    bab_returns
+    .dropna(subset=["r_bab"])
+    .merge(
+        factors_ff3_monthly[["date", "mkt_excess"]].assign(
+            month=lambda x: x["date"].values.astype("datetime64[M]")
+        ),
+        on="month", how="left"
+    )
+)
+m_neutral = smf.ols("r_bab ~ mkt_excess", data=bab_market).fit()
+bab_mkt_beta   = m_neutral.params["mkt_excess"]
+bab_mkt_beta_t = m_neutral.tvalues["mkt_excess"]
+bab_capm_alpha   = m_neutral.params["Intercept"] * 12 * 100
+bab_capm_alpha_t = m_neutral.tvalues["Intercept"]
+```
+
+The BAB factor is constructed to be market-neutral, but estimation error in betas means this only holds in expectation. As an empirical check, we regress the monthly BAB return on the market excess return. The realised market beta is `{python} f"{bab_mkt_beta:.3f}"` (t = `{python} f"{bab_mkt_beta_t:.2f}"`), confirming that the strategy carries negligible systematic market exposure. The annualised CAPM alpha is `{python} f"{bab_capm_alpha:.2f}"`% (t = `{python} f"{bab_capm_alpha_t:.2f}"`), closely matching the mean return in @tbl-bab-results as expected when market beta is near zero.
 
 ```{python}
 #| label: fig-bab-cumret-results
@@ -255,9 +310,10 @@ print(tabulate(
 \FloatBarrier
 ```
 
+
 ## Transaction Costs
 
-While the gross BAB factor earns positive returns, a real-world investor must also bear the transaction costs of monthly rebalancing. To assess this, we estimate round-trip costs from daily CRSP bid-ask spreads and apply them to the turnover of each portfolio leg. The results, reported below, reveal a dramatic impact of trading frictions. Over the subsample for which transaction cost data are available, the gross BAB strategy earns an annualised mean return of 9.18% (t$=$3.94), but after deducting estimated transaction costs the net return falls to $-$51.12% per year (t$=$−13.98). The average annual transaction cost drag amounts to 60.30 percentage points, far exceeding the gross return. This implies that, under the assumption of full monthly rebalancing, the BAB strategy is entirely non-viable after accounting for realistic trading frictions. The result should be interpreted as an upper bound on actual transaction costs, since in practice investors would rebalance less frequently and only trade when the cost savings exceed the friction. Notably, the estimated annual TC drag of 60.30 percentage points exceeds even the full-sample gross BAB return of 8.85%, meaning the strategy would be non-viable under these cost assumptions regardless of which sample period is used to measure gross returns. Nonetheless, the result highlights that the gross profitability documented in section 4.2 is highly sensitive to implementation costs, particularly given the wide bid-ask spreads prevalent in CRSP data for earlier decades prior to market decimalization.
+While the gross BAB factor earns positive returns, a real-world investor must also bear the transaction costs of monthly rebalancing. To assess this, we estimate round-trip costs from daily CRSP bid-ask spreads and apply them to the turnover of each portfolio leg. The results, reported below, reveal a dramatic impact of trading frictions. Over the subsample for which transaction cost data are available, the gross BAB strategy earns an annualised mean return of `{python} f"{tc_gross_pct:.2f}"`% (t$=$ `{python} f"{tc_gross_t:.2f}"`), but after deducting estimated transaction costs the net return falls to `{python} f"{tc_net_pct:.2f}"`% per year (t$=$ `{python} f"{tc_net_t:.2f}"`). The average annual transaction cost drag amounts to `{python} f"{tc_drag_pct:.2f}"` percentage points, far exceeding the gross return. This implies that, under the assumption of full monthly rebalancing, the BAB strategy is entirely non-viable after accounting for realistic trading frictions. The result should be interpreted as an upper bound on actual transaction costs, since in practice investors would rebalance less frequently and only trade when the cost savings exceed the friction. Notably, the estimated annual TC drag of `{python} f"{tc_drag_pct:.2f}"` percentage points exceeds even the full-sample gross BAB return of `{python} f"{bab_mean_pct:.2f}"`%, meaning the strategy would be non-viable under these cost assumptions regardless of which sample period is used to measure gross returns. Nonetheless, the result highlights that the gross profitability documented in section 4.2 is highly sensitive to implementation costs, particularly given the wide bid-ask spreads prevalent in CRSP data for earlier decades prior to market decimalization.
 
 ```{python}
 #| label: tbl-tc-results
@@ -271,6 +327,47 @@ print(tabulate(
     tablefmt="latex_booktabs",
     floatfmt=".4f",
     missingval="---"
+))
+```
+
+```{python}
+#| label: compute-tc-decomp-vars
+#| cache: true
+pre_drag_pct  = tc_decomp.loc["1993--2000",  "TC Drag"] * 100
+post_drag_pct = tc_decomp.loc["2001--2012", "TC Drag"] * 100
+mod_drag_pct  = tc_decomp.loc["2013--2025", "TC Drag"] * 100
+pre_net_pct   = tc_decomp.loc["1993--2000",  "Net BAB"] * 100
+post_net_pct  = tc_decomp.loc["2001--2012", "Net BAB"] * 100
+mod_net_pct   = tc_decomp.loc["2013--2025", "Net BAB"] * 100
+pre_spr       = tc_decomp.loc["1993--2000",  "Spread L (pct/mo)"]
+post_spr      = tc_decomp.loc["2001--2012", "Spread L (pct/mo)"]
+mod_spr       = tc_decomp.loc["2013--2025", "Spread L (pct/mo)"]
+```
+
+The aggregate TC drag conceals substantial variation across market structure regimes. US equity markets transitioned from fractional to decimal tick sizes between June 2000 and April 2001 (NYSE and AMEX fully decimal by January 29, 2001; NASDAQ by April 9, 2001), compressing bid-ask spreads by roughly 80% on average. @tbl-tc-decomp decomposes the TC drag into three sub-periods aligned with this structural break: the pre-decimalization era (1993--2000), the post-decimalization decade that overlaps with Frazzini and Pedersen's (2014) original sample end (2001--2012), and the modern era (2013--2025).
+
+The decomposition reveals that the aggregate drag is overwhelmingly a pre-decimalization phenomenon. During 1993--2000, the TC drag reaches `{python} f"{pre_drag_pct:.1f}"` percentage points per year, driven by average monthly long-leg half-spreads of `{python} f"{pre_spr:.2f}"`% — consistent with the 12.5 cent minimum tick on fractional markets, which translates to several percent for the small-cap, low-beta stocks that anchor the long leg. The leverage amplification built into the BAB formula ($TC^L = 2\bar{c}^L/\beta^L$) then multiplies this raw spread cost by roughly $1/\beta^L \approx 2$ to $3$. After decimalization, the drag falls sharply: to `{python} f"{post_drag_pct:.1f}"` pp/year in 2001--2012 and `{python} f"{mod_drag_pct:.1f}"` pp/year in 2013--2025, with corresponding net BAB returns of `{python} f"{post_net_pct:.1f}"`% and `{python} f"{mod_net_pct:.1f}"`% per year, respectively. These findings materially qualify the conclusion from @tbl-tc-results: the estimated TC drag declines substantially after decimalization, and the aggregate non-viability documented in the full TC subsample is driven overwhelmingly by the pre-decimalization era. Even so, the estimated net returns remain negative in all three sub-periods. Whether the strategy is viable under modern market conditions therefore depends on the degree to which our quoted-spread estimates overstate actual execution costs for institutional investors — an interpretation taken up in Section 5.3.
+
+```{python}
+#| label: tbl-tc-decomp
+#| tbl-cap: "TC drag decomposition by market structure era. Gross BAB, TC Drag, and Net BAB are annualised (\\% per year). Spread$^L$ is the average monthly half-spread on the long leg (\\% per month), before leverage scaling. $t$ (Net) tests whether the mean monthly net return differs from zero. The decimalization break (January 2001) separates the first two periods."
+#| tbl-pos: "H"
+#| output: asis
+_d = tc_decomp.copy()
+tc_decomp_display = pd.DataFrame({
+    "Gross BAB (\\%/yr)": (_d["Gross BAB"] * 100).round(2),
+    "TC Drag (\\%/yr)":   (_d["TC Drag"]   * 100).round(2),
+    "Net BAB (\\%/yr)":   (_d["Net BAB"]   * 100).round(2),
+    "$t$ (Net)":          _d["t (Net)"].round(2),
+    "Spread$^L$ (\\%/mo)": _d["Spread L (pct/mo)"].round(3),
+    "$N$":                _d["N"].astype(int),
+}, index=_d.index)
+print(tabulate(
+    tc_decomp_display,
+    headers=[""] + list(tc_decomp_display.columns),
+    tablefmt="latex_booktabs",
+    floatfmt=".2f",
+    intfmt="d",
 ))
 ```
 
