@@ -1,4 +1,4 @@
-# Betting Against Beta — Seminar Paper
+# Betting Against Beta - A Study of Proposition 1 & 2 in American Equity Markets
 
 **Seminar: Asset Prices and Financial Markets**
 **Department of Economics, University of Copenhagen**
@@ -13,6 +13,7 @@
 Seminar-Asset-Prices-and-Financial-Markets/
 ├── index.qmd                          # Main file — assembles all chapters
 ├── _quarto.yml                        # Quarto configuration
+├── config.yaml                        # Contained the WRDS credentials (Login removed for security)
 ├── references.bib                     # Bibliography
 ├── ku-frontpage.sty                   # KU LaTeX frontpage package
 ├── chapters/
@@ -22,20 +23,13 @@ Seminar-Asset-Prices-and-Financial-Markets/
 │   ├── 04_results.qmd                 ← Conrad
 │   ├── 05_discussion.qmd              ← Tobias
 │   └── 06_conclusion.qmd              ← Conrad
-├── final slides/
-│   ├── slides.qmd                     # RevealJS presentation
-│   └── custom.scss                    # Custom slide theme
-├── src/
-│   ├── data_loader.py                 # Data download utilities
-│   ├── analysis.py                    # Analysis helpers
-│   └── visualisation.py              # Plotting utilities
 ├── logos/                             # KU logo assets
-├── figures/                           # Saved plots (generated at render)
+├── figures/                           # Saved plots
 └── data/
-    ├── crsp_monthly.parquet           # Monthly CRSP data (not tracked)
-    ├── crsp_daily/                    # Daily CRSP data partitioned by permno (not tracked)
-    ├── factors_ff3_monthly.parquet    # Fama-French monthly factors (not tracked)
-    └── factors_ff3_daily.parquet      # Fama-French daily factors (not tracked)
+    ├── crsp_monthly.parquet           # Monthly CRSP data 
+    ├── crsp_daily/                    # Daily CRSP data
+    ├── factors_ff3_monthly.parquet    # Fama-French monthly factors 
+    └── factors_ff3_daily.parquet      # Fama-French daily factors 
 ```
 
 ## Division of Work
@@ -65,26 +59,6 @@ quarto render index.qmd
 
 # Preview with live reload (HTML)
 quarto preview index.qmd
-
-# Render the slides
-quarto render "final slides/slides.qmd"
-```
-
-## Git Workflow
-
-```bash
-# Before starting work:
-git pull origin main
-
-# Work on a feature branch:
-git checkout -b feature/your-name-description
-
-# Commit often:
-git add chapters/ figures/ references.bib
-git commit -m "Brief description of changes"
-git push origin feature/your-name-description
-
-# When done, open a Pull Request into main
 ```
 
 ## Dependencies

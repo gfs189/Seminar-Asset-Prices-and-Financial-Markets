@@ -1,13 +1,13 @@
 ---
-title: "Betting against beta"
-subtitle: "a study of proposition 1 & 2 in american equity markets"
+title: "Betting Against Beta"
+subtitle: "A Study of Proposition 1 & 2 in American Equity Markets"
 author: "Tobias Dines Schlünssen & Conrad Frederik Kromann"
-date: "2026-06-02"
+date: "2026-06-03"
 date-format: "D MMMM YYYY"
 ---
 ```{=latex}
 
-% --- Info page (KU template page 2) ---
+% Info page
 \thispagestyle{empty}
 \vspace*{2cm}
 \begin{tabular}{@{}p{3.5cm} p{9cm}}
@@ -19,7 +19,7 @@ date-format: "D MMMM YYYY"
                         &- A Study of Proposition 1 and 2 in American Equity Markets \\[1ex]
   Description:        & Testing for beta anomaly and performance of BAB strategy with transaction costs on US-equities. \\[1ex]
   Advisor:            & Jacob Lundbeck Serup\\[1ex]
-  Date:               & June 2nd, 2026 \\
+  Date:               & June 3nd, 2026 \\
 \end{tabular}
 \clearpage
 % Abstract page
