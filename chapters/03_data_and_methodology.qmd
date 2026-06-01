@@ -1,5 +1,5 @@
 # Data and Methodology
-In this chapter we describe the data and methodology used to test the propositions of Frazzini and Pedersen (2014) [@frazzinipedersen2014]. We first summarize the characteristics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test Propositions 1 and 2. Finally, we discuss how we introduce and estimate transaction costs for the BAB strategy, with code included for transparency and reproducibility.
+In this chapter we describe the data and methodology used to test the propositions of Frazzini and Pedersen (2014) [@frazzinipedersen2014]. We first summarize the characteristics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test Propositions 1 and 2. Finally, we discuss how we introduce and estimate transaction costs for the BAB strategy.
 
 ## Data Description
 This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pedersen [@frazzinipedersen2014] for the US equity market using CRSP data accessed via Wharton Research Data Services (WRDS) through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025. The choice of this period is driven by data availability and to ensure a long enough time series for robust beta estimation and portfolio construction.
@@ -426,7 +426,7 @@ print(tabulate(
 ```
 
 
-Table @tbl-summary shows that the sample contains `{python} f"{n_obs:,}"` stock-month observations across `{python} f"{n_stocks:,}"` unique stocks. The mean monthly excess return is `{python} f"{summary_stats.loc['Excess Return', 'Mean']*100:.2f}"`%, consistent with the well-documented equity risk premium, though the distribution is wide with a standard deviation of `{python} f"{summary_stats.loc['Excess Return', 'Std']*100:.2f}"`% per month. The mean estimated beta is `{python} f"{summary_stats.loc['Beta', 'Mean']:.2f}"`, slightly above one, with a standard deviation of `{python} f"{summary_stats.loc['Beta', 'Std']:.2f}"`, confirming meaningful cross-sectional dispersion in market risk — a necessary condition for the BAB strategy to be viable. Market capitalisation is highly right-skewed, reflecting the dominance of a small number of large-cap stocks in the US equity market.
+@tbl-summary shows that the mean monthly excess return is `{python} f"{summary_stats.loc['Excess Return', 'Mean']*100:.2f}"`%, consistent with the well-documented equity risk premium, though the distribution is wide with a standard deviation of `{python} f"{summary_stats.loc['Excess Return', 'Std']*100:.2f}"`% per month. The mean estimated beta is `{python} f"{summary_stats.loc['Beta', 'Mean']:.2f}"`, with a standard deviation of `{python} f"{summary_stats.loc['Beta', 'Std']:.2f}"`, confirming meaningful cross-sectional dispersion in market risk which is necessary for the BAB strategy to be viable. Market capitalisation is highly right-skewed, reflecting the dominance of a small number of large-cap stocks in the US equity market.
 
 ```{python}
 #| label: fig-nstocks
@@ -449,7 +449,7 @@ stocks_per_month = (
 )
 ```
 
-Figure @fig-nstocks shows that coverage grows steadily from around 500 stocks in the early 1960s to a peak of over 4,000 in the late 1990s, before declining as NASDAQ listings contracted following the dot-com bubble. The variation in coverage is relevant because the BAB factor is constructed from the full cross-section each month — a larger and more diverse universe of stocks in the later part of the sample provides more dispersion in beta and therefore a more powerful test of the propositions.
+@fig-nstocks shows that coverage grows steadily from around 1500 stocks in the early 1960s to a peak of over 5,000 in the late 1990s, before declining as NASDAQ listings contracted following the dot-com bubble. The variation in coverage is relevant because the BAB factor is constructed from the full cross-section each month — a larger and more diverse universe of stocks in the later part of the sample provides more dispersion in beta and therefore a more powerful test of the propositions.
 
 ```{python}
 #| label: fig-beta-dist
@@ -464,7 +464,7 @@ Figure @fig-nstocks shows that coverage grows steadily from around 500 stocks in
 )
 ```
 
-Figure @fig-beta-dist shows that the cross-sectional beta distribution is centred slightly above one and right-skewed, with a long tail driven by high-volatility small-cap stocks. The bulk of the distribution lies between 0 and 2, with most stocks having a beta below one — meaning the low-beta portfolio contains more stocks than a simple median split might suggest. The right tail confirms that there is a meaningful subset of high-beta stocks to short, providing the asymmetry in risk exposure that the BAB strategy exploits. The Vasicek shrinkage toward one compresses extreme estimates, which reduces the influence of the right tail on portfolio construction.
+@fig-beta-dist shows that the cross-sectional beta distribution is centred slightly above one and right-skewed, with a long tail driven by high-volatility small-cap stocks. The bulk of the distribution lies between 0 and 2, with most stocks having a beta below one meaning the low-beta portfolio contains more stocks than a simple median split might suggest. The right tail confirms that there is a meaningful subset of high-beta stocks to short, providing the asymmetry in risk exposure that the BAB strategy exploits. It can be concluded from the figure that a few outliers can be observed and should therfore be noted as a possible estimation uncertainty. The Vasicek shrinkage toward one compresses extreme estimates, which reduces the influence of the right tail on portfolio construction. 
 
 ## Beta Estimation
 
@@ -488,7 +488,7 @@ We estimate the correlation with the market $\hat{\rho}_i$ using overlapping thr
 
 $$r^{3d}_{i,t} = \sum_{k=0}^{2} \ln(1 + r_{i,t+k})$$
 
-The three-day aggregation corrects for non-synchronous trading: if a stock does not trade on day $t$, its observed return is zero while the market moves, causing the daily correlation to be underestimated. Summing over three consecutive days ensures that the delayed price discovery of infrequently traded stocks is captured. Overlapping three-day returns are computed for both the individual stock and the market from daily CRSP and Fama-French data. The rolling correlation uses a 1,260-trading-day (five-year) window with a minimum of 750 observations (approximately three years), and the last daily estimate within each calendar month is retained as the monthly correlation estimate.
+The three-day aggregation corrects for non-synchronous trading: if a stock does not trade on day $t$, its observed return is zero while the market moves, causing the daily correlation to be underestimated. Summing over three consecutive days ensures that the delayed price discovery of infrequently traded stocks is captured. Overlapping three-day returns are computed for both the individual stock and the market from daily CRSP and Fama-French data. The rolling correlation also uses a 1,260-trading-day window with a minimum of 750 observations, and the last daily estimate within each calendar month is retained as the monthly correlation estimate.
 
 ### Combined Beta Estimate
 
@@ -700,7 +700,7 @@ We estimate the round-trip transaction cost for the BAB strategy using daily bid
 
 $$c_{i,d} = \frac{\text{ask}_{i,d} - \text{bid}_{i,d}}{2 \cdot \text{mid}_{i,d}}$$
 
-where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly spread for each stock is the median of its daily half-spreads within the month, which is robust to days with stale or missing bid/ask quotes. Daily observations with a proportional half-spread above 2% are excluded as likely erroneous CRSP entries, following the convention in Novy-Marx and Velikov [@novymarxvelikov2016]. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg. Following Frazzini and Pedersen [@frazzinipedersen2014], we assume full monthly rebalancing, so this is an upper bound on realised costs.
+where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly spread for each stock is the median of its daily half-spreads within the month, which makes it robust to days with stale or missing bid/ask quotes. Daily observations with a proportional half-spread above 2% are excluded as likely erroneous or implausible CRSP entries, following the level used in Novy-Marx and Velikov [@novymarxvelikov2016]. We apply this cost to BAB portfolio turnover with each rebalancing incuring one half-spread on the sold leg and one on the bought leg. Following Frazzini and Pedersen [@frazzinipedersen2014], we assume full monthly rebalancing, so this is an upper bound on realised costs.
 
 Because the BAB factor scales each portfolio leg by the inverse of its beta, the transaction cost on each leg must be scaled accordingly. The round-trip cost borne per unit of BAB capital from the long leg is:
 
@@ -843,4 +843,4 @@ tc_decomp = pd.DataFrame([
 ]).set_index("Period")
 ```
 
-Because reliable CRSP bid-ask data are only available from January 1993 onward, the TC analysis covers a shorter period than the main BAB analysis (January 1963 to December 2025). The gross BAB return over the TC subsample is `{python} f"{bab_tc_sample['r_bab'].mean() * 12 * 100:.2f}"`% per year, compared to `{python} f"{bab_returns['r_bab'].mean() * 12 * 100:.2f}"`% over the full sample, so the two figures are not directly comparable.
+Because reliable CRSP bid-ask data are only available from January 1993 onward, the TC analysis covers a shorter period than the main BAB analysis (January 1963 to December 2025). The gross BAB return over the TC subsample is `{python} f"{bab_tc_sample['r_bab'].mean() * 12 * 100:.2f}"`% per year, compared to `{python} f"{bab_returns['r_bab'].mean() * 12 * 100:.2f}"`% over the full sample, so the conclusions of this analysis is not directly transferable to the full sample analysis.
