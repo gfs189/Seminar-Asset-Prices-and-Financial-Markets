@@ -100,7 +100,7 @@ print("\n".join(lines))
 
 ```{python}
 #| label: fig-sml-results
-#| fig-cap: "Empirical security market line (solid blue) estimated through decile-average betas and returns, against the CAPM prediction (red dashed). The flatter slope of the empirical line is consistent with the beta anomaly."
+#| fig-cap: "Empirical security market line (solid blue) estimated through decile-average betas and returns, against the CAPM prediction (red dashed)."
 (
     ggplot(decile_avg, aes(x="avg_beta", y="avg_ret"))
     + geom_point(size=3, color="steelblue")
@@ -121,7 +121,7 @@ print("\n".join(lines))
 
 ```{python}
 #| label: fig-decile-alphas-results
-#| fig-cap: "Monthly CAPM alpha by beta decile. Blue bars indicate positive alphas (low-beta deciles); red bars indicate negative alphas (high-beta deciles). The monotone decline from left to right is consistent with proposition 1."
+#| fig-cap: "Monthly CAPM alpha by beta decile. Blue bars indicate positive alphas (low-beta deciles); red bars indicate negative alphas (high-beta deciles)."
 (
     ggplot(
         decile_alphas.assign(positive=lambda x: x["alpha"] > 0),
