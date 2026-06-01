@@ -17,7 +17,7 @@ date-format: "D MMMM YYYY"
                         & Conrad Frederik Kromann (RTL959)\\[1ex]
   Section responsible:& GFS189: abstract, ch. 1, ch. 3 and ch. 5\\
                       & RTL959: abstract, ch. 2, ch. 4 and ch. 6\\[1ex]
-  Characters(incl. spaces): & ?\\[1ex]
+  Characters(incl. spaces): & 53,048 \\[1ex]
   Title and subtitle: & Betting Against Beta\\
                         &- A Study of Propositions 1 and 2 in US Equity Markets \\[1ex]
   Description:        & Testing for beta anomaly and performance of BAB strategy with transaction costs on US-equities. \\[1ex]
