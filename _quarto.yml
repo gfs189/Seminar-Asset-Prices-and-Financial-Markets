@@ -22,6 +22,7 @@ format:
         \usepackage{float}
         \usepackage{caption}
         \captionsetup[table]{font={small,it},labelfont={small,bf,it},skip=4pt}
+        \raggedbottom
     number-sections: true
     colorlinks: true
     tbl-pos: "H"
