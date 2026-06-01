@@ -11,8 +11,6 @@ Where $R_i - r_f$ is the excess return of asset $i$, $r_f$ is the risk-free rate
 
 Empirical evidence, however, has long challenged the predictions of the CAPM. One of the most well-known anomalies is the beta anomaly, which refers to the empirical finding that stocks with higher betas tend to have lower alphas than those with lower betas. This contradicts the predictions of the CAPM and suggests that there may be other factors at play in determining expected returns. The paper of focus here is Frazzini and Pedersen (2014) [@frazzinipedersen2014], which seeks to explain the beta anomaly and test the propositions that arise from their theoretical framework.
 
-
-
 ## Leverage Constraints and a Flatter Security Market Line
 The paper of Frazzini and Pedersen (2014)[@frazzinipedersen2014] suggests that the presence of leverage constraints can lead to a flatter security market line, which can explain the beta anomaly. Leverage constraints refer to the limitations that investors face when trying to borrow money to invest in higher beta assets. These constraints can arise from various sources, such as margin requirements, borrowing limits, or risk management policies. When investors are unable to borrow they compensate by over-buying high-beta risky assets. This leads to excess demand which lowers expected returns for high-beta assets and reduces their alphas. This is the reason for the flatter security market line and the beta anomaly. The paper [@frazzinipedersen2014] provides a theoretical framework for understanding how leverage constraints can lead to a flatter security market line and tests this framework using empirical data from the US equity market.
 

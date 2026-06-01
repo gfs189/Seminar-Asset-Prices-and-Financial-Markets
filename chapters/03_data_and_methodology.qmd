@@ -4,8 +4,6 @@ In this chapter we describe the data and methodology used to test the propositio
 ## Data Description
 This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pedersen [@frazzinipedersen2014] for the US equity market using CRSP data accessed via Wharton Research Data Services (WRDS) through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025. The choice of this period is driven by data availability and to ensure a long enough time series for robust beta estimation and portfolio construction.
 
-
-
 | Dataset | Frequency | Content | Purpose |
 |---|---|---|---|
 | CRSP stock data | Monthly | Excess returns, market capitalisation (NYSE, AMEX, NASDAQ) | BAB portfolio construction and factor returns |
@@ -13,9 +11,6 @@ This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pede
 | Fama-French factors | Monthly & daily | Risk-free rate, market excess return | Excess return computation; correlation component of beta |
 
 : *Data sources used in the analysis. CRSP data is accessed via WRDS through the `tidyfinance` Python package. Fama-French factors are downloaded from the Kenneth French data library. All data covers January 1963 to December 2025.* {#tbl-data}
-
-
-
 
 ```{python}
 #| eval: false
@@ -80,7 +75,6 @@ os.makedirs("figures", exist_ok=True)
 ## Fama-French Factors
 
 We download Fama-French 3-factor data at monthly and daily frequency. We retain only the risk-free rate and market excess return, which are the inputs needed for excess return computation and beta estimation.
-
 ```{python}
 #| eval: false
 factors_ff3_monthly = (
@@ -110,7 +104,6 @@ factors_ff3_daily.to_parquet("data/factors_ff3_daily.parquet")
 ## Monthly CRSP Data
 
 We download monthly CRSP data for all US common stocks listed on NYSE, AMEX, and NASDAQ. Market capitalisation is computed as shares outstanding times the absolute price, expressed in millions of USD. We also construct a one-month lagged market cap, which serves as the portfolio weight in the BAB factor construction.
-
 ```{python}
 #| eval: false
 crsp_monthly = tf.download_data(
@@ -124,7 +117,6 @@ crsp_monthly = tf.download_data(
 ## Data Cleaning
 
 Market capitalisation is computed as shares outstanding times absolute price, expressed in millions of USD. Observations with missing returns or market capitalisation are excluded from the sample. Excess returns are clipped at $-100\%$ to remove data errors in CRSP raw returns. Lagged market capitalisation (one month) is used as portfolio weights to ensure all weighting variables are known at the time of portfolio formation.
-
 ```{python}
 #| eval: false
 # Lagged market cap (one month) for portfolio weighting — computed from raw download
@@ -156,7 +148,6 @@ crsp_monthly.to_parquet("data/crsp_monthly.parquet")
 ## Daily CRSP Data
 
 Beta estimation in Frazzini and Pedersen (2014)[@frazzinipedersen2014] requires daily returns. The volatility component of beta uses a 1-year rolling window (252 trading days, minimum 120 observations) of daily excess returns. We also retain bid and ask prices from CRSP to compute proportional half-spreads for the transaction cost analysis. We download the daily data in batches of 500 PERMNOs to manage memory.
-
 ```{python}
 #| eval: false
 # Convert dates to ISO format for SQL
