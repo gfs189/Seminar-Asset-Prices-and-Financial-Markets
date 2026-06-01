@@ -2,7 +2,7 @@
 In this chapter we describe the data and methodology used to test the propositions of Frazzini and Pedersen (2014) [@frazzinipedersen2014]. We first summarize the characteristics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test Propositions 1 and 2. Finally, we discuss how we introduce and estimate transaction costs for the BAB strategy.
 
 ## Data Description
-This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pedersen [@frazzinipedersen2014] for the US equity market using CRSP data accessed via Wharton Research Data Services (WRDS) through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025. The choice of this period is driven by data availability and to ensure a long enough time series for robust beta estimation and portfolio construction.
+This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pedersen [@frazzinipedersen2014] for the US equity market using CRSP data accessed via Wharton Research Data Services (WRDS) through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025. The choice of this period is driven by data availability and to ensure a long enough time series for robust beta estimation and portfolio construction. @tbl-data summarises the three datasets used and their purpose in the analysis.
 
 | Dataset | Frequency | Content | Purpose |
 |---|---|---|---|
