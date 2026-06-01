@@ -108,11 +108,7 @@ factors_ff3_daily.to_parquet("data/factors_ff3_daily.parquet")
 
 ## Monthly CRSP Data
 
-We download monthly CRSP data for all US common stocks listed on NYSE, AMEX, and NASDAQ. Market capitalisation is computed as shares outstanding times the absolute value of price, expressed in millions of USD:
-
-$$MC_{i,t} = \frac{\text{shrout}_{i,t} \times |P_{i,t}|}{1{,}000}$$
-
-The absolute value is required because CRSP records negative prices to indicate bid-ask midpoints rather than transaction prices. We also construct a one-month lagged market cap, which serves as the portfolio weight in the BAB factor construction.
+We download monthly CRSP data for all US common stocks listed on NYSE, AMEX, and NASDAQ. Market capitalisation is computed as shares outstanding times the absolute value of price, expressed in millions of USD. The absolute value is required because CRSP records negative prices to indicate bid-ask midpoints rather than transaction prices. We also construct a one-month lagged market cap, which serves as the portfolio weight in the BAB factor construction.
 ```{python}
 #| eval: false
 #| include: false
@@ -126,11 +122,7 @@ crsp_monthly = tf.download_data(
 
 ## Data Cleaning
 
-Observations with missing returns or market capitalisation are excluded from the sample. To remove data errors in CRSP raw returns, excess returns are winsorised at $-100\%$:
-
-$$r^{excess}_{i,t} = \max(r_{i,t} - r_{f,t},\ -1)$$
-
-Lagged market capitalisation (one month) is used as portfolio weights to ensure all weighting variables are known at the time of portfolio formation.
+Observations with missing returns or market capitalisation are excluded from the sample. To remove data errors in CRSP raw returns, excess returns are winsorised at $-100\%$. Lagged market capitalisation (one month) is used as portfolio weights to ensure all weighting variables are known at the time of portfolio formation.
 ```{python}
 #| eval: false
 #| include: false
