@@ -1,5 +1,5 @@
 # Data and Methodology
-In this chapter we describe the data and methodology used to test the propositions of Frazzini and Pedersen (2014) [@frazzinipedersen2014]. We first summarize the characteristics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test proposition 1 and 2. Finally, we discuss how we introduce and estimate transaction costs for the BAB strategy, while including comments for transparency and reproducibility, regarding how the underlying analysis has been made.
+In this chapter we describe the data and methodology used to test the propositions of Frazzini and Pedersen (2014) [@frazzinipedersen2014]. We first summarize the characteristics of the data and their sources, then we detail the beta estimation procedure, the construction of the BAB factor, and the Fama-MacBeth regressions used to test Propositions 1 and 2. Finally, we discuss how we introduce and estimate transaction costs for the BAB strategy, with code included for transparency and reproducibility.
 
 ## Data Description
 This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pedersen [@frazzinipedersen2014] for the US equity market using CRSP data accessed via Wharton Research Data Services (WRDS) through the `tidyfinance` package [@tidyfinance]. The sample covers January 1963 through December 2025. The choice of this period is driven by data availability and to ensure a long enough time series for robust beta estimation and portfolio construction.
@@ -14,6 +14,7 @@ This paper replicates the Betting Against Beta (BAB) factor of Frazzini and Pede
 
 ```{python}
 #| eval: false
+#| include: false
 # Run once to store WRDS credentials securely in the tidyfinance config.
 # You will be prompted for your WRDS username and password.
 import tidyfinance as tf
@@ -55,6 +56,7 @@ TC_START_DATE = "1993-01-01"
 
 ```{python}
 #| eval: false
+#| include: false
 # Load WRDS credentials from project config.yaml
 _here = os.path.dirname(os.path.abspath("03_data.qmd"))
 _config_path = os.path.join(_here, "config.yaml")
@@ -74,9 +76,12 @@ os.makedirs("figures", exist_ok=True)
 
 ## Fama-French Factors
 
-We download Fama-French 3-factor data at monthly and daily frequency. We retain only the risk-free rate and market excess return, which are the inputs needed for excess return computation and beta estimation.
+We download Fama-French 3-factor data at monthly and daily frequency. We retain only the risk-free rate $r_{f,t}$ and market excess return, which are the inputs needed for excess return computation and beta estimation. The excess return for stock $i$ in month $t$ is defined as:
+
+$$r^{excess}_{i,t} = r_{i,t} - r_{f,t}$$
 ```{python}
 #| eval: false
+#| include: false
 factors_ff3_monthly = (
     tf.download_data(
         domain="famafrench",
@@ -103,9 +108,14 @@ factors_ff3_daily.to_parquet("data/factors_ff3_daily.parquet")
 
 ## Monthly CRSP Data
 
-We download monthly CRSP data for all US common stocks listed on NYSE, AMEX, and NASDAQ. Market capitalisation is computed as shares outstanding times the absolute price, expressed in millions of USD. We also construct a one-month lagged market cap, which serves as the portfolio weight in the BAB factor construction.
+We download monthly CRSP data for all US common stocks listed on NYSE, AMEX, and NASDAQ. Market capitalisation is computed as shares outstanding times the absolute value of price, expressed in millions of USD:
+
+$$MC_{i,t} = \frac{\text{shrout}_{i,t} \times |P_{i,t}|}{1{,}000}$$
+
+The absolute value is required because CRSP records negative prices to indicate bid-ask midpoints rather than transaction prices. We also construct a one-month lagged market cap, which serves as the portfolio weight in the BAB factor construction.
 ```{python}
 #| eval: false
+#| include: false
 crsp_monthly = tf.download_data(
     domain="wrds",
     dataset="crsp_monthly",
@@ -116,9 +126,14 @@ crsp_monthly = tf.download_data(
 
 ## Data Cleaning
 
-Market capitalisation is computed as shares outstanding times absolute price, expressed in millions of USD. Observations with missing returns or market capitalisation are excluded from the sample. Excess returns are clipped at $-100\%$ to remove data errors in CRSP raw returns. Lagged market capitalisation (one month) is used as portfolio weights to ensure all weighting variables are known at the time of portfolio formation.
+Observations with missing returns or market capitalisation are excluded from the sample. To remove data errors in CRSP raw returns, excess returns are winsorised at $-100\%$:
+
+$$r^{excess}_{i,t} = \max(r_{i,t} - r_{f,t},\ -1)$$
+
+Lagged market capitalisation (one month) is used as portfolio weights to ensure all weighting variables are known at the time of portfolio formation.
 ```{python}
 #| eval: false
+#| include: false
 # Lagged market cap (one month) for portfolio weighting — computed from raw download
 mktcap_lag = (
     crsp_monthly
@@ -150,6 +165,7 @@ crsp_monthly.to_parquet("data/crsp_monthly.parquet")
 Beta estimation in Frazzini and Pedersen (2014)[@frazzinipedersen2014] requires daily returns. The volatility component of beta uses a 1-year rolling window (252 trading days, minimum 120 observations) of daily excess returns. We also retain bid and ask prices from CRSP to compute proportional half-spreads for the transaction cost analysis. We download the daily data in batches of 500 PERMNOs to manage memory.
 ```{python}
 #| eval: false
+#| include: false
 # Convert dates to ISO format for SQL
 start_date_sql = pd.to_datetime(start_date).strftime("%Y-%m-%d")
 end_date_sql = pd.to_datetime(end_date).strftime("%Y-%m-%d")
@@ -377,7 +393,7 @@ analysis_data = (
 
 ## Sample Description
 
-@tbl-summary reports summary statistics for the key variables. @fig-nstocks shows how many stocks are available each month, establishing the scope of the data, while @fig-beta-dist shows the cross-sectional distribution of estimated betas, which motivates the beta anomaly analysis that follows.
+@tbl-summary reports summary statistics, @fig-nstocks shows stock coverage over time, and @fig-beta-dist shows the cross-sectional distribution of estimated betas.
 
 ```{=latex}
 \setcounter{table}{5}
@@ -410,6 +426,8 @@ print(tabulate(
 ```
 
 
+Table @tbl-summary shows that the sample contains `{python} f"{n_obs:,}"` stock-month observations across `{python} f"{n_stocks:,}"` unique stocks. The mean monthly excess return is `{python} f"{summary_stats.loc['Excess Return', 'Mean']*100:.2f}"`%, consistent with the well-documented equity risk premium, though the distribution is wide with a standard deviation of `{python} f"{summary_stats.loc['Excess Return', 'Std']*100:.2f}"`% per month. The mean estimated beta is `{python} f"{summary_stats.loc['Beta', 'Mean']:.2f}"`, slightly above one, with a standard deviation of `{python} f"{summary_stats.loc['Beta', 'Std']:.2f}"`, confirming meaningful cross-sectional dispersion in market risk — a necessary condition for the BAB strategy to be viable. Market capitalisation is highly right-skewed, reflecting the dominance of a small number of large-cap stocks in the US equity market.
+
 ```{python}
 #| label: fig-nstocks
 #| cache: true
@@ -431,6 +449,8 @@ stocks_per_month = (
 )
 ```
 
+Figure @fig-nstocks shows that coverage grows steadily from around 500 stocks in the early 1960s to a peak of over 4,000 in the late 1990s, before declining as NASDAQ listings contracted following the dot-com bubble. The variation in coverage is relevant because the BAB factor is constructed from the full cross-section each month — a larger and more diverse universe of stocks in the later part of the sample provides more dispersion in beta and therefore a more powerful test of the propositions.
+
 ```{python}
 #| label: fig-beta-dist
 #| cache: true
@@ -444,17 +464,23 @@ stocks_per_month = (
 )
 ```
 
+Figure @fig-beta-dist shows that the cross-sectional beta distribution is centred slightly above one and right-skewed, with a long tail driven by high-volatility small-cap stocks. The bulk of the distribution lies between 0 and 2, with most stocks having a beta below one — meaning the low-beta portfolio contains more stocks than a simple median split might suggest. The right tail confirms that there is a meaningful subset of high-beta stocks to short, providing the asymmetry in risk exposure that the BAB strategy exploits. The Vasicek shrinkage toward one compresses extreme estimates, which reduces the influence of the right tail on portfolio construction.
+
 ## Beta Estimation
 
 Following Frazzini and Pedersen [@frazzinipedersen2014], we estimate beta as the product of a correlation component and a volatility component:
 
 $$\hat{\beta}_i = \hat{\rho}_i \cdot \frac{\hat{\sigma}_i}{\hat{\sigma}_m}$$
 
-The correlation $\hat{\rho}_i$ is estimated from overlapping three-day log returns on a 5-year (1,260 trading day) rolling window with a minimum of 750 days, following the non-synchronous trading correction of Frazzini and Pedersen [@frazzinipedersen2014]. The volatility ratio is estimated from a 1-year rolling window of daily excess returns (minimum 120 observations). This two-component approach improves precision by using higher-frequency data for the noisier volatility estimate, while the overlapping three-day construction for the correlation mitigates the Scholes-Williams bias for infrequently traded stocks.
+The correlation $\hat{\rho}_i$ is estimated from overlapping three-day log returns on a 5-year (1,260 trading day) rolling window with a minimum of 750 days, following the non-synchronous trading correction of Frazzini and Pedersen [@frazzinipedersen2014]. The volatility ratio is estimated from a 1-year rolling window of daily excess returns (minimum 120 observations). This two-component approach improves precision by using higher-frequency data for the noisier volatility estimate, while the overlapping three-day construction for the correlation mitigates non-synchronous trading bias for infrequently traded stocks.
 
 ### Volatility Component
 
-We estimate annualised standard deviations using a 252-day rolling window of daily excess returns based on yearly business days. The stock's standard deviation $\hat{\sigma}_i$ and the market standard deviation $\hat{\sigma}_m$ are estimated over the same window to ensure comparability. For each stock-month, we retain the last available daily estimate within the month.
+We estimate annualised standard deviations using a 252-day rolling window of daily excess returns. For stock $i$ on day $d$, using a window of $T = 252$ days:
+
+$$\hat{\sigma}_{i,d} = \sqrt{\frac{1}{T-1} \sum_{\tau=d-T+1}^{d} \left(r^{excess}_{i,\tau} - \bar{r}^{excess}_{i,d}\right)^2}$$
+
+where $\bar{r}^{excess}_{i,d}$ is the mean excess return over the window. The market standard deviation $\hat{\sigma}_{m,d}$ is estimated identically. Both are estimated over the same window to ensure comparability in the volatility ratio $\hat{\sigma}_i / \hat{\sigma}_m$. For each stock-month, we retain the last available daily estimate within the month.
 
 ### Correlation Component
 
@@ -474,7 +500,11 @@ Beta estimates are lagged by one month before merging with returns to avoid a lo
 
 ## Proposition 1: The Security Market Line
 
-Proposition 1 predicts that the empirical SML is flatter than CAPM implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas. In the first pass, a separate OLS regression of excess returns on beta is estimated for each month, yielding a time series of monthly slope and intercept estimates. In the second pass, the reported coefficients are the time-series averages of these monthly estimates, and the associated $t$-statistics use Newey-West standard errors with four lags [@neweywest1987] to account for potential autocorrelation in the monthly coefficient estimates, following Frazzini and Pedersen [@frazzinipedersen2014].
+Proposition 1 predicts that the empirical SML is flatter than CAPM implies: high-beta assets earn lower risk-adjusted returns (negative CAPM alpha) and low-beta assets earn higher risk-adjusted returns (positive CAPM alpha). We test this by running Fama-MacBeth cross-sectional regressions of excess returns on lagged betas. In the first pass, a separate OLS regression is estimated for each month $t$:
+
+$$r^{excess}_{i,t} = \gamma_{0,t} + \gamma_{1,t}\hat{\beta}_{i,t-1} + \epsilon_{i,t}$$
+
+yielding a time series of monthly slope estimates $\{\hat{\gamma}_{1,t}\}$ and intercept estimates $\{\hat{\gamma}_{0,t}\}$. In the second pass, the reported coefficients are the time-series averages $\bar{\gamma}_j = T^{-1}\sum_t \hat{\gamma}_{j,t}$, and the associated $t$-statistics use Newey-West standard errors with four lags [@neweywest1987] to account for potential autocorrelation in the monthly coefficient estimates, following Frazzini and Pedersen [@frazzinipedersen2014]. Under the CAPM, $\gamma_{1,t}$ should equal the market excess return and $\gamma_{0,t}$ should equal zero; the beta anomaly predicts $\bar{\gamma}_1$ will be significantly below the average market excess return.
 
 ```{python}
 #| label: compute-fmb
@@ -507,7 +537,11 @@ fmb_summary = pd.DataFrame({
 
 ### Beta-Sorted Portfolio Alphas
 
-We sort stocks into 10 beta-decile portfolios and compute each decile's monthly CAPM alpha to visualise the alpha-beta relationship.
+We sort stocks into 10 beta-decile portfolios and compute each decile's CAPM alpha to visualise the alpha-beta relationship. Within each decile, returns are value-weighted using lagged market capitalisation as weights. For each decile $k$, we estimate the time-series regression:
+
+$$r^{k,excess}_{t} = \alpha_k + \beta_k r^{mkt,excess}_t + \epsilon_{k,t}$$
+
+where $\alpha_k$ is the CAPM alpha for decile $k$. Under the beta anomaly, $\alpha_k$ should decrease monotonically from the lowest to the highest beta decile.
 
 ```{python}
 #| label: compute-decile-alphas
@@ -666,7 +700,7 @@ We estimate the round-trip transaction cost for the BAB strategy using daily bid
 
 $$c_{i,d} = \frac{\text{ask}_{i,d} - \text{bid}_{i,d}}{2 \cdot \text{mid}_{i,d}}$$
 
-where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly spread for each stock is the median of its daily half-spreads within the month, which is robust to days with stale or missing bid/ask quotes. Daily observations with a proportional half-spread above 2% are excluded as likely erroneous CRSP entries, following the convention in Novy-Marx and Velikov [@novymarxvelikov2016]. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg. Following Frazzini, Israel, and Moskowitz (2015), we assume full monthly rebalancing, so this is an upper bound on realised costs.
+where $\text{mid}_{i,d}$ is the bid-ask midpoint. The monthly spread for each stock is the median of its daily half-spreads within the month, which is robust to days with stale or missing bid/ask quotes. Daily observations with a proportional half-spread above 2% are excluded as likely erroneous CRSP entries, following the convention in Novy-Marx and Velikov [@novymarxvelikov2016]. We apply this cost to BAB portfolio turnover: each rebalancing incurs one half-spread on the sold leg and one on the bought leg. Following Frazzini and Pedersen [@frazzinipedersen2014], we assume full monthly rebalancing, so this is an upper bound on realised costs.
 
 Because the BAB factor scales each portfolio leg by the inverse of its beta, the transaction cost on each leg must be scaled accordingly. The round-trip cost borne per unit of BAB capital from the long leg is:
 
