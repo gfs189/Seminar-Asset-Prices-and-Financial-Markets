@@ -50,7 +50,7 @@ fmb_display = pd.DataFrame({
 fmb_display.index = ["Intercept", "Beta"]
 print(tabulate(
     fmb_display,
-    headers=["", "Mean (\\%/month)", "$t$-statistic"],
+    headers=["", "Mean (%/month)", "t-statistic"],
     tablefmt="latex_booktabs",
     floatfmt=".2f"
 ))
@@ -246,7 +246,7 @@ The strong cumulative returns in @fig-bab-cumret-results are achieved with embed
         "Long leg": "dashed",
         "Short leg": "dotted"
     })
-    + labs(x="Date", y="Cumulative Return (\\$1 Invested, log scale)", color="", linetype="")
+    + labs(x="Date", y="Cumulative Return (\\$1 Invested, log)", color="", linetype="")
     + theme_minimal()
     + theme(legend_position="bottom")
 )
