@@ -449,7 +449,7 @@ stocks_per_month = (
 )
 ```
 
-@fig-nstocks shows that coverage grows steadily from around 1500 stocks in the early 1960s to a peak of over 5,000 in the late 1990s, before declining as NASDAQ listings contracted following the dot-com bubble. The variation in coverage is relevant because the BAB factor is constructed from the full cross-section each month — a larger and more diverse universe of stocks in the later part of the sample provides more dispersion in beta and therefore a more powerful test of the propositions.
+@fig-nstocks shows that coverage grows steadily from around 1500 stocks in the early 1960s to a peak of over 5,000 in the late 1990s, before declining as NASDAQ listings contracted following the dot-com bubble. The variation in coverage is relevant because the BAB factor is constructed from the full cross-section each month, meaning a larger and more diverse universe of stocks in the later part of the sample provides more dispersion in beta and therefore a more powerful test of the propositions.
 
 ```{python}
 #| label: fig-beta-dist
