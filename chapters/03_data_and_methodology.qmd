@@ -620,6 +620,12 @@ bab_returns = (
 )
 ```
 
+We evaluate the performance of the BAB factor using four summary statistics. The annualised mean return is $\bar{r}^{BAB} \times 12$ and the annualised standard deviation is $\hat{\sigma}^{BAB} \times \sqrt{12}$, where $\bar{r}^{BAB}$ and $\hat{\sigma}^{BAB}$ are the sample mean and standard deviation of the monthly BAB returns. The Sharpe ratio is the ratio of annualised mean excess return to annualised standard deviation:
+
+$$SR = \frac{\bar{r}^{BAB} \times 12}{\hat{\sigma}^{BAB} \times \sqrt{12}} = \frac{\bar{r}^{BAB}}{\hat{\sigma}^{BAB}} \times \sqrt{12}$$
+
+Since the BAB factor is already expressed as an excess return (it is self-financing and earns returns above the risk-free rate by construction), no additional subtraction of the risk-free rate is required. The t-statistic tests whether the mean monthly return is significantly different from zero.
+
 ```{python}
 #| label: compute-bab-summary
 #| cache: true
