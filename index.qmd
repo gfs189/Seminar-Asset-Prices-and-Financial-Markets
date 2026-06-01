@@ -15,6 +15,8 @@ date-format: "D MMMM YYYY"
   Faculty:            & Faculty of Social Sciences (SAMF) \\[1ex]
   Author(s):          & Tobias Dines Schlünssen (GFS189)\\
                         & Conrad Frederik Kromann (RTL959)\\[1ex]
+  Section responsible:& GFS189: ch. 01, ch. 3 and ch. 05\\
+                      & RTL959: ch. 02, ch. 4 and ch. 06\\[1ex]
   Title and subtitle: & Betting Against Beta\\
                         &- A Study of Proposition 1 and 2 in American Equity Markets \\[1ex]
   Description:        & Testing for beta anomaly and performance of BAB strategy with transaction costs on US-equities. \\[1ex]
