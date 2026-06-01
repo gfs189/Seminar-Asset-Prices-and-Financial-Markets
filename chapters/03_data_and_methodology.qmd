@@ -431,7 +431,7 @@ print(tabulate(
 ```{python}
 #| label: fig-nstocks
 #| cache: true
-#| fig-cap: "Number of distinct stocks included in the sample each month. Coverage grows steadily from around 500 stocks in the early 1960s to a peak of over 4,000 in the late 1990s before declining as NASDAQ listings contracted following the dot-com bubble. The pattern reflects the expansion of US equity markets and the availability of valid beta estimates."
+#| fig-cap: "Number of distinct stocks included in the sample each month."
 stocks_per_month = (
     analysis_data
     .groupby("month")["permno"]
@@ -454,7 +454,7 @@ stocks_per_month = (
 ```{python}
 #| label: fig-beta-dist
 #| cache: true
-#| fig-cap: "Cross-sectional distribution of estimated betas across all stock-month observations in the sample. The distribution is centred slightly above one with a long right tail driven by high-volatility small-cap stocks. The red dashed line marks a beta of one, which corresponds to the market portfolio under the CAPM."
+#| fig-cap: "Cross-sectional distribution of estimated betas across all stock-month observations in the sample."
 (
     ggplot(analysis_data, aes(x="beta"))
     + geom_histogram(bins=60, fill="steelblue", color="white", alpha=0.8)

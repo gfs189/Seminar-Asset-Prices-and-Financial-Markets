@@ -224,7 +224,7 @@ bab_legs_melt = pd.melt(
     })
 )
 ```
-The strong cumulative returns in @fig-bab-cumret-results are achieved with embedded leverage. The long leg scales returns by $1/\beta^L$, and since the low-beta portfolio has $\beta^L < 1$, the long side invests on margin. Over our sample the average leverage multiple on the long leg is `{python} f"{avg_lev_long:.2f}"` — meaning every \$1 of BAB capital controls roughly \$`{python} f"{avg_lev_long:.2f}"` of low-beta exposure — while the short leg is de-levered to a scaling factor of `{python} f"{avg_lev_short:.2f}"`. The impressive compounding visible in the figure therefore partly reflects this structural leverage, and returns would be materially lower if the long leg were held unlevered.
+The strong cumulative returns in @fig-bab-cumret-results are achieved with embedded leverage. The long leg scales returns by $1/\beta^L$, and since the low-beta portfolio has $\beta^L < 1$, the long side invests on margin. Over our sample the average leverage multiple on the long leg is `{python} f"{avg_lev_long:.2f}"`, meaning every \$1 of BAB capital controls roughly \$`{python} f"{avg_lev_long:.2f}"` of low-beta exposure, while the short leg is de-levered to a scaling factor of `{python} f"{avg_lev_short:.2f}"`. The impressive compounding visible in the figure therefore partly reflects this structural leverage, and returns would be materially lower if the long leg were held unlevered.
 
 @fig-bab-legs decomposes the cumulative return into its long and short leg contributions separately, clarifying which side drives performance and when.
 
